@@ -24,10 +24,13 @@ public class UserRepositoryTest {
 	@Test
 	@DisplayName("Must save a user")
 	public void saveUserTest() {
+		// Scenario
 		User newUser = new User(null,"Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
 		
+		// Execution
 		User savedUser = userRepository.save(newUser);
 		
+		// Verification
 		Assertions.assertThat(savedUser.getId()).isNotNull();
 	}
 	
