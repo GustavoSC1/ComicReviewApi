@@ -2,6 +2,7 @@ package com.gustavo.comicreviewapi.services;
 
 import java.time.LocalDate;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +17,7 @@ import com.gustavo.comicreviewapi.dtos.UserDTO;
 import com.gustavo.comicreviewapi.dtos.UserNewDTO;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.UserRepository;
+import com.gustavo.comicreviewapi.services.exceptions.BusinessException;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -51,6 +53,23 @@ public class UserServiceTest {
 		Assertions.assertThat(savedUserDto.getBirthDate()).isEqualTo(LocalDate.of(1996, 10, 17));
 		Assertions.assertThat(savedUserDto.getPhone()).isEqualTo("998123456");		
 		Assertions.assertThat(savedUserDto.getEmail()).isEqualTo("gu.cruz17@hotmail.com");
+	}
+	
+	@Test
+	@DisplayName("Should throw business error when trying to save a user with duplicate email")
+	public void shouldNotSaveAUserWithDuplicatedEmail() {
+		// Scenario
+		UserNewDTO newUser = new UserNewDTO("Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
+		
+		Mockito.when(userRepository.existsByEmail(newUser.getEmail())).thenReturn(true);
+		
+		// Execution and Verification
+		Exception exception = assertThrows(BusinessException.class, () -> {userService.save(newUser);});
+	
+		String expectedMessage = "E-mail already registered!";
+		String actualMessage = exception.getMessage();
+		
+		Assertions.assertThat(actualMessage).isEqualTo(expectedMessage);
 	}
 	
 }
