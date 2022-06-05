@@ -3,6 +3,7 @@ package com.gustavo.comicreviewapi.resources;
 import java.time.LocalDate;
 
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,15 +43,20 @@ public class UserControllerTest {
 	@MockBean
 	UserService userService;
 	
+	ObjectMapper mapper;
+	
+	@BeforeEach
+	public void setUp() {
+		// Adicionando módulo para o jackson suportar o LocalDate
+		mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
+		mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+	}
+	
 	@Test
 	@DisplayName("Must save a user")
 	public void saveUserTest() throws Exception {
-		// Scenario
-		// Adicionando módulo para o jackson suportar o LocalDate
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(new JavaTimeModule());
-		mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-		
+		// Scenario		
 		long id = 2l;
 		
 		UserNewDTO newUser = new UserNewDTO("Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
@@ -72,5 +78,26 @@ public class UserControllerTest {
 		.perform(request)
 		.andExpect( MockMvcResultMatchers.status().isCreated() )
 		.andExpect( MockMvcResultMatchers.header().string(HttpHeaders.LOCATION, Matchers.containsString("/users/"+id)));
+	}
+	
+	@Test
+	@DisplayName("Should throw validation error when there is not enough data for user creation")
+	public void createInvalidUserTest() throws Exception {
+		// Scenario
+		UserNewDTO newUser = new UserNewDTO();
+		newUser.setBirthDate(LocalDate.of(2022, 10, 17));
+		
+		String json = mapper.writeValueAsString(newUser);
+				
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.post(USER_API)
+													.contentType(MediaType.APPLICATION_JSON)
+													.accept(MediaType.APPLICATION_JSON)
+													.content(json);		
+		// Verification
+		mvc.perform(request)
+			.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+			.andExpect(MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(4)));			
 	}
 }
