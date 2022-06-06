@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -21,6 +22,9 @@ public class UserRepositoryTest {
 	@Autowired
 	UserRepository userRepository;
 	
+	@Autowired
+	TestEntityManager entityManager;
+	
 	@Test
 	@DisplayName("Must save a user")
 	public void saveUserTest() {
@@ -32,6 +36,20 @@ public class UserRepositoryTest {
 		
 		// Verification
 		Assertions.assertThat(savedUser.getId()).isNotNull();
+	}
+	
+	@Test
+	@DisplayName("Must check if there is a user with the email provided")
+	public void existsByEmailTest() {
+		// Scenario
+		User newUser = new User(null,"Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
+		entityManager.persist(newUser);
+		
+		// Execution
+		boolean foundUser = userRepository.existsByEmail(newUser.getEmail());
+		
+		// Verification
+		Assertions.assertThat(foundUser).isTrue();
 	}
 	
 }
