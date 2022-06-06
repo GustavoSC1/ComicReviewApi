@@ -1,5 +1,7 @@
 package com.gustavo.comicreviewapi.services;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 import com.gustavo.comicreviewapi.dtos.UserDTO;
@@ -7,6 +9,7 @@ import com.gustavo.comicreviewapi.dtos.UserNewDTO;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.UserRepository;
 import com.gustavo.comicreviewapi.services.exceptions.BusinessException;
+import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 
 @Service
 public class UserService {
@@ -28,6 +31,13 @@ public class UserService {
 		user = userRepository.save(user);
 		
 		return new UserDTO(user);
+	}
+	
+	public User findById(Long id) {
+		Optional<User> userOptional = userRepository.findById(id);
+		User user = userOptional.orElseThrow(() -> new ObjectNotFoundException("Object not found! Id: " + id + ", Type: " + User.class.getName()));
+	
+		return user;
 	}
 
 }
