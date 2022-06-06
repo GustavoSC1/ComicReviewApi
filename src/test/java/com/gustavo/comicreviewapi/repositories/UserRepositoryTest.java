@@ -1,6 +1,7 @@
 package com.gustavo.comicreviewapi.repositories;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -50,6 +51,20 @@ public class UserRepositoryTest {
 		
 		// Verification
 		Assertions.assertThat(foundUser).isTrue();
+	}
+	
+	@Test
+	@DisplayName("Must get one user per id")
+	public void findByIdTest() {
+		// Scenario
+		User user = new User(null,"Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
+		entityManager.persist(user);
+		
+		// Execution
+		Optional<User> foundUser = userRepository.findById(user.getId());
+		
+		// Verification
+		Assertions.assertThat(foundUser.isPresent()).isTrue();
 	}
 	
 }
