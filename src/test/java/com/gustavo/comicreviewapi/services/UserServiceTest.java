@@ -1,6 +1,7 @@
 package com.gustavo.comicreviewapi.services;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.assertj.core.api.Assertions;
@@ -70,6 +71,28 @@ public class UserServiceTest {
 		String actualMessage = exception.getMessage();
 		
 		Assertions.assertThat(actualMessage).isEqualTo(expectedMessage);
+	}
+	
+	@Test
+	@DisplayName("Must get one user per id")
+	public void findByIdTest() {
+		// Scenario
+		Long id = 2l;
+		
+		User user = new User(null,"Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
+		user.setId(id);
+		
+		Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(user));
+		
+		// Execution
+		User foundUser = userService.findById(id);
+		
+		// Verification
+		Assertions.assertThat(foundUser.getId()).isEqualTo(id);
+		Assertions.assertThat(foundUser.getName()).isEqualTo("Gustavo da Silva Cruz");
+		Assertions.assertThat(foundUser.getBirthDate()).isEqualTo(LocalDate.of(1996, 10, 17));
+		Assertions.assertThat(foundUser.getPhone()).isEqualTo("998123456");		
+		Assertions.assertThat(foundUser.getEmail()).isEqualTo("gu.cruz17@hotmail.com");
 	}
 	
 }
