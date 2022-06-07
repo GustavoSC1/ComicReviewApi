@@ -19,6 +19,7 @@ import com.gustavo.comicreviewapi.dtos.UserNewDTO;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.UserRepository;
 import com.gustavo.comicreviewapi.services.exceptions.BusinessException;
+import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -39,8 +40,9 @@ public class UserServiceTest {
 	public void saveUserTest() {
 		// Scenario
 		Long id = 2l;
-		UserNewDTO newUser = new UserNewDTO("Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
-		User savedUser = new User(null,"Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
+		
+		UserNewDTO newUser = createUserNewDTO();
+		User savedUser = createUser();
 		savedUser.setId(id);
 		
 		Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(savedUser);
@@ -60,7 +62,7 @@ public class UserServiceTest {
 	@DisplayName("Should throw business error when trying to save a user with duplicate email")
 	public void shouldNotSaveAUserWithDuplicatedEmail() {
 		// Scenario
-		UserNewDTO newUser = new UserNewDTO("Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
+		UserNewDTO newUser = createUserNewDTO();
 		
 		Mockito.when(userRepository.existsByEmail(newUser.getEmail())).thenReturn(true);
 		
@@ -79,7 +81,7 @@ public class UserServiceTest {
 		// Scenario
 		Long id = 2l;
 		
-		User user = new User(null,"Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
+		User user = createUser();
 		user.setId(id);
 		
 		Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(user));
@@ -93,6 +95,31 @@ public class UserServiceTest {
 		Assertions.assertThat(foundUser.getBirthDate()).isEqualTo(LocalDate.of(1996, 10, 17));
 		Assertions.assertThat(foundUser.getPhone()).isEqualTo("998123456");		
 		Assertions.assertThat(foundUser.getEmail()).isEqualTo("gu.cruz17@hotmail.com");
+	}
+	
+	@Test
+	@DisplayName("Should return error when trying to get a non-existent user")
+	public void userNotFoundByIdTest() {
+		// Scenario
+		Long id = 1l;
+		Mockito.when(userRepository.findById(id)).thenReturn(Optional.empty());
+		
+		// Execution and Verification
+		Exception exception = assertThrows(ObjectNotFoundException.class, () -> {userService.findById(id);});
+		
+		String expectedMessage = "Object not found! Id: " + id + ", Type: " + User.class.getName();
+		String actualMessage = exception.getMessage();
+		
+		Assertions.assertThat(actualMessage).isEqualTo(expectedMessage);	
+	}
+	
+
+	private User createUser() {
+		return new User(null,"Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
+	}
+	
+	private UserNewDTO createUserNewDTO() {
+		return new UserNewDTO("Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
 	}
 	
 }
