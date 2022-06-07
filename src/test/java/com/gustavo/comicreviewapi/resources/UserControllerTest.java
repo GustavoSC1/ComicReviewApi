@@ -27,7 +27,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.gustavo.comicreviewapi.dtos.UserDTO;
 import com.gustavo.comicreviewapi.dtos.UserNewDTO;
+import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.services.UserService;
+import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -124,6 +126,28 @@ public class UserControllerTest {
 			.andExpect(MockMvcResultMatchers.jsonPath("name").value("Gustavo da Silva Cruz"))
 			.andExpect(MockMvcResultMatchers.jsonPath("phone").value("998123456"))
 			.andExpect(MockMvcResultMatchers.jsonPath("email").value("gu.cruz17@hotmail.com"));
+	}
+	
+	@Test
+	@DisplayName("Should return error when trying to get a non-existent user")
+	public void userNotFoundByIdTest() throws Exception {
+		// Scenario
+		Long id = 2l;
+		
+		BDDMockito.given(userService.find(id)).willThrow(new ObjectNotFoundException("Object not found! Id: " + id + ", Type: " + User.class.getName()));
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.get(USER_API.concat("/"+id))
+													.accept(MediaType.APPLICATION_JSON);
+		
+		// Verification
+		mvc
+		.perform(request)
+		.andExpect(MockMvcResultMatchers.status().isNotFound())
+		.andExpect(MockMvcResultMatchers.jsonPath("error").value("Not found"))
+		.andExpect(MockMvcResultMatchers.jsonPath("message").value("Object not found! Id: " + id + ", Type: " + User.class.getName()));
+		
 	}
 	
 	public UserDTO createUserDTO() {
