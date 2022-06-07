@@ -33,6 +33,12 @@ public class UserService {
 		return new UserDTO(user);
 	}
 	
+	public UserDTO find(Long id) {
+		User user = findById(id);
+		
+		return new UserDTO(user);
+	}
+	
 	public User findById(Long id) {
 		Optional<User> userOptional = userRepository.findById(id);
 		User user = userOptional.orElseThrow(() -> new ObjectNotFoundException("Object not found! Id: " + id + ", Type: " + User.class.getName()));

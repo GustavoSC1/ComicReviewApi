@@ -60,7 +60,7 @@ public class UserControllerTest {
 		long id = 2l;
 		
 		UserNewDTO newUser = new UserNewDTO("Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
-		UserDTO savedUser = new UserDTO(null,"Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
+		UserDTO savedUser = createUserDTO();
 		savedUser.setId(id);
 		
 		BDDMockito.given(userService.save(Mockito.any(UserNewDTO.class))).willReturn(savedUser);
@@ -99,5 +99,34 @@ public class UserControllerTest {
 		mvc.perform(request)
 			.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
 			.andExpect(MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(4)));			
+	}
+	
+	@Test
+	@DisplayName("Must get one user per id")
+	public void findUserTest() throws Exception {
+		// Scenario
+		Long id = 2l;
+		
+		UserDTO user = createUserDTO();
+		user.setId(id);
+		
+		BDDMockito.given(userService.find(id)).willReturn(user);
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.get(USER_API.concat("/"+id))
+													.accept(MediaType.APPLICATION_JSON);
+		
+		// Verification
+		mvc.perform(request)
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.jsonPath("id").value(id))
+			.andExpect(MockMvcResultMatchers.jsonPath("name").value("Gustavo da Silva Cruz"))
+			.andExpect(MockMvcResultMatchers.jsonPath("phone").value("998123456"))
+			.andExpect(MockMvcResultMatchers.jsonPath("email").value("gu.cruz17@hotmail.com"));
+	}
+	
+	public UserDTO createUserDTO() {
+		return new UserDTO(null,"Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
 	}
 }
