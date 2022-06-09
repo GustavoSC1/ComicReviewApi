@@ -146,8 +146,34 @@ public class UserControllerTest {
 		.perform(request)
 		.andExpect(MockMvcResultMatchers.status().isNotFound())
 		.andExpect(MockMvcResultMatchers.jsonPath("error").value("Not found"))
-		.andExpect(MockMvcResultMatchers.jsonPath("message").value("Object not found! Id: " + id + ", Type: " + User.class.getName()));
+		.andExpect(MockMvcResultMatchers.jsonPath("message").value("Object not found! Id: " + id + ", Type: " + User.class.getName()));		
+	}
+	
+	@Test
+	@DisplayName("Must update a company")
+	public void updateUserTest() throws Exception {
+		// Scenario
+		Long id = 2l;
 		
+		UserDTO userDto = new UserDTO(id, "Daniel Cauê Calebe Jesus", LocalDate.of(1996, 10, 17), "988078805", "daniel-jesus87@cvc.com.br");
+		
+		BDDMockito.given(userService.update(Mockito.anyLong(), Mockito.any(UserDTO.class))).willReturn(userDto);
+		
+		String json = mapper.writeValueAsString(userDto);
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.put(USER_API.concat("/"+id))
+													.contentType(MediaType.APPLICATION_JSON)
+													.accept(MediaType.APPLICATION_JSON)
+													.content(json);
+		// Verification
+		mvc.perform(request)
+		.andExpect(MockMvcResultMatchers.status().isOk())
+		.andExpect(MockMvcResultMatchers.jsonPath("id").value(id))
+		.andExpect(MockMvcResultMatchers.jsonPath("name").value("Daniel Cauê Calebe Jesus"))
+		.andExpect(MockMvcResultMatchers.jsonPath("phone").value("988078805"))
+		.andExpect(MockMvcResultMatchers.jsonPath("email").value("daniel-jesus87@cvc.com.br"));
 	}
 	
 	public UserDTO createUserDTO() {
