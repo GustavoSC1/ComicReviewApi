@@ -39,6 +39,19 @@ public class UserService {
 		return new UserDTO(user);
 	}
 	
+	public UserDTO update(Long id, UserDTO userDto) {
+		User user = findById(id);
+		
+		user.setName(userDto.getName());
+		user.setEmail(userDto.getEmail());
+		user.setPhone(userDto.getPhone());
+		user.setBirthDate(userDto.getBirthDate());
+		
+		user = userRepository.save(user);
+		
+		return new UserDTO(user);
+	}
+	
 	public User findById(Long id) {
 		Optional<User> userOptional = userRepository.findById(id);
 		User user = userOptional.orElseThrow(() -> new ObjectNotFoundException("Object not found! Id: " + id + ", Type: " + User.class.getName()));
