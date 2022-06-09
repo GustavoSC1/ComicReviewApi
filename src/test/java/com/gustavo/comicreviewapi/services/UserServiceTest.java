@@ -113,6 +113,33 @@ public class UserServiceTest {
 		Assertions.assertThat(actualMessage).isEqualTo(expectedMessage);	
 	}
 	
+	@Test
+	@DisplayName("Must update a user")
+	public void updateUserTest() {
+		// Scenario
+		Long id = 2l;
+		
+		UserDTO userDto = new UserDTO(id, "Daniel Cauê Calebe Jesus", LocalDate.of(1996, 10, 17), "988078805", "daniel-jesus87@cvc.com.br");
+		
+		User foundUser = createUser();
+		foundUser.setId(id);
+		
+		User updatedUser = new User(id, "Daniel Cauê Calebe Jesus", LocalDate.of(1996, 10, 17), "988078805", "daniel-jesus87@cvc.com.br");
+		
+		Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(foundUser));
+		Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(updatedUser);
+		
+		// Execution
+		UserDTO updatedUserDto = userService.update(id, userDto);
+		
+		// Verification
+		Assertions.assertThat(updatedUserDto.getId()).isEqualTo(id);
+		Assertions.assertThat(updatedUserDto.getName()).isEqualTo("Daniel Cauê Calebe Jesus");
+		Assertions.assertThat(updatedUserDto.getBirthDate()).isEqualTo(LocalDate.of(1996, 10, 17));
+		Assertions.assertThat(updatedUserDto.getPhone()).isEqualTo("988078805");
+		Assertions.assertThat(updatedUserDto.getEmail()).isEqualTo("daniel-jesus87@cvc.com.br");		
+	}
+	
 
 	private User createUser() {
 		return new User(null,"Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
