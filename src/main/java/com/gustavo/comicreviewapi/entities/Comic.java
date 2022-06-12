@@ -1,10 +1,16 @@
 package com.gustavo.comicreviewapi.entities;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 
 @Entity
 public class Comic implements Serializable {
@@ -18,6 +24,12 @@ public class Comic implements Serializable {
 	
 	@Column(length=3000)
 	private String description;
+	
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JoinTable(name = "tb_comic_author",
+			joinColumns = @JoinColumn(name = "comic_id"),
+			inverseJoinColumns = @JoinColumn(name = "author_id"))
+	private Set<Author> authors = new HashSet<>();
 	
 	public Comic() {
 		
@@ -52,6 +64,10 @@ public class Comic implements Serializable {
 		return description;
 	}
 
+	public Set<Author> getAuthors() {
+		return authors;
+	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -70,6 +86,10 @@ public class Comic implements Serializable {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public void setAuthors(Set<Author> authors) {
+		this.authors = authors;
 	}
 
 	@Override
