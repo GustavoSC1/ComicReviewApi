@@ -10,32 +10,32 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.gustavo.comicreviewapi.entities.Author;
+import com.gustavo.comicreviewapi.entities.Character;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @DataJpaTest
-public class AuthorRepositoryTest {
+public class CharacterRepositoryTest {
 	
 	@Autowired
-	AuthorRepository authorRepository;
+	CharacterRepository characterRepository;
 	
 	@Autowired
 	TestEntityManager entityManager;
 	
 	@Test
-	@DisplayName("Must get one author per name")
+	@DisplayName("Must get one character per name")
 	public void findByNameTest() {
 		// Scenario
-		Author author = new Author(null, "Stefan Petrucha");
-		entityManager.persist(author);
+		Character character = new Character(null, "Homem Aranha");
+		entityManager.persist(character);
 		
 		// Execution
-		Author foundAuthor = authorRepository.findByName(author.getName());
+		Character foundCharacter = characterRepository.findByName(character.getName());
 		
 		// Verification
-		Assertions.assertThat(foundAuthor.getId()).isNotNull();
-		Assertions.assertThat(foundAuthor.getName()).isEqualTo("Stefan Petrucha");
+		Assertions.assertThat(foundCharacter.getId()).isNotNull();
+		Assertions.assertThat(foundCharacter.getName()).isEqualTo("Homem Aranha");		
 	}
 
 }

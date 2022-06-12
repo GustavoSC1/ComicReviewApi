@@ -4,12 +4,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.gustavo.comicreviewapi.entities.Author;
+import com.gustavo.comicreviewapi.entities.Character;
 
 @Repository
-public interface AuthorRepository extends JpaRepository<Author, Long> {
+public interface CharacterRepository extends JpaRepository<Character, Long> {
 	
 	@Transactional(readOnly=true)
-	Author findByName(String name);
-
+	Character findByName(String name);
+	
 }
