@@ -31,6 +31,12 @@ public class Comic implements Serializable {
 			inverseJoinColumns = @JoinColumn(name = "author_id"))
 	private Set<Author> authors = new HashSet<>();
 	
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JoinTable(name = "tb_comic_character",
+			joinColumns = @JoinColumn(name = "comic_id"),
+			inverseJoinColumns = @JoinColumn(name = "character_id"))
+	private Set<Character> characters = new HashSet<>();
+	
 	public Comic() {
 		
 	}
@@ -68,6 +74,10 @@ public class Comic implements Serializable {
 		return authors;
 	}
 
+	public Set<Character> getCharacters() {
+		return characters;
+	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -90,6 +100,10 @@ public class Comic implements Serializable {
 
 	public void setAuthors(Set<Author> authors) {
 		this.authors = authors;
+	}
+
+	public void setCharacters(Set<Character> characters) {
+		this.characters = characters;
 	}
 
 	@Override
