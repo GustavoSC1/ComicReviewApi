@@ -3,21 +3,40 @@ package com.gustavo.comicreviewapi.services;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Clock;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.gustavo.comicreviewapi.dtos.feignDtos.MarvelAPIModelDTO;
+import com.gustavo.comicreviewapi.feignClients.MarvelClient;
+
 @Service
 public class ComicService {
 	
-	public String publicKey;
+	private String publicKey;
 	
-	public String privateKey;
+	private String privateKey;
+	
+	private MarvelClient marvelClient;
+	
+	private Clock clock;
 	
 	public ComicService(@Value("${marvel.public_key}")String publicKey, 
-			@Value("${marvel.private_key}") String privateKey) {
+			@Value("${marvel.private_key}") String privateKey, MarvelClient marvelClient, Clock clock) {
 		this.publicKey = publicKey;
 		this.privateKey = privateKey;
+		this.marvelClient = marvelClient;
+		this.clock = clock;
+	}
+	
+	public MarvelAPIModelDTO getComicByApi(Integer idComicMarvel) {
+		String timeStamp = String.valueOf((int)(clock.millis() / 1000));
+		String hash = getHash(timeStamp);
+		
+		MarvelAPIModelDTO comic = marvelClient.getComic(idComicMarvel, timeStamp, publicKey, hash);
+		
+		return comic;
 	}
 	
 	public String getHash(String timeStemp) {
