@@ -4,6 +4,15 @@ public class MarvelAPIModelDTO {
 	
 	private ComicDataContainerDTO data;
 
+	public MarvelAPIModelDTO() {
+	
+	}
+
+	public MarvelAPIModelDTO(ComicDataContainerDTO data) {
+		super();
+		this.data = data;
+	}
+
 	public ComicDataContainerDTO getData() {
 		return data;
 	}

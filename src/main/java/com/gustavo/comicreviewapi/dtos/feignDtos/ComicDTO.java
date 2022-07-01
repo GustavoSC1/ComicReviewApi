@@ -13,6 +13,18 @@ public class ComicDTO {
 	private CreatorListDTO creators;
 	private CharacterListDTO characters;
 	
+	public ComicDTO() {
+		
+	}
+
+	public ComicDTO(Integer id, String title, String isbn, String description) {
+		super();
+		this.id = id;
+		this.title = title;
+		this.isbn = isbn;
+		this.description = description;
+	}
+
 	public Integer getId() {
 		return id;
 	}
