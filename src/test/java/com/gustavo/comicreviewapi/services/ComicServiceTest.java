@@ -12,6 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.gustavo.comicreviewapi.dtos.ComicNewDTO;
 import com.gustavo.comicreviewapi.dtos.feignDtos.CharacterListDTO;
 import com.gustavo.comicreviewapi.dtos.feignDtos.CharacterSummaryDTO;
 import com.gustavo.comicreviewapi.dtos.feignDtos.ComicDTO;
@@ -20,6 +21,7 @@ import com.gustavo.comicreviewapi.dtos.feignDtos.ComicPriceDTO;
 import com.gustavo.comicreviewapi.dtos.feignDtos.CreatorListDTO;
 import com.gustavo.comicreviewapi.dtos.feignDtos.CreatorSummaryDTO;
 import com.gustavo.comicreviewapi.dtos.feignDtos.MarvelAPIModelDTO;
+import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.feignClients.MarvelClient;
 
 @ExtendWith(SpringExtension.class)
@@ -27,6 +29,12 @@ import com.gustavo.comicreviewapi.feignClients.MarvelClient;
 public class ComicServiceTest {
 		
 	ComicService comicService;
+		
+	@MockBean
+	AuthorService authorService;
+	
+	@MockBean
+	CharacterService characterService;
 	
 	@MockBean
 	MarvelClient marvelClient;
@@ -36,7 +44,8 @@ public class ComicServiceTest {
 	
 	@BeforeEach
 	public void setUp() {
-		this.comicService = Mockito.spy(new ComicService("ae78641e8976ffdf3fd4b71254a3b9bf", "eb9fd0d8r8745cd0d554fb2c0e7896dab3bb745", marvelClient, clock));		
+		this.comicService = Mockito.spy(new ComicService("ae78641e8976ffdf3fd4b71254a3b9bf", 
+				"eb9fd0d8r8745cd0d554fb2c0e7896dab3bb745", authorService, characterService, marvelClient, clock));		
 	}
 	
 	@Test
@@ -79,6 +88,36 @@ public class ComicServiceTest {
 		Assertions.assertThat(marvelAPIModelDTO.getData().getResults().get(0).getPrices().get(0).getPrice()).isEqualTo(38.61F);
 		Assertions.assertThat(marvelAPIModelDTO.getData().getResults().get(0).getCharacters().getItems().get(0).getName()).isEqualTo("Homem Aranha");
 		Assertions.assertThat(marvelAPIModelDTO.getData().getResults().get(0).getCreators().getItems().get(0).getName()).isEqualTo("Stefan Petrucha");
+	}
+	
+	@Test
+	@DisplayName("Must pass the values of MarvelAPIModelDTO to a Comic")
+	public void fromDTOTest() {
+		// Scenario
+		MarvelAPIModelDTO foundMarvelAPIModelDTO = createMarvelAPIModelDTO();
+		
+		ComicNewDTO comicNewDTO = new ComicNewDTO();
+		comicNewDTO.setIdComicMarvel(1);
+		
+		Mockito.doReturn(foundMarvelAPIModelDTO).when(comicService).getComicByApi(comicNewDTO.getIdComicMarvel());
+		Mockito.when(authorService.findByName("Homem Aranha")).thenReturn(null);
+		Mockito.when(characterService.findByName("Stefan Petrucha")).thenReturn(null);
+		
+		// Execution
+		Comic comic = comicService.fromDTO(comicNewDTO);
+		
+		// Verification
+		Assertions.assertThat(comic.getId()).isEqualTo(1);
+		Assertions.assertThat(comic.getTitle()).isEqualTo("Homem-Aranha: Eternamente jovem");
+		Assertions.assertThat(comic.getIsbn()).isEqualTo("9786555612752");
+		Assertions.assertThat(comic.getDescription()).isEqualTo("Na esperança de obter algumas fotos de seu alter "
+				+ "ego aracnídeo em ação, Peter Parker "
+				+ "sai em busca de problemas – e os encontra na forma de uma placa de pedra misteriosa e "
+				+ "mítica cobiçada pelo Rei do Crime e pelos facínoras da Maggia, o maior sindicato criminal "
+				+ "da cidade.");
+		Assertions.assertThat(comic.getPrice()).isEqualTo(38.61F);
+		Assertions.assertThat(comic.getCharacters().stream().findFirst().get().getName()).isEqualTo("Homem Aranha");
+		Assertions.assertThat(comic.getAuthors().stream().findFirst().get().getName()).isEqualTo("Stefan Petrucha");
 	}
 	
 	private MarvelAPIModelDTO createMarvelAPIModelDTO() {
