@@ -16,6 +16,8 @@ import com.gustavo.comicreviewapi.entities.Author;
 import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.entities.Character;
 import com.gustavo.comicreviewapi.feignClients.MarvelClient;
+import com.gustavo.comicreviewapi.repositories.ComicRepository;
+import com.gustavo.comicreviewapi.services.exceptions.BusinessException;
 
 @Service
 public class ComicService {
@@ -23,6 +25,8 @@ public class ComicService {
 	private String publicKey;
 	
 	private String privateKey;
+	
+	private ComicRepository comicRepository;
 	
 	private AuthorService authorService;
 	
@@ -33,9 +37,11 @@ public class ComicService {
 	private Clock clock;
 	
 	public ComicService(@Value("${marvel.public_key}")String publicKey, @Value("${marvel.private_key}") String privateKey, 
-			AuthorService authorService, CharacterService characterService, MarvelClient marvelClient, Clock clock) {
+			ComicRepository comicRepository, AuthorService authorService, CharacterService characterService, 
+			MarvelClient marvelClient, Clock clock) {
 		this.publicKey = publicKey;
 		this.privateKey = privateKey;
+		this.comicRepository = comicRepository;
 		this.authorService = authorService;
 		this.characterService = characterService;
 		this.marvelClient = marvelClient;
@@ -43,36 +49,40 @@ public class ComicService {
 	}
 	
 	public Comic fromDTO(ComicNewDTO objDto) {		
-		Comic comic = new Comic();
-		MarvelAPIModelDTO marvelModel = getComicByApi(objDto.getIdComicMarvel());
-		
-		comic.setId(Long.valueOf(marvelModel.getData().getResults().get(0).getId()));
-		comic.setTitle(marvelModel.getData().getResults().get(0).getTitle());
-		comic.setDescription(marvelModel.getData().getResults().get(0).getDescription());
-		comic.setIsbn(marvelModel.getData().getResults().get(0).getIsbn());
-		comic.setPrice(marvelModel.getData().getResults().get(0).getPrices().get(0).getPrice());
-		
-		for (CreatorSummaryDTO creator: marvelModel.getData().getResults().get(0).getCreators().getItems()) {
-			Author obj = authorService.findByName(creator.getName());	
+		if(comicRepository.existsById(Long.valueOf(objDto.getIdComicMarvel()))) {
+			throw new BusinessException("Comic already registered!");
+		} else {
+			Comic comic = new Comic();
+			MarvelAPIModelDTO marvelModel = getComicByApi(objDto.getIdComicMarvel());
 			
-			if(obj==null) {				
-				comic.getAuthors().add(new Author(null, creator.getName()));					
-			} else {
-				comic.getAuthors().add(obj);
-			}
-		}
-		
-		for (CharacterSummaryDTO character: marvelModel.getData().getResults().get(0).getCharacters().getItems()) {
-			Character obj = characterService.findByName(character.getName());	
+			comic.setId(Long.valueOf(marvelModel.getData().getResults().get(0).getId()));
+			comic.setTitle(marvelModel.getData().getResults().get(0).getTitle());
+			comic.setDescription(marvelModel.getData().getResults().get(0).getDescription());
+			comic.setIsbn(marvelModel.getData().getResults().get(0).getIsbn());
+			comic.setPrice(marvelModel.getData().getResults().get(0).getPrices().get(0).getPrice());
 			
-			if(obj==null) {				
-				comic.getCharacters().add(new Character(null, character.getName()));					
-			} else {
-				comic.getCharacters().add(obj);
+			for (CreatorSummaryDTO creator: marvelModel.getData().getResults().get(0).getCreators().getItems()) {
+				Author obj = authorService.findByName(creator.getName());	
+				
+				if(obj==null) {				
+					comic.getAuthors().add(new Author(null, creator.getName()));					
+				} else {
+					comic.getAuthors().add(obj);
+				}
 			}
+			
+			for (CharacterSummaryDTO character: marvelModel.getData().getResults().get(0).getCharacters().getItems()) {
+				Character obj = characterService.findByName(character.getName());	
+				
+				if(obj==null) {				
+					comic.getCharacters().add(new Character(null, character.getName()));					
+				} else {
+					comic.getCharacters().add(obj);
+				}
+			}
+			
+			return comic;	
 		}
-		
-		return comic;		
 	}
 	
 	public MarvelAPIModelDTO getComicByApi(Integer idComicMarvel) {

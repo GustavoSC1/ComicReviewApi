@@ -2,6 +2,7 @@ package com.gustavo.comicreviewapi.services;
 
 import java.time.Clock;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,12 +24,17 @@ import com.gustavo.comicreviewapi.dtos.feignDtos.CreatorSummaryDTO;
 import com.gustavo.comicreviewapi.dtos.feignDtos.MarvelAPIModelDTO;
 import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.feignClients.MarvelClient;
+import com.gustavo.comicreviewapi.repositories.ComicRepository;
+import com.gustavo.comicreviewapi.services.exceptions.BusinessException;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 public class ComicServiceTest {
 		
 	ComicService comicService;
+	
+	@MockBean
+	ComicRepository comicRepository;
 		
 	@MockBean
 	AuthorService authorService;
@@ -45,7 +51,8 @@ public class ComicServiceTest {
 	@BeforeEach
 	public void setUp() {
 		this.comicService = Mockito.spy(new ComicService("ae78641e8976ffdf3fd4b71254a3b9bf", 
-				"eb9fd0d8r8745cd0d554fb2c0e7896dab3bb745", authorService, characterService, marvelClient, clock));		
+				"eb9fd0d8r8745cd0d554fb2c0e7896dab3bb745", comicRepository, authorService, characterService, marvelClient, 
+				clock));		
 	}
 	
 	@Test
@@ -118,6 +125,24 @@ public class ComicServiceTest {
 		Assertions.assertThat(comic.getPrice()).isEqualTo(38.61F);
 		Assertions.assertThat(comic.getCharacters().stream().findFirst().get().getName()).isEqualTo("Homem Aranha");
 		Assertions.assertThat(comic.getAuthors().stream().findFirst().get().getName()).isEqualTo("Stefan Petrucha");
+	}
+	
+	@Test
+	@DisplayName("Should throw business error when trying to save a comic with duplicate id")
+	public void shouldNotSaveAComicWithDuplicatedId() {
+		// Scenario
+		ComicNewDTO comicNewDTO = new ComicNewDTO();
+		comicNewDTO.setIdComicMarvel(1);
+		
+		Mockito.when(comicRepository.existsById(1l)).thenReturn(true);
+		
+		// Execution and Verification
+		Exception exception = assertThrows(BusinessException.class, () -> {comicService.fromDTO(comicNewDTO);});
+		
+		String expectedMessage = "Comic already registered!";
+		String actualMessage = exception.getMessage();
+		
+		Assertions.assertThat(actualMessage).isEqualTo(expectedMessage);
 	}
 	
 	private MarvelAPIModelDTO createMarvelAPIModelDTO() {
