@@ -68,6 +68,26 @@ public class ComicControllerTest {
 		.andExpect( MockMvcResultMatchers.header().string(HttpHeaders.LOCATION, Matchers.containsString("/comics/"+id)) );
 	}
 	
+	@Test
+	@DisplayName("Should throw validation error when there is not enough data for comic creation")
+	public void createInvalidComicTest() throws Exception {
+		// Scenario
+		ComicNewDTO newComic = new ComicNewDTO();
+				
+		String json = new ObjectMapper().writeValueAsString(newComic);
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.post(COMIC_API)
+													.contentType(MediaType.APPLICATION_JSON)
+													.accept(MediaType.APPLICATION_JSON)
+													.content(json);
+		// Verification
+		mvc.perform(request)
+			.andExpect( MockMvcResultMatchers.status().isUnprocessableEntity() )
+			.andExpect( MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(1)) );
+	}
+	
 	private ComicDTO createComicDTO() {
 		AuthorDTO authorDto = new AuthorDTO(null, "Stefan Petrucha");
 		CharacterDTO characterDto = new CharacterDTO(null, "Homem Aranha");
