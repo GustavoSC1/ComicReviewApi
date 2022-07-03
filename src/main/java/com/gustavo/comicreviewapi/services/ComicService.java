@@ -8,6 +8,7 @@ import java.time.Clock;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.gustavo.comicreviewapi.dtos.ComicDTO;
 import com.gustavo.comicreviewapi.dtos.ComicNewDTO;
 import com.gustavo.comicreviewapi.dtos.feignDtos.CharacterSummaryDTO;
 import com.gustavo.comicreviewapi.dtos.feignDtos.CreatorSummaryDTO;
@@ -48,6 +49,13 @@ public class ComicService {
 		this.clock = clock;
 	}
 	
+	public ComicDTO save(ComicNewDTO objDto) {
+		Comic comic = fromDTO(objDto);
+		comic = comicRepository.save(comic);
+		
+		return new ComicDTO(comic);
+	}
+	
 	public Comic fromDTO(ComicNewDTO objDto) {		
 		if(comicRepository.existsById(Long.valueOf(objDto.getIdComicMarvel()))) {
 			throw new BusinessException("Comic already registered!");
@@ -79,7 +87,7 @@ public class ComicService {
 				} else {
 					comic.getCharacters().add(obj);
 				}
-			}
+			}			
 			
 			return comic;	
 		}

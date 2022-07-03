@@ -6,9 +6,13 @@ import java.util.List;
 public class ComicDTO {
 	
 	private Integer id;
+	
 	private String title;
+	
 	private String isbn;
+	
 	private String description;
+	
 	private List<ComicPriceDTO> prices = new ArrayList<>();
 	private CreatorListDTO creators;
 	private CharacterListDTO characters;

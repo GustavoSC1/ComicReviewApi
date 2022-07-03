@@ -22,6 +22,8 @@ import com.gustavo.comicreviewapi.dtos.feignDtos.ComicPriceDTO;
 import com.gustavo.comicreviewapi.dtos.feignDtos.CreatorListDTO;
 import com.gustavo.comicreviewapi.dtos.feignDtos.CreatorSummaryDTO;
 import com.gustavo.comicreviewapi.dtos.feignDtos.MarvelAPIModelDTO;
+import com.gustavo.comicreviewapi.entities.Author;
+import com.gustavo.comicreviewapi.entities.Character;
 import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.feignClients.MarvelClient;
 import com.gustavo.comicreviewapi.repositories.ComicRepository;
@@ -145,6 +147,55 @@ public class ComicServiceTest {
 		Assertions.assertThat(actualMessage).isEqualTo(expectedMessage);
 	}
 	
+	@Test
+	@DisplayName("Must save a comic")
+	public void saveComicTest() {
+		// Scenario
+		Integer id = 1;
+		
+		ComicNewDTO comicNewDto = new ComicNewDTO();
+		comicNewDto.setIdComicMarvel(id);
+		
+		Comic comic = createComic();
+		comic.setId(Long.valueOf(id));
+		
+		Mockito.doReturn(comic).when(comicService).fromDTO(comicNewDto);
+		Mockito.when(comicRepository.save(Mockito.any(Comic.class))).thenReturn(comic);
+		
+		// Execution
+		com.gustavo.comicreviewapi.dtos.ComicDTO savedComic = comicService.save(comicNewDto);
+		
+		// Verification
+		Assertions.assertThat(savedComic.getId()).isEqualTo(1);
+		Assertions.assertThat(savedComic.getTitle()).isEqualTo("Homem-Aranha: Eternamente jovem");
+		Assertions.assertThat(savedComic.getIsbn()).isEqualTo("9786555612752");
+		Assertions.assertThat(savedComic.getDescription()).isEqualTo("Na esperança de obter algumas fotos de seu alter "
+				+ "ego aracnídeo em ação, Peter Parker "
+				+ "sai em busca de problemas – e os encontra na forma de uma placa de pedra misteriosa e "
+				+ "mítica cobiçada pelo Rei do Crime e pelos facínoras da Maggia, o maior sindicato criminal "
+				+ "da cidade.");
+		Assertions.assertThat(savedComic.getPrice()).isEqualTo(38.61F);
+		Assertions.assertThat(savedComic.getCharacters().stream().findFirst().get().getName()).isEqualTo("Homem Aranha");
+		Assertions.assertThat(savedComic.getAuthors().stream().findFirst().get().getName()).isEqualTo("Stefan Petrucha");
+	}
+	
+	private Comic createComic() {
+		Author author = new Author(null, "Stefan Petrucha");
+		Character character = new Character(null, "Homem Aranha");
+		
+		Comic comic = new Comic(null, "Homem-Aranha: Eternamente jovem", 38.61F, "9786555612752", 
+				"Na esperança de obter algumas fotos de seu alter "
+				+ "ego aracnídeo em ação, Peter Parker "
+				+ "sai em busca de problemas – e os encontra na forma de uma placa de pedra misteriosa e "
+				+ "mítica cobiçada pelo Rei do Crime e pelos facínoras da Maggia, o maior sindicato criminal "
+				+ "da cidade.");
+		
+		comic.getAuthors().add(author);
+		comic.getCharacters().add(character);
+		
+		return comic;
+	}
+	
 	private MarvelAPIModelDTO createMarvelAPIModelDTO() {
 		ComicPriceDTO comicPriceDTO = new ComicPriceDTO(38.61F);
 		
@@ -176,5 +227,7 @@ public class ComicServiceTest {
 		
 		return marvelAPIModelDTO;		
 	}
+	
+	
 
 }
