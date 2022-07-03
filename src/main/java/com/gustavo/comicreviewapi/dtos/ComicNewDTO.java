@@ -11,6 +11,10 @@ public class ComicNewDTO implements Serializable {
 		
 	}
 
+	public ComicNewDTO(Integer idComicMarvel) {
+		this.idComicMarvel = idComicMarvel;
+	}
+
 	public Integer getIdComicMarvel() {
 		return idComicMarvel;
 	}

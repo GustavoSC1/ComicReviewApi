@@ -23,15 +23,12 @@ public class ComicDTO implements Serializable {
 
 	}
 
-	public ComicDTO(Long id, String title, Float price, String isbn, String description, Set<AuthorDTO> authors,
-			Set<CharacterDTO> characters) {
+	public ComicDTO(Long id, String title, Float price, String isbn, String description) {
 		this.id = id;
 		this.title = title;
 		this.price = price;
 		this.isbn = isbn;
 		this.description = description;
-		this.authors = authors;
-		this.characters = characters;
 	}
 
 	public ComicDTO(Comic comic) {
