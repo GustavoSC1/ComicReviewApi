@@ -13,18 +13,18 @@ import javax.validation.constraints.Past;
 public class UserNewDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@NotEmpty(message="Mandatory completion")
+	@NotEmpty(message="The name field is required")
 	@Length(min=8, max=120, message="The length must be between 8 and 120 characters")
 	private String name;
 	
-	@NotNull(message="Mandatory completion")
+	@NotNull(message="The birth date field is required")
 	@Past(message="Invalid date")
 	private LocalDate birthDate;
 	
-	@NotEmpty(message="Mandatory completion")
+	@NotEmpty(message="The birth date field is required")
 	private String phone;
 	
-	@NotEmpty(message="Mandatory completion")
+	@NotEmpty(message="The Email field is required")
 	@Email(message="Invalid email")
 	private String email;
 		

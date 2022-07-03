@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.gustavo.comicreviewapi.dtos.feignDtos.MarvelAPIModelDTO;
 
-//Declara um cliente Feign
-@FeignClient(name = "${marvel.name}", url = "${marvel.baseUrl}")
+@FeignClient(name = "${marvel.name}", url = "${marvel.baseUrl}") //Declara um cliente Feign
 public interface MarvelClient {
 	
 	@GetMapping("/comics/{idComicMarvel}")
