@@ -2,6 +2,8 @@ package com.gustavo.comicreviewapi.resources;
 
 import java.net.URI;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +24,7 @@ public class ComicController {
 	private ComicService comicService;
 	
 	@PostMapping
-	public ResponseEntity<ComicDTO> save(@RequestBody ComicNewDTO comicNewDto) {
+	public ResponseEntity<ComicDTO> save(@Valid @RequestBody ComicNewDTO comicNewDto) {
 		ComicDTO comicDto = comicService.save(comicNewDto);
 		
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")

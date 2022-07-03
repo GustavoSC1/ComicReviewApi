@@ -2,9 +2,14 @@ package com.gustavo.comicreviewapi.dtos;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 public class ComicNewDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	@NotNull(message="The comic id field is required")
+	@Min(value=1, message="idComicMarvel não pode ser menor que 1")
 	private Integer idComicMarvel;
 	
 	public ComicNewDTO() {
