@@ -29,6 +29,7 @@ import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.feignClients.MarvelClient;
 import com.gustavo.comicreviewapi.repositories.ComicRepository;
 import com.gustavo.comicreviewapi.services.exceptions.BusinessException;
+import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -206,6 +207,22 @@ public class ComicServiceTest {
 		Assertions.assertThat(foundComic.getPrice()).isEqualTo(38.61F);
 		Assertions.assertThat(foundComic.getCharacters().stream().findFirst().get().getName()).isEqualTo("Homem Aranha");
 		Assertions.assertThat(foundComic.getAuthors().stream().findFirst().get().getName()).isEqualTo("Stefan Petrucha");
+	}
+	
+	@Test
+	@DisplayName("Should return error when trying to get a non-existent comic")
+	public void comicNotFoundByIdTest() {
+		// Scenario
+		Long id = 1l;
+		Mockito.when(comicRepository.findById(id)).thenReturn(Optional.empty());
+		
+		// Execution and Verification
+		Exception exception = assertThrows(ObjectNotFoundException.class, () -> {comicService.findById(id);});
+	
+		String expectMessage = "Object not found! Id: " + id + ", Type: " + Comic.class.getName();
+		String actualMessage = exception.getMessage();
+		
+		Assertions.assertThat(actualMessage).isEqualTo(expectMessage);
 	}
 	
 	private Comic createComic() {
