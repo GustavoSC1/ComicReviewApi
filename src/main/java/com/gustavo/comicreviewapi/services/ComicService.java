@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Clock;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import com.gustavo.comicreviewapi.entities.Character;
 import com.gustavo.comicreviewapi.feignClients.MarvelClient;
 import com.gustavo.comicreviewapi.repositories.ComicRepository;
 import com.gustavo.comicreviewapi.services.exceptions.BusinessException;
+import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 
 @Service
 public class ComicService {
@@ -118,6 +120,13 @@ public class ComicService {
 		BigInteger hash = new BigInteger(1, md.digest(value.getBytes()));
 	
 		return hash.toString(16);
+	}
+	
+	public Comic findById(Long id) {
+		Optional<Comic> comicOptional = comicRepository.findById(id);
+		Comic comic = comicOptional.orElseThrow(() -> new ObjectNotFoundException("Object not found! Id: " + id + ", Type: " + Comic.class.getName()));
+		
+		return comic;
 	}
 
 }

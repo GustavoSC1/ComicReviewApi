@@ -1,6 +1,7 @@
 package com.gustavo.comicreviewapi.services;
 
 import java.time.Clock;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.assertj.core.api.Assertions;
@@ -179,6 +180,34 @@ public class ComicServiceTest {
 		Assertions.assertThat(savedComic.getAuthors().stream().findFirst().get().getName()).isEqualTo("Stefan Petrucha");
 	}
 	
+	@Test
+	@DisplayName("Must get one comic per id")
+	public void findByIdTest() {
+		// Scenario
+		Long id = 2l;
+		
+		Comic comic = createComic();
+		comic.setId(id);
+		
+		Mockito.when(comicRepository.findById(id)).thenReturn(Optional.of(comic));
+		
+		// Execution
+		Comic foundComic = comicService.findById(id);
+		
+		// Verification
+		Assertions.assertThat(foundComic.getId()).isEqualTo(2);
+		Assertions.assertThat(foundComic.getTitle()).isEqualTo("Homem-Aranha: Eternamente jovem");
+		Assertions.assertThat(foundComic.getIsbn()).isEqualTo("9786555612752");
+		Assertions.assertThat(foundComic.getDescription()).isEqualTo("Na esperança de obter algumas fotos de seu alter "
+				+ "ego aracnídeo em ação, Peter Parker "
+				+ "sai em busca de problemas – e os encontra na forma de uma placa de pedra misteriosa e "
+				+ "mítica cobiçada pelo Rei do Crime e pelos facínoras da Maggia, o maior sindicato criminal "
+				+ "da cidade.");
+		Assertions.assertThat(foundComic.getPrice()).isEqualTo(38.61F);
+		Assertions.assertThat(foundComic.getCharacters().stream().findFirst().get().getName()).isEqualTo("Homem Aranha");
+		Assertions.assertThat(foundComic.getAuthors().stream().findFirst().get().getName()).isEqualTo("Stefan Petrucha");
+	}
+	
 	private Comic createComic() {
 		Author author = new Author(null, "Stefan Petrucha");
 		Character character = new Character(null, "Homem Aranha");
@@ -195,7 +224,7 @@ public class ComicServiceTest {
 		
 		return comic;
 	}
-	
+		
 	private MarvelAPIModelDTO createMarvelAPIModelDTO() {
 		ComicPriceDTO comicPriceDTO = new ComicPriceDTO(38.61F);
 		
@@ -227,7 +256,5 @@ public class ComicServiceTest {
 		
 		return marvelAPIModelDTO;		
 	}
-	
-	
 
 }
