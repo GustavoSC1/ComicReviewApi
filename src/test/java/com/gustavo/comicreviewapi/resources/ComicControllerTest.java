@@ -88,6 +88,37 @@ public class ComicControllerTest {
 			.andExpect( MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(1)) );
 	}
 	
+	@Test
+	@DisplayName("Must get one comic per id")
+	public void findComicTest() throws Exception {
+		// Scenario
+		Long id = 2l;
+		
+		ComicDTO comic = createComicDTO();
+		comic.setId(id);
+		
+		BDDMockito.given(comicService.find(id)).willReturn(comic);
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.get(COMIC_API.concat("/"+id))
+													.accept(MediaType.APPLICATION_JSON);
+		
+		// Verification
+		mvc.perform(request)
+		.andExpect(MockMvcResultMatchers.status().isOk())
+		.andExpect(MockMvcResultMatchers.jsonPath("id").value(id))
+		.andExpect(MockMvcResultMatchers.jsonPath("title").value("Homem-Aranha: Eternamente jovem"))
+		.andExpect(MockMvcResultMatchers.jsonPath("isbn").value("9786555612752"))
+		.andExpect(MockMvcResultMatchers.jsonPath("description").value("Na esperança de obter algumas fotos de seu alter "
+				+ "ego aracnídeo em ação, Peter Parker "
+				+ "sai em busca de problemas – e os encontra na forma de uma placa de pedra misteriosa e "
+				+ "mítica cobiçada pelo Rei do Crime e pelos facínoras da Maggia, o maior sindicato criminal "
+				+ "da cidade."))
+		.andExpect(MockMvcResultMatchers.jsonPath("characters[0].name").value("Homem Aranha"))
+		.andExpect(MockMvcResultMatchers.jsonPath("authors[0].name").value("Stefan Petrucha"));
+	}
+	
 	private ComicDTO createComicDTO() {
 		AuthorDTO authorDto = new AuthorDTO(null, "Stefan Petrucha");
 		CharacterDTO characterDto = new CharacterDTO(null, "Homem Aranha");
