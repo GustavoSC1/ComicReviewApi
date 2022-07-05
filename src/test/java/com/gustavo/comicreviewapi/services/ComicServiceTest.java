@@ -225,6 +225,34 @@ public class ComicServiceTest {
 		Assertions.assertThat(actualMessage).isEqualTo(expectMessage);
 	}
 	
+	@Test
+	@DisplayName("Must call findById method and return Comic to controller")
+	public void findTest() {
+		// Scenario
+		Long id = 2l;
+		
+		Comic comic = createComic();
+		comic.setId(id);
+		
+		Mockito.doReturn(comic).when(comicService).findById(id);
+		
+		// Execution
+		com.gustavo.comicreviewapi.dtos.ComicDTO foundComic = comicService.find(id);
+		
+		// Verification
+		Assertions.assertThat(foundComic.getId()).isEqualTo(2);
+		Assertions.assertThat(foundComic.getTitle()).isEqualTo("Homem-Aranha: Eternamente jovem");
+		Assertions.assertThat(foundComic.getIsbn()).isEqualTo("9786555612752");
+		Assertions.assertThat(foundComic.getDescription()).isEqualTo("Na esperança de obter algumas fotos de seu alter "
+				+ "ego aracnídeo em ação, Peter Parker "
+				+ "sai em busca de problemas – e os encontra na forma de uma placa de pedra misteriosa e "
+				+ "mítica cobiçada pelo Rei do Crime e pelos facínoras da Maggia, o maior sindicato criminal "
+				+ "da cidade.");
+		Assertions.assertThat(foundComic.getPrice()).isEqualTo(38.61F);
+		Assertions.assertThat(foundComic.getCharacters().stream().findFirst().get().getName()).isEqualTo("Homem Aranha");
+		Assertions.assertThat(foundComic.getAuthors().stream().findFirst().get().getName()).isEqualTo("Stefan Petrucha");
+	}
+	
 	private Comic createComic() {
 		Author author = new Author(null, "Stefan Petrucha");
 		Character character = new Character(null, "Homem Aranha");
