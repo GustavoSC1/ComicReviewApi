@@ -6,6 +6,8 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +33,13 @@ public class ComicController {
 				.buildAndExpand(comicDto.getId()).toUri();
 		
 		return ResponseEntity.created(uri).body(comicDto);
+	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<ComicDTO> find(@PathVariable Long id) {
+		ComicDTO comicDto = comicService.find(id);
+		
+		return ResponseEntity.ok().body(comicDto);
 	}
 
 }
