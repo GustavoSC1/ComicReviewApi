@@ -49,7 +49,7 @@ public class ComicService {
 		this.characterService = characterService;
 		this.marvelClient = marvelClient;
 		this.clock = clock;
-	}
+	}	
 	
 	public ComicDTO save(ComicNewDTO objDto) {
 		Comic comic = fromDTO(objDto);
@@ -57,7 +57,7 @@ public class ComicService {
 		
 		return new ComicDTO(comic);
 	}
-	
+		
 	public Comic fromDTO(ComicNewDTO objDto) {		
 		if(comicRepository.existsById(Long.valueOf(objDto.getIdComicMarvel()))) {
 			throw new BusinessException("Comic already registered!");
@@ -120,6 +120,13 @@ public class ComicService {
 		BigInteger hash = new BigInteger(1, md.digest(value.getBytes()));
 	
 		return hash.toString(16);
+	}
+	
+
+	public ComicDTO find(Long id) {
+		Comic comic = findById(id);
+		
+		return new ComicDTO(comic);
 	}
 	
 	public Comic findById(Long id) {
