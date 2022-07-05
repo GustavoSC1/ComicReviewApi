@@ -24,7 +24,9 @@ import com.gustavo.comicreviewapi.dtos.AuthorDTO;
 import com.gustavo.comicreviewapi.dtos.CharacterDTO;
 import com.gustavo.comicreviewapi.dtos.ComicDTO;
 import com.gustavo.comicreviewapi.dtos.ComicNewDTO;
+import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.services.ComicService;
+import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -117,6 +119,27 @@ public class ComicControllerTest {
 				+ "da cidade."))
 		.andExpect(MockMvcResultMatchers.jsonPath("characters[0].name").value("Homem Aranha"))
 		.andExpect(MockMvcResultMatchers.jsonPath("authors[0].name").value("Stefan Petrucha"));
+	}
+	
+	@Test
+	@DisplayName("Should return error when trying to get a non-existent comic")
+	public void comicNotFoundByIdTest() throws Exception {
+		// Scenario
+		Long id = 2l;
+		
+		BDDMockito.given(comicService.find(id)).willThrow(new ObjectNotFoundException("Object not found! Id: " + id + ", Type: " + Comic.class.getName()));
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.get(COMIC_API.concat("/"+id))
+													.accept(MediaType.APPLICATION_JSON);
+		
+		// Verification
+		mvc
+		.perform(request)
+		.andExpect(MockMvcResultMatchers.status().isNotFound())
+		.andExpect(MockMvcResultMatchers.jsonPath("error").value("Not found"))
+		.andExpect(MockMvcResultMatchers.jsonPath("message").value("Object not found! Id: " + id + ", Type: " + Comic.class.getName()));
 	}
 	
 	private ComicDTO createComicDTO() {
