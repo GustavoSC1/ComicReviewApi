@@ -151,12 +151,12 @@ public class ComicControllerTest {
 				+ "ego aracnídeo em ação, Peter Parker "
 				+ "sai em busca de problemas – e os encontra na forma de uma placa de pedra misteriosa e "
 				+ "mítica cobiçada pelo Rei do Crime e pelos facínoras da Maggia, o maior sindicato criminal "
-				+ "da cidade.");
+				+ "da cidade.", false);
 		
 		comicDto.getAuthors().add(authorDto);
 		comicDto.getCharacters().add(characterDto);
 		
 		return comicDto;
 	}
-
+	
 }

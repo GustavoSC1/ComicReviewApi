@@ -15,6 +15,7 @@ public class ComicDTO implements Serializable {
 	private Float price;
 	private String isbn;
 	private String description;
+	private Boolean activeDiscount;
 	
 	private Set<AuthorDTO> authors = new HashSet<>();
 	private Set<CharacterDTO> characters = new HashSet<>();
@@ -23,12 +24,13 @@ public class ComicDTO implements Serializable {
 
 	}
 
-	public ComicDTO(Long id, String title, Float price, String isbn, String description) {
+	public ComicDTO(Long id, String title, Float price, String isbn, String description, Boolean activeDiscount) {
 		this.id = id;
 		this.title = title;
 		this.price = price;
 		this.isbn = isbn;
 		this.description = description;
+		this.activeDiscount = activeDiscount;
 	}
 
 	public ComicDTO(Comic comic) {
@@ -60,6 +62,10 @@ public class ComicDTO implements Serializable {
 	public String getDescription() {
 		return description;
 	}
+	
+	public Boolean getActiveDiscount() {
+		return activeDiscount;
+	}
 
 	public Set<AuthorDTO> getAuthors() {
 		return authors;
@@ -87,6 +93,10 @@ public class ComicDTO implements Serializable {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public void setActiveDiscount(Boolean activeDiscount) {
+		this.activeDiscount = activeDiscount;
 	}
 
 	public void setAuthors(Set<AuthorDTO> authors) {
