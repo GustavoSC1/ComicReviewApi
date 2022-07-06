@@ -1,6 +1,8 @@
 package com.gustavo.comicreviewapi.services;
 
 import java.time.Clock;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -14,10 +16,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.gustavo.comicreviewapi.dtos.AuthorDTO;
+import com.gustavo.comicreviewapi.dtos.CharacterDTO;
+import com.gustavo.comicreviewapi.dtos.ComicDTO;
 import com.gustavo.comicreviewapi.dtos.ComicNewDTO;
 import com.gustavo.comicreviewapi.dtos.feignDtos.CharacterListDTO;
 import com.gustavo.comicreviewapi.dtos.feignDtos.CharacterSummaryDTO;
-import com.gustavo.comicreviewapi.dtos.feignDtos.ComicDTO;
 import com.gustavo.comicreviewapi.dtos.feignDtos.ComicDataContainerDTO;
 import com.gustavo.comicreviewapi.dtos.feignDtos.ComicPriceDTO;
 import com.gustavo.comicreviewapi.dtos.feignDtos.CreatorListDTO;
@@ -165,7 +169,7 @@ public class ComicServiceTest {
 		Mockito.when(comicRepository.save(Mockito.any(Comic.class))).thenReturn(comic);
 		
 		// Execution
-		com.gustavo.comicreviewapi.dtos.ComicDTO savedComic = comicService.save(comicNewDto);
+		ComicDTO savedComic = comicService.save(comicNewDto);
 		
 		// Verification
 		Assertions.assertThat(savedComic.getId()).isEqualTo(1);
@@ -237,7 +241,7 @@ public class ComicServiceTest {
 		Mockito.doReturn(comic).when(comicService).findById(id);
 		
 		// Execution
-		com.gustavo.comicreviewapi.dtos.ComicDTO foundComic = comicService.find(id);
+		ComicDTO foundComic = comicService.find(id);
 		
 		// Verification
 		Assertions.assertThat(foundComic.getId()).isEqualTo(2);
@@ -251,6 +255,34 @@ public class ComicServiceTest {
 		Assertions.assertThat(foundComic.getPrice()).isEqualTo(38.61F);
 		Assertions.assertThat(foundComic.getCharacters().stream().findFirst().get().getName()).isEqualTo("Homem Aranha");
 		Assertions.assertThat(foundComic.getAuthors().stream().findFirst().get().getName()).isEqualTo("Stefan Petrucha");
+	}
+	
+	@Test
+	@DisplayName("Must calculate a discount on the Comic price based on the last ISBN number and the day of the week the "
+			+ "user is making the request")
+	public void checkDiscountTest() {
+		// Scenario
+		ComicDTO comicDto = createComicDto();
+		comicDto.setId(2l);
+						
+		Mockito.doReturn(obterData(15,11,2022)).when(comicService).getDate();
+		
+		// Execution
+		comicService.checkDiscount(comicDto);
+		
+		// Verification
+		Assertions.assertThat(comicDto.getId()).isEqualTo(2);
+		Assertions.assertThat(comicDto.getTitle()).isEqualTo("Homem-Aranha: Eternamente jovem");
+		Assertions.assertThat(comicDto.getIsbn()).isEqualTo("9786555612752");
+		Assertions.assertThat(comicDto.getDescription()).isEqualTo("Na esperança de obter algumas fotos de seu alter "
+				+ "ego aracnídeo em ação, Peter Parker "
+				+ "sai em busca de problemas – e os encontra na forma de uma placa de pedra misteriosa e "
+				+ "mítica cobiçada pelo Rei do Crime e pelos facínoras da Maggia, o maior sindicato criminal "
+				+ "da cidade.");
+		Assertions.assertThat(comicDto.getCharacters().stream().findFirst().get().getName()).isEqualTo("Homem Aranha");
+		Assertions.assertThat(comicDto.getAuthors().stream().findFirst().get().getName()).isEqualTo("Stefan Petrucha");
+		Assertions.assertThat(comicDto.getPrice()).isEqualTo(34.75F);
+		Assertions.assertThat(comicDto.getActiveDiscount()).isEqualTo(true);
 	}
 	
 	private Comic createComic() {
@@ -269,6 +301,23 @@ public class ComicServiceTest {
 		
 		return comic;
 	}
+	
+	private ComicDTO createComicDto() {
+		AuthorDTO authorDto = new AuthorDTO(null, "Stefan Petrucha");
+		CharacterDTO characterDto = new CharacterDTO(null, "Homem Aranha");
+		
+		ComicDTO comicDto = new ComicDTO(null, "Homem-Aranha: Eternamente jovem", 38.61F, "9786555612752", 
+				"Na esperança de obter algumas fotos de seu alter "
+				+ "ego aracnídeo em ação, Peter Parker "
+				+ "sai em busca de problemas – e os encontra na forma de uma placa de pedra misteriosa e "
+				+ "mítica cobiçada pelo Rei do Crime e pelos facínoras da Maggia, o maior sindicato criminal "
+				+ "da cidade.", false);
+		
+		comicDto.getAuthors().add(authorDto);
+		comicDto.getCharacters().add(characterDto);
+		
+		return comicDto;
+	}
 		
 	private MarvelAPIModelDTO createMarvelAPIModelDTO() {
 		ComicPriceDTO comicPriceDTO = new ComicPriceDTO(38.61F);
@@ -283,7 +332,8 @@ public class ComicServiceTest {
 		CharacterListDTO characterListDTO = new CharacterListDTO();
 		characterListDTO.getItems().add(characterSummaryDTO);
 		
-		ComicDTO comicDTO = new ComicDTO(1, "Homem-Aranha: Eternamente jovem", "9786555612752", 
+		com.gustavo.comicreviewapi.dtos.feignDtos.ComicDTO comicDTO = new 
+				com.gustavo.comicreviewapi.dtos.feignDtos.ComicDTO(1, "Homem-Aranha: Eternamente jovem", "9786555612752", 
 				"Na esperança de obter algumas fotos de seu alter "
 				+ "ego aracnídeo em ação, Peter Parker "
 				+ "sai em busca de problemas – e os encontra na forma de uma placa de pedra misteriosa e "
@@ -300,6 +350,14 @@ public class ComicServiceTest {
 		MarvelAPIModelDTO marvelAPIModelDTO = new MarvelAPIModelDTO(comicDataContainerDTO);
 		
 		return marvelAPIModelDTO;		
+	}
+	
+	public static Date obterData(int day, int mounth, int year){
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.DAY_OF_MONTH, day);
+		calendar.set(Calendar.MONTH, mounth - 1);
+		calendar.set(Calendar.YEAR, year);
+		return calendar.getTime();
 	}
 
 }

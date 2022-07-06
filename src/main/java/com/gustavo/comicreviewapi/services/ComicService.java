@@ -1,9 +1,13 @@
 package com.gustavo.comicreviewapi.services;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Clock;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -122,18 +126,53 @@ public class ComicService {
 		return hash.toString(16);
 	}
 	
-
 	public ComicDTO find(Long id) {
 		Comic comic = findById(id);
 		
 		return new ComicDTO(comic);
 	}
-	
+		
 	public Comic findById(Long id) {
 		Optional<Comic> comicOptional = comicRepository.findById(id);
 		Comic comic = comicOptional.orElseThrow(() -> new ObjectNotFoundException("Object not found! Id: " + id + ", Type: " + Comic.class.getName()));
 		
 		return comic;
+	}
+	
+	public void checkDiscount(ComicDTO comicDto) {
+		Double percentual = 10.0 / 100.0; 
+		
+		Date data = getDate();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(data);
+		int day = cal.get(Calendar.DAY_OF_WEEK);
+				
+		comicDto.setActiveDiscount(false);
+		
+		char lastNumber = comicDto.getIsbn().charAt(comicDto.getIsbn().length() - 1);
+		
+		if ((lastNumber == '0' || lastNumber == '1') && day == 2)  {
+			comicDto.setActiveDiscount(true);
+		} else if ((lastNumber == '2' || lastNumber == '3') &&  day == 3) {
+			comicDto.setActiveDiscount(true);
+		} else if (( lastNumber == '4' || lastNumber == '5') && day == 4) {
+			comicDto.setActiveDiscount(true);
+		} else if ((lastNumber == '6' || lastNumber == '7') && day == 5) {
+			comicDto.setActiveDiscount(true);
+		} else if ((lastNumber == '8' || lastNumber == '9') && day == 6) {
+			comicDto.setActiveDiscount(true);
+		}
+		
+		if(comicDto.getActiveDiscount()) {
+			Double newValue = comicDto.getPrice() - (percentual * comicDto.getPrice());
+			BigDecimal bd = new BigDecimal(newValue).setScale(2, RoundingMode.HALF_EVEN);
+			comicDto.setPrice(bd.floatValue());
+		}		
+		
+	}
+	
+	public Date getDate() {
+		return new Date();
 	}
 
 }
