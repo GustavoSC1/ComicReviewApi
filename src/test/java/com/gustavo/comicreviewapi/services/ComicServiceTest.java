@@ -238,6 +238,8 @@ public class ComicServiceTest {
 		Comic comic = createComic();
 		comic.setId(id);
 		
+		Mockito.doReturn(obterData(16,11,2022)).when(comicService).getDate();
+		
 		Mockito.doReturn(comic).when(comicService).findById(id);
 		
 		// Execution
@@ -255,6 +257,7 @@ public class ComicServiceTest {
 		Assertions.assertThat(foundComic.getPrice()).isEqualTo(38.61F);
 		Assertions.assertThat(foundComic.getCharacters().stream().findFirst().get().getName()).isEqualTo("Homem Aranha");
 		Assertions.assertThat(foundComic.getAuthors().stream().findFirst().get().getName()).isEqualTo("Stefan Petrucha");
+		Assertions.assertThat(foundComic.getActiveDiscount()).isEqualTo(false);
 	}
 	
 	@Test
