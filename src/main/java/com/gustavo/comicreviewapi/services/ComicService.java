@@ -128,8 +128,9 @@ public class ComicService {
 	
 	public ComicDTO find(Long id) {
 		Comic comic = findById(id);
-		
-		return new ComicDTO(comic);
+		ComicDTO comicDto = new ComicDTO(comic);
+		checkDiscount(comicDto);
+		return comicDto;
 	}
 		
 	public Comic findById(Long id) {
