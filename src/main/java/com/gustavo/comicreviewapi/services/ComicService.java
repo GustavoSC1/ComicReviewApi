@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.gustavo.comicreviewapi.dtos.ComicDTO;
 import com.gustavo.comicreviewapi.dtos.ComicNewDTO;
@@ -126,6 +127,7 @@ public class ComicService {
 		return hash.toString(16);
 	}
 	
+	@Transactional(readOnly = true)
 	public ComicDTO find(Long id) {
 		Comic comic = findById(id);
 		ComicDTO comicDto = new ComicDTO(comic);
