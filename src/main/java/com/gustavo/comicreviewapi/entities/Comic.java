@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Comic implements Serializable {
@@ -36,6 +37,9 @@ public class Comic implements Serializable {
 			joinColumns = @JoinColumn(name = "comic_id"),
 			inverseJoinColumns = @JoinColumn(name = "character_id"))
 	private Set<Character> characters = new HashSet<>();
+	
+	@OneToMany(mappedBy = "comic")
+	private Set<Review> reviews = new HashSet<>();
 	
 	public Comic() {
 		
@@ -77,6 +81,10 @@ public class Comic implements Serializable {
 	public Set<Character> getCharacters() {
 		return characters;
 	}
+	
+	public Set<Review> getReviews() {
+		return reviews;
+	}
 
 	public void setId(Long id) {
 		this.id = id;
@@ -104,6 +112,10 @@ public class Comic implements Serializable {
 
 	public void setCharacters(Set<Character> characters) {
 		this.characters = characters;
+	}
+	
+	public void setReviews(Set<Review> reviews) {
+		this.reviews = reviews;
 	}
 
 	@Override

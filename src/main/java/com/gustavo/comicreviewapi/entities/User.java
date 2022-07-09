@@ -1,11 +1,14 @@
 package com.gustavo.comicreviewapi.entities;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class User {
@@ -17,6 +20,9 @@ public class User {
 	private LocalDate birthDate;
 	private String phone;
 	private String email;
+	
+	@OneToMany(mappedBy="user")
+	private Set<Review> reviews = new HashSet<>();
 		
 	public User() {
 		
@@ -51,6 +57,10 @@ public class User {
 		return email;
 	}
 	
+	public Set<Review> getReviews() {
+		return reviews;
+	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -69,6 +79,10 @@ public class User {
 	
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	
+	public void setReviews(Set<Review> reviews) {
+		this.reviews = reviews;
 	}
 
 	@Override
