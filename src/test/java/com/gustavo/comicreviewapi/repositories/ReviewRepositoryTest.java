@@ -1,6 +1,5 @@
 package com.gustavo.comicreviewapi.repositories;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.assertj.core.api.Assertions;
