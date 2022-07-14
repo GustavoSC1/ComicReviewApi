@@ -9,7 +9,7 @@ public class ComicNewDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@NotNull(message="The comic id field is required")
-	@Min(value=1, message="idComicMarvel não pode ser menor que 1")
+	@Min(value=1, message="idComicMarvel cannot be less than 1")
 	private Integer idComicMarvel;
 	
 	public ComicNewDTO() {

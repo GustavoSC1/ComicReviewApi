@@ -80,6 +80,26 @@ public class ReviewControllerTest {
 		.andExpect( MockMvcResultMatchers.header().string(HttpHeaders.LOCATION, Matchers.containsString("/reviews/"+id)));
 	}
 	
+	@Test
+	@DisplayName("Should throw validation error when there is not enough data for review creation")
+	public void createInvalidReviewTest() throws Exception {
+		// Scenario
+		ReviewNewDTO newReview = new ReviewNewDTO();
+		
+		String json = mapper.writeValueAsString(newReview);
+				
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.post(REVIEW_API)
+													.contentType(MediaType.APPLICATION_JSON)
+													.accept(MediaType.APPLICATION_JSON)
+													.content(json);
+		// Verification
+		mvc.perform(request)	
+			.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+			.andExpect(MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(5)));
+	}
+	
 	public ReviewNewDTO createReviewNewDTO() {
 		return new ReviewNewDTO("Ótima história", LocalDateTime.of(2022, 11, 20, 21, 50), "A HQ mostra o Homem-Aranha em sua essência: "
 				+ "cheio de problemas, tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
