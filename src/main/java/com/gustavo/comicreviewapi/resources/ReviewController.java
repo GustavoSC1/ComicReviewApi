@@ -2,6 +2,8 @@ package com.gustavo.comicreviewapi.resources;
 
 import java.net.URI;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +24,7 @@ public class ReviewController {
 	private ReviewService reviewService;
 	
 	@PostMapping
-	public ResponseEntity<ReviewDTO> save(@RequestBody ReviewNewDTO reviewNewDto) {
+	public ResponseEntity<ReviewDTO> save(@Valid @RequestBody ReviewNewDTO reviewNewDto) {
 		ReviewDTO reviewDto = reviewService.save(reviewNewDto);
 		
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
