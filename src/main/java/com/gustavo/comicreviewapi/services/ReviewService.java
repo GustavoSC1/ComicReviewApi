@@ -36,6 +36,12 @@ public class ReviewService {
 		
 		return new ReviewDTO(review);
 	}
+	
+	public ReviewDTO find(Long id) {
+		Review review = findById(id);
+		
+		return new ReviewDTO(review);
+	}
 		
 	public Review findById(Long id) {
 		Optional<Review> reviewOptional = reviewRepository.findById(id);

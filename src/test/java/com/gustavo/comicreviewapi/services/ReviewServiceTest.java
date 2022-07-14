@@ -42,7 +42,7 @@ public class ReviewServiceTest {
 	
 	@BeforeEach
 	public void setUp() {
-		this.reviewService = new ReviewService(reviewRepository, userService, comicService);
+		this.reviewService = Mockito.spy(new ReviewService(reviewRepository, userService, comicService));
 	}
 	
 	@Test
@@ -118,6 +118,32 @@ public class ReviewServiceTest {
 		String actualMessage = exception.getMessage();
 		
 		Assertions.assertThat(actualMessage).isEqualTo(expectedMessage);
+	}
+	
+	@Test
+	@DisplayName("Must call findById method and return Review to controller")
+	public void findTest() {
+		// Scenario
+		long id = 2l;
+		
+		Review review = createReview();
+		review.setId(id);
+		
+		Mockito.doReturn(review).when(reviewService).findById(id);
+		
+		// Execution
+		ReviewDTO foundReview = reviewService.find(id);
+		
+		// Verification
+		Assertions.assertThat(foundReview.getId()).isEqualTo(id);
+		Assertions.assertThat(foundReview.getTitle()).isEqualTo("Ótima história");
+		Assertions.assertThat(foundReview.getDate()).isEqualTo(LocalDateTime.of(2022, 11, 20, 21, 50));
+		Assertions.assertThat(foundReview.getContent()).isEqualTo("A HQ mostra o Homem-Aranha em sua essência: "
+				+ "cheio de problemas, tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
+				+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
+				+ "família. É maravilhoso ver a determinação do herói e impossível não se identificar com ele, não se agoniar "
+				+ "com seus problemas e torcer pela sua vitória. É tudo que se espera de uma boa aventura de super-heróis e "
+				+ "um roteiro perfeito para um filme do Aracnídeo.");
 	}
 	
 	public ReviewNewDTO createReviewNewDTO() {
