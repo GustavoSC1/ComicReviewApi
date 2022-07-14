@@ -61,6 +61,7 @@ public class ReviewServiceTest {
 		
 		Mockito.when(userService.findById(id)).thenReturn(user);
 		Mockito.when(comicService.findById(id)).thenReturn(comic);
+		Mockito.doReturn(LocalDateTime.of(2022, 11, 20, 21, 50)).when(reviewService).getDateTime();
 		Mockito.when(reviewRepository.save(Mockito.any(Review.class))).thenReturn(savedReview);
 		
 		// Execution		
@@ -147,7 +148,7 @@ public class ReviewServiceTest {
 	}
 	
 	public ReviewNewDTO createReviewNewDTO() {
-		return new ReviewNewDTO("Ótima história", LocalDateTime.of(2022, 11, 20, 21, 50), "A HQ mostra o Homem-Aranha em sua essência: "
+		return new ReviewNewDTO("Ótima história", "A HQ mostra o Homem-Aranha em sua essência: "
 				+ "cheio de problemas, tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
 				+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
 				+ "família. É maravilhoso ver a determinação do herói e impossível não se identificar com ele, não se agoniar "
