@@ -1,5 +1,6 @@
 package com.gustavo.comicreviewapi.services;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class ReviewService {
 		User user = userService.findById(reviewDto.getUserId());
 		Comic comic = comicService.findById(reviewDto.getComicId());
 		
-		Review review = new Review(null, reviewDto.getTitle(), reviewDto.getDate(), reviewDto.getContent(), user, comic);
+		Review review = new Review(null, reviewDto.getTitle(), getDateTime(), reviewDto.getContent(), user, comic);
 		review = reviewRepository.save(review);
 		
 		return new ReviewDTO(review);
@@ -48,6 +49,10 @@ public class ReviewService {
 		Review review = reviewOptional.orElseThrow(() -> new ObjectNotFoundException("Object not found! Id: " + id + ", Type: " + Review.class.getName()));
 	
 		return review;
+	}
+	
+	public LocalDateTime getDateTime() {
+		return LocalDateTime.now();
 	}
 
 }
