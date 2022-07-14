@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +23,7 @@ import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.entities.Review;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.ReviewRepository;
+import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -100,6 +102,22 @@ public class ReviewServiceTest {
 				+ "família. É maravilhoso ver a determinação do herói e impossível não se identificar com ele, não se agoniar "
 				+ "com seus problemas e torcer pela sua vitória. É tudo que se espera de uma boa aventura de super-heróis e "
 				+ "um roteiro perfeito para um filme do Aracnídeo.");
+	}
+	
+	@Test
+	@DisplayName("Should return error when trying to get a non-existent review")
+	public void reviewNotFoundByIdTest() {
+		// Scenario
+		Long id = 1l;
+		Mockito.when(reviewRepository.findById(id)).thenReturn(Optional.empty());
+		
+		// Execution and Verification
+		Exception exception = assertThrows(ObjectNotFoundException.class, () -> {reviewService.findById(id);});
+		
+		String expectedMessage = "Object not found! Id: " + id + ", Type: " + Review.class.getName();
+		String actualMessage = exception.getMessage();
+		
+		Assertions.assertThat(actualMessage).isEqualTo(expectedMessage);
 	}
 	
 	public ReviewNewDTO createReviewNewDTO() {
