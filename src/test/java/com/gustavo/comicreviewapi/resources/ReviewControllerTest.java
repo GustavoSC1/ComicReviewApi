@@ -82,7 +82,7 @@ public class ReviewControllerTest {
 	
 	@Test
 	@DisplayName("Should throw validation error when there is not enough data for review creation")
-	public void createInvalidReviewTest() throws Exception {
+	public void saveInvalidReviewTest() throws Exception {
 		// Scenario
 		ReviewNewDTO newReview = new ReviewNewDTO();
 		

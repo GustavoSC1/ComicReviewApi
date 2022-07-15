@@ -21,10 +21,10 @@ public class UserNewDTO implements Serializable {
 	@Past(message="Invalid date")
 	private LocalDate birthDate;
 	
-	@NotEmpty(message="The birth date field is required")
+	@NotEmpty(message="The phone field is required")
 	private String phone;
 	
-	@NotEmpty(message="The Email field is required")
+	@NotEmpty(message="The email field is required")
 	@Email(message="Invalid email")
 	private String email;
 		
