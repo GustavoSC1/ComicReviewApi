@@ -84,7 +84,7 @@ public class UserControllerTest {
 	
 	@Test
 	@DisplayName("Should throw validation error when there is not enough data for user creation")
-	public void createInvalidUserTest() throws Exception {
+	public void saveInvalidUserTest() throws Exception {
 		// Scenario
 		UserNewDTO newUser = new UserNewDTO();
 		newUser.setBirthDate(LocalDate.of(2022, 10, 17));
@@ -174,6 +174,29 @@ public class UserControllerTest {
 		.andExpect(MockMvcResultMatchers.jsonPath("name").value("Daniel Cauê Calebe Jesus"))
 		.andExpect(MockMvcResultMatchers.jsonPath("phone").value("988078805"))
 		.andExpect(MockMvcResultMatchers.jsonPath("email").value("daniel-jesus87@cvc.com.br"));
+	}
+	
+	@Test
+	@DisplayName("Should throw validation error when there is not enough data for user updating")
+	public void updateInvalidUserTest() throws Exception {
+		// Scenario
+		Long id = 2l;
+		
+		UserDTO user = new UserDTO();
+		user.setBirthDate(LocalDate.of(2022, 10, 17));
+		
+		String json = mapper.writeValueAsString(user);
+				
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.put(USER_API.concat("/"+id))
+													.contentType(MediaType.APPLICATION_JSON)
+													.accept(MediaType.APPLICATION_JSON)
+													.content(json);		
+		// Verification
+		mvc.perform(request)
+			.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+			.andExpect(MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(5)));
 	}
 	
 	public UserDTO createUserDTO() {
