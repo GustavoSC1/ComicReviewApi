@@ -30,7 +30,7 @@ public class UserRepositoryTest {
 	@DisplayName("Must save a user")
 	public void saveUserTest() {
 		// Scenario
-		User newUser = new User(null,"Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
+		User newUser = new User(null,"Gustavo Silva Cruz", LocalDate.of(1996, 10, 17), "998123899", "gu.cruz17@hotmail.com");
 		
 		// Execution
 		User savedUser = userRepository.save(newUser);
@@ -43,7 +43,7 @@ public class UserRepositoryTest {
 	@DisplayName("Must check if there is a user with the email provided")
 	public void existsByEmailTest() {
 		// Scenario
-		User newUser = new User(null,"Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
+		User newUser = new User(null,"Gustavo Silva Cruz", LocalDate.of(1996, 10, 17), "998123899", "gu.cruz17@hotmail.com");
 		entityManager.persist(newUser);
 		
 		// Execution
@@ -57,7 +57,7 @@ public class UserRepositoryTest {
 	@DisplayName("Must get one user per id")
 	public void findByIdTest() {
 		// Scenario
-		User user = new User(null,"Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
+		User user = new User(null,"Gustavo Silva Cruz", LocalDate.of(1996, 10, 17), "998123899", "gu.cruz17@hotmail.com");
 		entityManager.persist(user);
 		
 		// Execution
