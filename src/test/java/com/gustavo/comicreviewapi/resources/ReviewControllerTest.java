@@ -100,6 +100,36 @@ public class ReviewControllerTest {
 			.andExpect(MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(4)));
 	}
 	
+	@Test
+	@DisplayName("Must get one review per id")
+	public void findReviewTest() throws Exception {
+		// Scenario
+		Long id = 2l;
+		
+		ReviewDTO review = createReviewDTO();
+		review.setId(id);
+		
+		BDDMockito.given(reviewService.find(id)).willReturn(review);
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.get(REVIEW_API.concat("/"+id))
+													.accept(MediaType.APPLICATION_JSON);
+		
+		// Verification
+		mvc.perform(request)
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.jsonPath("id").value(id))
+			.andExpect(MockMvcResultMatchers.jsonPath("title").value("Ótima história"))
+			.andExpect(MockMvcResultMatchers.jsonPath("date").value("2022-11-20T21:50:00"))
+			.andExpect(MockMvcResultMatchers.jsonPath("content").value("A HQ mostra o Homem-Aranha em sua essência: "
+					+ "cheio de problemas, tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
+					+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
+					+ "família. É maravilhoso ver a determinação do herói e impossível não se identificar com ele, não se agoniar "
+					+ "com seus problemas e torcer pela sua vitória. É tudo que se espera de uma boa aventura de super-heróis e "
+					+ "um roteiro perfeito para um filme do Aracnídeo."));
+	}
+	
 	public ReviewNewDTO createReviewNewDTO() {
 		return new ReviewNewDTO("Ótima história", "A HQ mostra o Homem-Aranha em sua essência: "
 				+ "cheio de problemas, tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
