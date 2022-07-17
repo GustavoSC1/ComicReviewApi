@@ -147,9 +147,9 @@ public class UserServiceTest {
 		foundUser.setId(id);
 		
 		User updatedUser = new User(id, "Daniel Cauê Calebe Jesus", LocalDate.of(1996, 10, 17), "988078805", "daniel-jesus87@cvc.com.br");
-		
-		Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(foundUser));
+				
 		Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(updatedUser);
+		Mockito.doReturn(foundUser).when(userService).findById(id);
 		
 		// Execution
 		UserDTO updatedUserDto = userService.update(id, userDto);
