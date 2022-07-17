@@ -52,9 +52,9 @@ public class UserServiceTest {
 		
 		// Verification
 		Assertions.assertThat(savedUserDto.getId()).isEqualTo(id);
-		Assertions.assertThat(savedUserDto.getName()).isEqualTo("Gustavo da Silva Cruz");
+		Assertions.assertThat(savedUserDto.getName()).isEqualTo("Gustavo Silva Cruz");
 		Assertions.assertThat(savedUserDto.getBirthDate()).isEqualTo(LocalDate.of(1996, 10, 17));
-		Assertions.assertThat(savedUserDto.getPhone()).isEqualTo("998123456");		
+		Assertions.assertThat(savedUserDto.getPhone()).isEqualTo("998123899");		
 		Assertions.assertThat(savedUserDto.getEmail()).isEqualTo("gu.cruz17@hotmail.com");
 	}
 	
@@ -91,9 +91,9 @@ public class UserServiceTest {
 		
 		// Verification
 		Assertions.assertThat(foundUser.getId()).isEqualTo(id);
-		Assertions.assertThat(foundUser.getName()).isEqualTo("Gustavo da Silva Cruz");
+		Assertions.assertThat(foundUser.getName()).isEqualTo("Gustavo Silva Cruz");
 		Assertions.assertThat(foundUser.getBirthDate()).isEqualTo(LocalDate.of(1996, 10, 17));
-		Assertions.assertThat(foundUser.getPhone()).isEqualTo("998123456");		
+		Assertions.assertThat(foundUser.getPhone()).isEqualTo("998123899");		
 		Assertions.assertThat(foundUser.getEmail()).isEqualTo("gu.cruz17@hotmail.com");
 	}
 	
@@ -129,9 +129,9 @@ public class UserServiceTest {
 		
 		// Verification
 		Assertions.assertThat(foundUser.getId()).isEqualTo(id);
-		Assertions.assertThat(foundUser.getName()).isEqualTo("Gustavo da Silva Cruz");
+		Assertions.assertThat(foundUser.getName()).isEqualTo("Gustavo Silva Cruz");
 		Assertions.assertThat(foundUser.getBirthDate()).isEqualTo(LocalDate.of(1996, 10, 17));
-		Assertions.assertThat(foundUser.getPhone()).isEqualTo("998123456");		
+		Assertions.assertThat(foundUser.getPhone()).isEqualTo("998123899");		
 		Assertions.assertThat(foundUser.getEmail()).isEqualTo("gu.cruz17@hotmail.com");
 	}
 	
@@ -141,12 +141,12 @@ public class UserServiceTest {
 		// Scenario
 		Long id = 2l;
 		
-		UserDTO userDto = new UserDTO(id, "Daniel Cauê Calebe Jesus", LocalDate.of(1996, 10, 17), "988078805", "daniel-jesus87@cvc.com.br");
+		UserDTO userDto = new UserDTO(id, "Fulano Cauê Calebe Jesus", LocalDate.of(1996, 10, 17), "988078805", "fulano-jesus87@hotmail.com.br");
 		
 		User foundUser = createUser();
 		foundUser.setId(id);
 		
-		User updatedUser = new User(id, "Daniel Cauê Calebe Jesus", LocalDate.of(1996, 10, 17), "988078805", "daniel-jesus87@cvc.com.br");
+		User updatedUser = new User(id, "Fulano Cauê Calebe Jesus", LocalDate.of(1996, 10, 17), "988078805", "fulano-jesus87@hotmail.com.br");
 				
 		Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(updatedUser);
 		Mockito.doReturn(foundUser).when(userService).findById(id);
@@ -156,19 +156,19 @@ public class UserServiceTest {
 		
 		// Verification
 		Assertions.assertThat(updatedUserDto.getId()).isEqualTo(id);
-		Assertions.assertThat(updatedUserDto.getName()).isEqualTo("Daniel Cauê Calebe Jesus");
+		Assertions.assertThat(updatedUserDto.getName()).isEqualTo("Fulano Cauê Calebe Jesus");
 		Assertions.assertThat(updatedUserDto.getBirthDate()).isEqualTo(LocalDate.of(1996, 10, 17));
 		Assertions.assertThat(updatedUserDto.getPhone()).isEqualTo("988078805");
-		Assertions.assertThat(updatedUserDto.getEmail()).isEqualTo("daniel-jesus87@cvc.com.br");		
+		Assertions.assertThat(updatedUserDto.getEmail()).isEqualTo("fulano-jesus87@hotmail.com.br");		
 	}
 	
 
 	private User createUser() {
-		return new User(null,"Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
+		return new User(null,"Gustavo Silva Cruz", LocalDate.of(1996, 10, 17), "998123899", "gu.cruz17@hotmail.com");
 	}
 	
 	private UserNewDTO createUserNewDTO() {
-		return new UserNewDTO("Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
+		return new UserNewDTO("Gustavo Silva Cruz", LocalDate.of(1996, 10, 17), "998123899", "gu.cruz17@hotmail.com");
 	}
 	
 }

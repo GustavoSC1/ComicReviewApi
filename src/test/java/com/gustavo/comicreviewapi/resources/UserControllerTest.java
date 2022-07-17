@@ -61,7 +61,7 @@ public class UserControllerTest {
 		// Scenario		
 		long id = 2l;
 		
-		UserNewDTO newUser = new UserNewDTO("Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
+		UserNewDTO newUser = new UserNewDTO("Gustavo Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
 		UserDTO savedUser = createUserDTO();
 		savedUser.setId(id);
 		
@@ -123,8 +123,8 @@ public class UserControllerTest {
 		mvc.perform(request)
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.jsonPath("id").value(id))
-			.andExpect(MockMvcResultMatchers.jsonPath("name").value("Gustavo da Silva Cruz"))
-			.andExpect(MockMvcResultMatchers.jsonPath("phone").value("998123456"))
+			.andExpect(MockMvcResultMatchers.jsonPath("name").value("Gustavo Silva Cruz"))
+			.andExpect(MockMvcResultMatchers.jsonPath("phone").value("998123899"))
 			.andExpect(MockMvcResultMatchers.jsonPath("email").value("gu.cruz17@hotmail.com"));
 	}
 	
@@ -155,7 +155,7 @@ public class UserControllerTest {
 		// Scenario
 		Long id = 2l;
 		
-		UserDTO userDto = new UserDTO(id, "Daniel Cauê Calebe Jesus", LocalDate.of(1996, 10, 17), "988078805", "daniel-jesus87@cvc.com.br");
+		UserDTO userDto = new UserDTO(id, "Fulano Cauê Calebe Jesus", LocalDate.of(1996, 10, 17), "998123899", "fulano-jesus87@hotmail.com.br");
 		
 		BDDMockito.given(userService.update(Mockito.anyLong(), Mockito.any(UserDTO.class))).willReturn(userDto);
 		
@@ -171,9 +171,9 @@ public class UserControllerTest {
 		mvc.perform(request)
 		.andExpect(MockMvcResultMatchers.status().isOk())
 		.andExpect(MockMvcResultMatchers.jsonPath("id").value(id))
-		.andExpect(MockMvcResultMatchers.jsonPath("name").value("Daniel Cauê Calebe Jesus"))
-		.andExpect(MockMvcResultMatchers.jsonPath("phone").value("988078805"))
-		.andExpect(MockMvcResultMatchers.jsonPath("email").value("daniel-jesus87@cvc.com.br"));
+		.andExpect(MockMvcResultMatchers.jsonPath("name").value("Fulano Cauê Calebe Jesus"))
+		.andExpect(MockMvcResultMatchers.jsonPath("phone").value("998123899"))
+		.andExpect(MockMvcResultMatchers.jsonPath("email").value("fulano-jesus87@hotmail.com.br"));
 	}
 	
 	@Test
@@ -200,6 +200,6 @@ public class UserControllerTest {
 	}
 	
 	public UserDTO createUserDTO() {
-		return new UserDTO(null,"Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
+		return new UserDTO(null,"Gustavo Silva Cruz", LocalDate.of(1996, 10, 17), "998123899", "gu.cruz17@hotmail.com");
 	}
 }
