@@ -27,7 +27,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewNewDTO;
+import com.gustavo.comicreviewapi.entities.Review;
 import com.gustavo.comicreviewapi.services.ReviewService;
+import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -128,6 +130,26 @@ public class ReviewControllerTest {
 					+ "família. É maravilhoso ver a determinação do herói e impossível não se identificar com ele, não se agoniar "
 					+ "com seus problemas e torcer pela sua vitória. É tudo que se espera de uma boa aventura de super-heróis e "
 					+ "um roteiro perfeito para um filme do Aracnídeo."));
+	}
+	
+	@Test
+	@DisplayName("Should return error when trying to get a non-existent review")
+	public void reviewNotFoundByIdTest() throws Exception {
+		// Scenario
+		Long id = 2l;
+		
+		BDDMockito.given(reviewService.find(id)).willThrow(new ObjectNotFoundException("Object not found! Id: " + id + ", Type: " + Review.class.getName()));
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.get(REVIEW_API.concat("/"+id))
+													.accept(MediaType.APPLICATION_JSON);
+		
+		// Verification
+		mvc.perform(request)
+			.andExpect(MockMvcResultMatchers.status().isNotFound())
+			.andExpect(MockMvcResultMatchers.jsonPath("error").value("Not found"))
+			.andExpect(MockMvcResultMatchers.jsonPath("message").value("Object not found! Id: " + id + ", Type: " + Review.class.getName()));
 	}
 	
 	public ReviewNewDTO createReviewNewDTO() {
