@@ -150,7 +150,7 @@ public class UserControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Must update a company")
+	@DisplayName("Must update a user")
 	public void updateUserTest() throws Exception {
 		// Scenario
 		Long id = 2l;

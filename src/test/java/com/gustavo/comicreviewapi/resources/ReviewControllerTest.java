@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewNewDTO;
+import com.gustavo.comicreviewapi.dtos.ReviewUpdateDTO;
 import com.gustavo.comicreviewapi.entities.Review;
 import com.gustavo.comicreviewapi.services.ReviewService;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
@@ -150,6 +151,46 @@ public class ReviewControllerTest {
 			.andExpect(MockMvcResultMatchers.status().isNotFound())
 			.andExpect(MockMvcResultMatchers.jsonPath("error").value("Not found"))
 			.andExpect(MockMvcResultMatchers.jsonPath("message").value("Object not found! Id: " + id + ", Type: " + Review.class.getName()));
+	}
+	
+	@Test
+	@DisplayName("Must update a review")
+	public void updateReviewTest() throws Exception {
+		// Scenario
+		Long id = 2l;
+		
+		ReviewUpdateDTO reviewUpdateDto = new ReviewUpdateDTO("História fraca", "A HQ não mostra quase nada sobre o Homem-Aranha: "
+				+ "deveria mostrar mais sobre os seus problemas, ele tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
+				+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
+				+ "família.");
+		
+		ReviewDTO updatedReview = new ReviewDTO(id, "História fraca", LocalDateTime.of(2022, 11, 21, 19, 29), 
+				"A HQ não mostra quase nada sobre o Homem-Aranha: "
+				+ "deveria mostrar mais sobre os seus problemas, ele tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
+				+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
+				+ "família.");
+		
+		BDDMockito.given(reviewService.update(Mockito.anyLong(), Mockito.any(ReviewUpdateDTO.class))).willReturn(updatedReview);
+		
+		String json = mapper.writeValueAsString(reviewUpdateDto);
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.put(REVIEW_API.concat("/"+id))
+													.contentType(MediaType.APPLICATION_JSON)
+													.accept(MediaType.APPLICATION_JSON)
+													.content(json);
+		
+		// Verification
+		mvc.perform(request)
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.jsonPath("id").value(id))
+			.andExpect(MockMvcResultMatchers.jsonPath("title").value("História fraca"))
+			.andExpect(MockMvcResultMatchers.jsonPath("date").value("2022-11-21T19:29:00"))
+			.andExpect(MockMvcResultMatchers.jsonPath("content").value("A HQ não mostra quase nada sobre o Homem-Aranha: "
+					+ "deveria mostrar mais sobre os seus problemas, ele tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
+					+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
+					+ "família."));
 	}
 	
 	public ReviewNewDTO createReviewNewDTO() {
