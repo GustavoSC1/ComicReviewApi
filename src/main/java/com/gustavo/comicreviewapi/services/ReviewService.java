@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewNewDTO;
+import com.gustavo.comicreviewapi.dtos.ReviewUpdateDTO;
 import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.entities.Review;
 import com.gustavo.comicreviewapi.entities.User;
@@ -49,6 +50,18 @@ public class ReviewService {
 		Review review = reviewOptional.orElseThrow(() -> new ObjectNotFoundException("Object not found! Id: " + id + ", Type: " + Review.class.getName()));
 	
 		return review;
+	}
+	
+	public ReviewDTO update(Long id, ReviewUpdateDTO reviewDto) {
+		Review review = findById(id);
+		
+		review.setTitle(reviewDto.getTitle());
+		review.setContent(reviewDto.getContent());
+		review.setDate(getDateTime());
+		
+		review = reviewRepository.save(review);
+		
+		return new ReviewDTO(review);		
 	}
 	
 	public LocalDateTime getDateTime() {
