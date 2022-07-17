@@ -17,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewNewDTO;
+import com.gustavo.comicreviewapi.dtos.ReviewUpdateDTO;
 import com.gustavo.comicreviewapi.entities.Author;
 import com.gustavo.comicreviewapi.entities.Character;
 import com.gustavo.comicreviewapi.entities.Comic;
@@ -145,6 +146,42 @@ public class ReviewServiceTest {
 				+ "família. É maravilhoso ver a determinação do herói e impossível não se identificar com ele, não se agoniar "
 				+ "com seus problemas e torcer pela sua vitória. É tudo que se espera de uma boa aventura de super-heróis e "
 				+ "um roteiro perfeito para um filme do Aracnídeo.");
+	}
+	
+	@Test
+	@DisplayName("Must update a review")
+	public void updateReviewTest() {
+		// Scenario
+		Long id = 2l;
+		
+		ReviewUpdateDTO reviewDto = new ReviewUpdateDTO("História fraca", "A HQ não mostra quase nada sobre o Homem-Aranha: "
+				+ "deveria mostrar mais sobre os seus problemas, ele tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
+				+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
+				+ "família.");
+		
+		Review foundReview = createReview();
+		foundReview.setId(id);
+		
+		Review updatedReview = new Review(id, "História fraca", LocalDateTime.of(2022, 11, 21, 19, 29), 
+						"A HQ não mostra quase nada sobre o Homem-Aranha: "
+						+ "deveria mostrar mais sobre os seus problemas, ele tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
+						+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
+						+ "família.", null, null);
+		
+		Mockito.when(reviewRepository.save(Mockito.any(Review.class))).thenReturn(updatedReview);
+		Mockito.doReturn(foundReview).when(reviewService).findById(id);
+		
+		// Execution
+		ReviewDTO updatedReviewDto = reviewService.update(id, reviewDto);
+		
+		// Verification
+		Assertions.assertThat(updatedReviewDto.getId()).isEqualTo(id);
+		Assertions.assertThat(updatedReviewDto.getTitle()).isEqualTo("História fraca");
+		Assertions.assertThat(updatedReviewDto.getDate()).isEqualTo(LocalDateTime.of(2022, 11, 21, 19, 29));
+		Assertions.assertThat(updatedReviewDto.getContent()).isEqualTo("A HQ não mostra quase nada sobre o Homem-Aranha: "
+				+ "deveria mostrar mais sobre os seus problemas, ele tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
+				+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
+				+ "família.");
 	}
 	
 	public ReviewNewDTO createReviewNewDTO() {
