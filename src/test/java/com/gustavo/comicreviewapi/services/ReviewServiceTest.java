@@ -205,7 +205,7 @@ public class ReviewServiceTest {
 	}
 	
 	private User createUser() {
-		return new User(null,"Gustavo da Silva Cruz", LocalDate.of(1996, 10, 17), "998123456", "gu.cruz17@hotmail.com");
+		return new User(null,"Gustavo Silva Cruz", LocalDate.of(1996, 10, 17), "998123899", "gu.cruz17@hotmail.com");
 	}
 	
 	private Comic createComic() {
