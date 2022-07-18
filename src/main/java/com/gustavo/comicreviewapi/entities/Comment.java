@@ -2,8 +2,6 @@ package com.gustavo.comicreviewapi.entities;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,10 +10,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 @Entity
-public class Review implements Serializable {
+public class Comment implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
@@ -28,27 +25,24 @@ public class Review implements Serializable {
 	private String content;
 	
 	@ManyToOne
-	@JoinColumn(name = "user_id")	
-	private User user;
+	@JoinColumn(name = "review_id")
+	private Review review;
 	
 	@ManyToOne
-	@JoinColumn(name = "comic_id")
-	private Comic comic;
-	
-	@OneToMany(mappedBy = "review")
-	private Set<Comment> comments = new HashSet<>();
-	
-	public Review() {
+	@JoinColumn(name = "user_id")
+	private User user;
 
+	public Comment() {	
+		
 	}
-
-	public Review(Long id, String title, LocalDateTime date, String content, User user, Comic comic) {
+	
+	public Comment(Long id, String title, LocalDateTime date, String content, Review review, User user) {		
 		this.id = id;
 		this.title = title;
 		this.date = date;
 		this.content = content;
+		this.review = review;
 		this.user = user;
-		this.comic = comic;
 	}
 
 	public Long getId() {
@@ -67,16 +61,12 @@ public class Review implements Serializable {
 		return content;
 	}
 
-	public User getUser() {
-		return user;
+	public Review getReview() {
+		return review;
 	}
 
-	public Comic getComic() {
-		return comic;
-	}
-	
-	public Set<Comment> getComments() {
-		return comments;
+	public User getUser() {
+		return user;
 	}
 
 	public void setId(Long id) {
@@ -95,16 +85,12 @@ public class Review implements Serializable {
 		this.content = content;
 	}
 
+	public void setReview(Review review) {
+		this.review = review;
+	}
+
 	public void setUser(User user) {
 		this.user = user;
-	}
-
-	public void setComic(Comic comic) {
-		this.comic = comic;
-	}
-
-	public void setComments(Set<Comment> comments) {
-		this.comments = comments;
 	}
 
 	@Override
@@ -123,7 +109,7 @@ public class Review implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Review other = (Review) obj;
+		Comment other = (Comment) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -131,5 +117,5 @@ public class Review implements Serializable {
 			return false;
 		return true;
 	}
-
+	
 }
