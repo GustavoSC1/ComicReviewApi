@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +21,7 @@ import com.gustavo.comicreviewapi.entities.Comment;
 import com.gustavo.comicreviewapi.entities.Review;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.CommentRepository;
+import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -89,6 +91,22 @@ public class CommentServiceTest {
 		Assertions.assertThat(foundComment.getTitle()).isEqualTo("Ótimo review");
 		Assertions.assertThat(foundComment.getDate()).isEqualTo(LocalDateTime.of(2022, 11, 20, 22, 10));
 		Assertions.assertThat(foundComment.getContent()).isEqualTo("Parabéns pelo review, com certeza irei adquirir essa HQ!");		
+	}
+	
+	@Test
+	@DisplayName("Should return error when trying to get a non-existent comment")
+	public void commentNotFoundByIdTest() {
+		// Scenario
+		Long id = 1l;
+		Mockito.when(commentRepository.findById(id)).thenReturn(Optional.empty());
+		
+		// Execution and Verification
+		Exception exception = assertThrows(ObjectNotFoundException.class, () -> {commentService.findById(id);});
+	
+		String expectedMessage = "Object not found! Id: " + id + ", Type: " + Comment.class.getName();
+		String actualMessage = exception.getMessage();
+		
+		Assertions.assertThat(actualMessage).isEqualTo(expectedMessage);		
 	}
 	
 	private Review createReview() {					
