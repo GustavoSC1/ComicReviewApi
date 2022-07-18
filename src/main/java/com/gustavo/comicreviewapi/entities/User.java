@@ -23,6 +23,9 @@ public class User {
 	
 	@OneToMany(mappedBy="user")
 	private Set<Review> reviews = new HashSet<>();
+	
+	@OneToMany(mappedBy = "user")
+	private Set<Comment> comments = new HashSet<>();
 		
 	public User() {
 		
@@ -60,6 +63,10 @@ public class User {
 	public Set<Review> getReviews() {
 		return reviews;
 	}
+	
+	public Set<Comment> getComments() {
+		return comments;
+	}
 
 	public void setId(Long id) {
 		this.id = id;
@@ -83,6 +90,10 @@ public class User {
 	
 	public void setReviews(Set<Review> reviews) {
 		this.reviews = reviews;
+	}
+
+	public void setComments(Set<Comment> comments) {
+		this.comments = comments;
 	}
 
 	@Override
