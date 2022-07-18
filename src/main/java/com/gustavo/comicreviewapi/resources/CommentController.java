@@ -2,6 +2,8 @@ package com.gustavo.comicreviewapi.resources;
 
 import java.net.URI;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +24,7 @@ public class CommentController {
 	private CommentService commentService;
 	
 	@PostMapping
-	public ResponseEntity<CommentDTO> save(@RequestBody CommentNewDTO commentNewDto) {
+	public ResponseEntity<CommentDTO> save(@Valid @RequestBody CommentNewDTO commentNewDto) {
 		CommentDTO commentDto = commentService.save(commentNewDto);
 		
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
