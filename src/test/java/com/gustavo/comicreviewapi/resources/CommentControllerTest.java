@@ -32,7 +32,7 @@ import com.gustavo.comicreviewapi.services.CommentService;
 @AutoConfigureMockMvc
 public class CommentControllerTest {
 	
-	static String REVIEW_API = "/comments";
+	static String COMMENT_API = "/comments";
 	
 	@Autowired
 	MockMvc mvc;
@@ -56,7 +56,7 @@ public class CommentControllerTest {
 				
 		// Execution
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-													.post(REVIEW_API)
+													.post(COMMENT_API)
 													.contentType(MediaType.APPLICATION_JSON)
 													.accept(MediaType.APPLICATION_JSON)
 													.content(json);	
@@ -66,6 +66,27 @@ public class CommentControllerTest {
 			.perform(request)
 			.andExpect( MockMvcResultMatchers.status().isCreated() )
 			.andExpect( MockMvcResultMatchers.header().string(HttpHeaders.LOCATION, Matchers.containsString("/comments/"+id)));
+	}
+	
+	@Test
+	@DisplayName("Should throw validation error when there is not enough data for comment creation")
+	public void saveInvalidCommentTest() throws Exception {
+		// Scenario
+		CommentNewDTO newComment = new CommentNewDTO();
+		
+		String json = new ObjectMapper().writeValueAsString(newComment);
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.post(COMMENT_API)
+													.contentType(MediaType.APPLICATION_JSON)
+													.accept(MediaType.APPLICATION_JSON)
+													.content(json);
+		
+		// Verification
+		mvc.perform(request)	
+				.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+				.andExpect(MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(4)));
 	}
 	
 	private CommentNewDTO createCommentNewDTO() {
