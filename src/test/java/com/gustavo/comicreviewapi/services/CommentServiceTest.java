@@ -2,6 +2,7 @@ package com.gustavo.comicreviewapi.services;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,6 +68,27 @@ public class CommentServiceTest {
 		Assertions.assertThat(savedCommentDto.getTitle()).isEqualTo("Ótimo review");
 		Assertions.assertThat(savedCommentDto.getDate()).isEqualTo(LocalDateTime.of(2022, 11, 20, 22, 10));
 		Assertions.assertThat(savedCommentDto.getContent()).isEqualTo("Parabéns pelo review, com certeza irei adquirir essa HQ!");
+	}
+	
+	@Test
+	@DisplayName("Must get one comment per id")
+	public void findByIdTest() {
+		// Scenario
+		Long id = 2l;
+		
+		Comment comment = createComment();
+		comment.setId(id);
+		
+		Mockito.when(commentRepository.findById(id)).thenReturn(Optional.of(comment));
+		
+		// Execution
+		Comment foundComment = commentService.findById(id);
+		
+		// Verification
+		Assertions.assertThat(foundComment.getId()).isEqualTo(id);
+		Assertions.assertThat(foundComment.getTitle()).isEqualTo("Ótimo review");
+		Assertions.assertThat(foundComment.getDate()).isEqualTo(LocalDateTime.of(2022, 11, 20, 22, 10));
+		Assertions.assertThat(foundComment.getContent()).isEqualTo("Parabéns pelo review, com certeza irei adquirir essa HQ!");		
 	}
 	
 	private Review createReview() {					

@@ -1,6 +1,7 @@
 package com.gustavo.comicreviewapi.services;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,7 @@ import com.gustavo.comicreviewapi.entities.Comment;
 import com.gustavo.comicreviewapi.entities.Review;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.CommentRepository;
+import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 
 @Service
 public class CommentService {
@@ -34,6 +36,13 @@ public class CommentService {
 		comment = commentRepository.save(comment);
 		
 		return new CommentDTO(comment);	
+	}
+	
+	public Comment findById(Long id) {
+		Optional<Comment> commentOptional = commentRepository.findById(id);
+		Comment comment = commentOptional.orElseThrow(() -> new ObjectNotFoundException("Object not found! Id: " + id + ", Type: " + Comment.class.getName()));
+		
+		return comment;
 	}
 	
 	public LocalDateTime getDateTime() {
