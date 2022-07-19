@@ -38,6 +38,12 @@ public class CommentService {
 		return new CommentDTO(comment);	
 	}
 	
+	public CommentDTO find(Long id) {
+		Comment coment = findById(id);
+		
+		return new CommentDTO(coment);
+	}
+	
 	public Comment findById(Long id) {
 		Optional<Comment> commentOptional = commentRepository.findById(id);
 		Comment comment = commentOptional.orElseThrow(() -> new ObjectNotFoundException("Object not found! Id: " + id + ", Type: " + Comment.class.getName()));

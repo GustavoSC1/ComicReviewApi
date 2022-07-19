@@ -40,7 +40,7 @@ public class CommentServiceTest {
 	
 	@BeforeEach
 	public void setUp() {
-		this.commentService = new CommentService(commentRepository, userService, reviewService);
+		this.commentService = Mockito.spy(new CommentService(commentRepository, userService, reviewService));
 	}
 	
 	@Test
@@ -107,6 +107,27 @@ public class CommentServiceTest {
 		String actualMessage = exception.getMessage();
 		
 		Assertions.assertThat(actualMessage).isEqualTo(expectedMessage);		
+	}
+	
+	@Test
+	@DisplayName("Must call findById method and return Comment to controller")
+	public void findTest() {
+		// Scenario
+		long id = 2l;
+		
+		Comment comment = createComment();
+		comment.setId(id);
+		
+		Mockito.doReturn(comment).when(commentService).findById(id);
+		
+		// Execution
+		CommentDTO foundComment = commentService.find(id);
+		
+		// Verification
+		Assertions.assertThat(foundComment.getId()).isEqualTo(id);
+		Assertions.assertThat(foundComment.getTitle()).isEqualTo("Ótimo review");
+		Assertions.assertThat(foundComment.getDate()).isEqualTo(LocalDateTime.of(2022, 11, 20, 22, 10));
+		Assertions.assertThat(foundComment.getContent()).isEqualTo("Parabéns pelo review, com certeza irei adquirir essa HQ!");		
 	}
 	
 	private Review createReview() {					
