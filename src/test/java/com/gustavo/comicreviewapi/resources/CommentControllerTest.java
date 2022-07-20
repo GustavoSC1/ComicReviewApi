@@ -89,6 +89,30 @@ public class CommentControllerTest {
 				.andExpect(MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(4)));
 	}
 	
+	@Test
+	@DisplayName("Must get one comment per id")
+	public void findCommentTest() throws Exception {
+		// Scenario
+		Long id = 2l;
+		
+		CommentDTO comment = createCommentDTO();
+		comment.setId(id);
+		
+		BDDMockito.given(commentService.find(id)).willReturn(comment);
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.get(COMMENT_API.concat("/"+id))
+													.accept(MediaType.APPLICATION_JSON);
+		// Verification
+		mvc.perform(request)
+		.andExpect(MockMvcResultMatchers.status().isOk())
+		.andExpect(MockMvcResultMatchers.jsonPath("id").value(id))
+		.andExpect(MockMvcResultMatchers.jsonPath("title").value("Ótimo review"))
+		.andExpect(MockMvcResultMatchers.jsonPath("date").value("2022-11-20T22:10:00"))
+		.andExpect(MockMvcResultMatchers.jsonPath("content").value("Parabéns pelo review, com certeza irei adquirir essa HQ!"));
+	}
+	
 	private CommentNewDTO createCommentNewDTO() {
 		return new CommentNewDTO("Ótimo review", "Parabéns pelo review, com certeza irei adquirir essa HQ!", 1l, 1l);
 	}

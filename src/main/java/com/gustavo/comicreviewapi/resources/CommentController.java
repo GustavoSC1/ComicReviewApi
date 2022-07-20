@@ -6,6 +6,8 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +33,13 @@ public class CommentController {
 				.buildAndExpand(commentDto.getId()).toUri();
 	
 		return ResponseEntity.created(uri).body(commentDto);
+	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<CommentDTO> find(@PathVariable Long id) {
+		CommentDTO commentDto = commentService.find(id);
+		
+		return ResponseEntity.ok().body(commentDto);
 	}
 	
 }
