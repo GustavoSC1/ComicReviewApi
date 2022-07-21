@@ -24,7 +24,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gustavo.comicreviewapi.dtos.CommentDTO;
 import com.gustavo.comicreviewapi.dtos.CommentNewDTO;
+import com.gustavo.comicreviewapi.entities.Comment;
 import com.gustavo.comicreviewapi.services.CommentService;
+import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -111,6 +113,26 @@ public class CommentControllerTest {
 		.andExpect(MockMvcResultMatchers.jsonPath("title").value("Ótimo review"))
 		.andExpect(MockMvcResultMatchers.jsonPath("date").value("2022-11-20T22:10:00"))
 		.andExpect(MockMvcResultMatchers.jsonPath("content").value("Parabéns pelo review, com certeza irei adquirir essa HQ!"));
+	}
+	
+	@Test
+	@DisplayName("Should return error when trying to get a non-existent comment")
+	public void commentNotFoundByIdTest() throws Exception {
+		// Scenario
+		Long id = 2l;
+		
+		BDDMockito.given(commentService.find(id)).willThrow(new ObjectNotFoundException("Object not found! Id: " + id + ", Type: " + Comment.class.getName()));
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.get(COMMENT_API.concat("/"+id))
+													.accept(MediaType.APPLICATION_JSON);
+		
+		// Verification
+		mvc.perform(request)
+			.andExpect(MockMvcResultMatchers.status().isNotFound())
+			.andExpect(MockMvcResultMatchers.jsonPath("error").value("Not found"))
+			.andExpect(MockMvcResultMatchers.jsonPath("message").value("Object not found! Id: " + id + ", Type: " + Comment.class.getName()));
 	}
 	
 	private CommentNewDTO createCommentNewDTO() {
