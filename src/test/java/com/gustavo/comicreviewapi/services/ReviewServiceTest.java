@@ -1,6 +1,5 @@
 package com.gustavo.comicreviewapi.services;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -15,6 +14,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.gustavo.comicreviewapi.builders.ReviewBuilder;
+import com.gustavo.comicreviewapi.builders.UserBuilder;
 import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewNewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewUpdateDTO;
@@ -53,12 +54,10 @@ public class ReviewServiceTest {
 		Long id = 1l;
 		
 		ReviewNewDTO newReview = createReviewNewDTO();
-		User user = createUser();
-		user.setId(id);
+		User user = UserBuilder.aUser().withId(id).now();
 		Comic comic = createComic();
 		comic.setId(id);
-		Review savedReview = createReview();
-		savedReview.setId(id);
+		Review savedReview = ReviewBuilder.aReview().withId(id).now();
 		
 		Mockito.when(userService.findById(id)).thenReturn(user);
 		Mockito.when(comicService.findById(id)).thenReturn(comic);
@@ -86,8 +85,7 @@ public class ReviewServiceTest {
 		// Scenario
 		Long id = 2l;
 		
-		Review review = createReview();
-		review.setId(id);
+		Review review = ReviewBuilder.aReview().withId(id).now();
 		
 		Mockito.when(reviewRepository.findById(id)).thenReturn(Optional.of(review));
 		
@@ -128,8 +126,7 @@ public class ReviewServiceTest {
 		// Scenario
 		long id = 2l;
 		
-		Review review = createReview();
-		review.setId(id);
+		Review review = ReviewBuilder.aReview().withId(id).now();
 		
 		Mockito.doReturn(review).when(reviewService).findById(id);
 		
@@ -159,8 +156,7 @@ public class ReviewServiceTest {
 				+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
 				+ "família.");
 		
-		Review foundReview = createReview();
-		foundReview.setId(id);
+		Review foundReview = ReviewBuilder.aReview().withId(id).now();
 		
 		Review updatedReview = new Review(id, "História fraca", LocalDateTime.of(2022, 11, 21, 19, 29), 
 						"A HQ não mostra quase nada sobre o Homem-Aranha: "
@@ -193,22 +189,7 @@ public class ReviewServiceTest {
 				+ "com seus problemas e torcer pela sua vitória. É tudo que se espera de uma boa aventura de super-heróis e "
 				+ "um roteiro perfeito para um filme do Aracnídeo.", 1l, 1l);
 	}
-	
-	private Review createReview() {					
-		Review review = new Review(null,"Ótima história", LocalDateTime.of(2022, 11, 20, 21, 50), "A HQ mostra o Homem-Aranha em sua essência: "
-				+ "cheio de problemas, tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
-				+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
-				+ "família. É maravilhoso ver a determinação do herói e impossível não se identificar com ele, não se agoniar "
-				+ "com seus problemas e torcer pela sua vitória. É tudo que se espera de uma boa aventura de super-heróis e "
-				+ "um roteiro perfeito para um filme do Aracnídeo.", null, null);
 		
-		return review;
-	}
-	
-	private User createUser() {
-		return new User(null,"Gustavo Silva Cruz", LocalDate.of(1996, 10, 17), "998123899", "gu.cruz17@hotmail.com");
-	}
-	
 	private Comic createComic() {
 		Author author = new Author(null, "Stefan Petrucha");
 		Character character = new Character(null, "Homem Aranha");

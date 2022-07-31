@@ -1,6 +1,5 @@
 package com.gustavo.comicreviewapi.services;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -15,6 +14,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.gustavo.comicreviewapi.builders.ReviewBuilder;
+import com.gustavo.comicreviewapi.builders.UserBuilder;
 import com.gustavo.comicreviewapi.dtos.CommentDTO;
 import com.gustavo.comicreviewapi.dtos.CommentNewDTO;
 import com.gustavo.comicreviewapi.dtos.CommentUpdateDTO;
@@ -51,10 +52,8 @@ public class CommentServiceTest {
 		Long id = 1l;
 		
 		CommentNewDTO newComment = createCommentNewDTO();
-		User user = createUser();
-		user.setId(id);
-		Review review = createReview();
-		review.setId(id);
+		User user = UserBuilder.aUser().withId(id).now();
+		Review review = ReviewBuilder.aReview().withId(id).now();
 		Comment savedComment = createComment();
 		savedComment.setId(id);
 		
@@ -158,24 +157,9 @@ public class CommentServiceTest {
 		Assertions.assertThat(updatedCommentDto.getDate()).isEqualTo(LocalDateTime.of(2022, 11, 22, 20, 12));
 		Assertions.assertThat(updatedCommentDto.getContent()).isEqualTo("Review muito interessante, talvez um dia eu adquira essa a HQ!");			
 	}
-	
-	private Review createReview() {					
-		Review review = new Review(null,"Ótima história", LocalDateTime.of(2022, 11, 20, 21, 50), "A HQ mostra o Homem-Aranha em sua essência: "
-				+ "cheio de problemas, tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
-				+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
-				+ "família. É maravilhoso ver a determinação do herói e impossível não se identificar com ele, não se agoniar "
-				+ "com seus problemas e torcer pela sua vitória. É tudo que se espera de uma boa aventura de super-heróis e "
-				+ "um roteiro perfeito para um filme do Aracnídeo.", null, null);
 		
-		return review;
-	}
-	
 	private CommentNewDTO createCommentNewDTO() {
 		return new CommentNewDTO("Ótimo review", "Parabéns pelo review, com certeza irei adquirir essa HQ!", 1l, 1l);
-	}
-	
-	private User createUser() {
-		return new User(null,"Gustavo Silva Cruz", LocalDate.of(1996, 10, 17), "998123899", "gu.cruz17@hotmail.com");
 	}
 	
 	private Comment createComment() {
