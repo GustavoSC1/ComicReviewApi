@@ -14,6 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.gustavo.comicreviewapi.builders.ComicBuilder;
 import com.gustavo.comicreviewapi.builders.ReviewBuilder;
 import com.gustavo.comicreviewapi.builders.UserBuilder;
 import com.gustavo.comicreviewapi.dtos.ReviewDTO;
@@ -55,8 +56,8 @@ public class ReviewServiceTest {
 		
 		ReviewNewDTO newReview = createReviewNewDTO();
 		User user = UserBuilder.aUser().withId(id).now();
-		Comic comic = createComic();
-		comic.setId(id);
+		Comic comic = ComicBuilder.aComic().withAuthorsList(new Author(null, "Stefan Petrucha"))
+				.withCharactersList(new Character(null, "Homem Aranha")).withId(id).now();
 		Review savedReview = ReviewBuilder.aReview().withId(id).now();
 		
 		Mockito.when(userService.findById(id)).thenReturn(user);
@@ -188,23 +189,6 @@ public class ReviewServiceTest {
 				+ "família. É maravilhoso ver a determinação do herói e impossível não se identificar com ele, não se agoniar "
 				+ "com seus problemas e torcer pela sua vitória. É tudo que se espera de uma boa aventura de super-heróis e "
 				+ "um roteiro perfeito para um filme do Aracnídeo.", 1l, 1l);
-	}
-		
-	private Comic createComic() {
-		Author author = new Author(null, "Stefan Petrucha");
-		Character character = new Character(null, "Homem Aranha");
-		
-		Comic comic = new Comic(null, "Homem-Aranha: Eternamente jovem", 38.61F, "9786555612752", 
-				"Na esperança de obter algumas fotos de seu alter "
-				+ "ego aracnídeo em ação, Peter Parker "
-				+ "sai em busca de problemas – e os encontra na forma de uma placa de pedra misteriosa e "
-				+ "mítica cobiçada pelo Rei do Crime e pelos facínoras da Maggia, o maior sindicato criminal "
-				+ "da cidade.");
-		
-		comic.getAuthors().add(author);
-		comic.getCharacters().add(character);
-		
-		return comic;
-	}
+	}		
 
 }

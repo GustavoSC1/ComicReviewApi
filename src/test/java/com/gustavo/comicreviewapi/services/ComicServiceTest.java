@@ -16,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.gustavo.comicreviewapi.builders.ComicBuilder;
 import com.gustavo.comicreviewapi.dtos.AuthorDTO;
 import com.gustavo.comicreviewapi.dtos.CharacterDTO;
 import com.gustavo.comicreviewapi.dtos.ComicDTO;
@@ -162,8 +163,8 @@ public class ComicServiceTest {
 		ComicNewDTO comicNewDto = new ComicNewDTO();
 		comicNewDto.setIdComicMarvel(id);
 		
-		Comic comic = createComic();
-		comic.setId(Long.valueOf(id));
+		Comic comic = ComicBuilder.aComic().withAuthorsList(new Author(null, "Stefan Petrucha"))
+				.withCharactersList(new Character(null, "Homem Aranha")).withId(Long.valueOf(id)).now();
 		
 		Mockito.doReturn(comic).when(comicService).fromDTO(comicNewDto);
 		Mockito.when(comicRepository.save(Mockito.any(Comic.class))).thenReturn(comic);
@@ -191,8 +192,8 @@ public class ComicServiceTest {
 		// Scenario
 		Long id = 2l;
 		
-		Comic comic = createComic();
-		comic.setId(id);
+		Comic comic = ComicBuilder.aComic().withAuthorsList(new Author(null, "Stefan Petrucha"))
+				.withCharactersList(new Character(null, "Homem Aranha")).withId(id).now();
 		
 		Mockito.when(comicRepository.findById(id)).thenReturn(Optional.of(comic));
 		
@@ -235,8 +236,8 @@ public class ComicServiceTest {
 		// Scenario
 		Long id = 2l;
 		
-		Comic comic = createComic();
-		comic.setId(id);
+		Comic comic = ComicBuilder.aComic().withAuthorsList(new Author(null, "Stefan Petrucha"))
+				.withCharactersList(new Character(null, "Homem Aranha")).withId(id).now();
 		
 		Mockito.doReturn(obterData(16,11,2022)).when(comicService).getDate();
 		
@@ -287,24 +288,7 @@ public class ComicServiceTest {
 		Assertions.assertThat(comicDto.getPrice()).isEqualTo(34.75F);
 		Assertions.assertThat(comicDto.getActiveDiscount()).isEqualTo(true);
 	}
-	
-	private Comic createComic() {
-		Author author = new Author(null, "Stefan Petrucha");
-		Character character = new Character(null, "Homem Aranha");
 		
-		Comic comic = new Comic(null, "Homem-Aranha: Eternamente jovem", 38.61F, "9786555612752", 
-				"Na esperança de obter algumas fotos de seu alter "
-				+ "ego aracnídeo em ação, Peter Parker "
-				+ "sai em busca de problemas – e os encontra na forma de uma placa de pedra misteriosa e "
-				+ "mítica cobiçada pelo Rei do Crime e pelos facínoras da Maggia, o maior sindicato criminal "
-				+ "da cidade.");
-		
-		comic.getAuthors().add(author);
-		comic.getCharacters().add(character);
-		
-		return comic;
-	}
-	
 	private ComicDTO createComicDto() {
 		AuthorDTO authorDto = new AuthorDTO(null, "Stefan Petrucha");
 		CharacterDTO characterDto = new CharacterDTO(null, "Homem Aranha");
