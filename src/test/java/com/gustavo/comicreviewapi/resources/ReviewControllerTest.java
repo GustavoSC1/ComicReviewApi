@@ -3,7 +3,6 @@ package com.gustavo.comicreviewapi.resources;
 import java.time.LocalDateTime;
 
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,8 +22,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewNewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewUpdateDTO;
@@ -45,16 +42,7 @@ public class ReviewControllerTest {
 	
 	@MockBean
 	ReviewService reviewService;
-	
-	ObjectMapper mapper;	
-
-	@BeforeEach
-	public void setUp() {
-		mapper = new ObjectMapper();
-		mapper.registerModule(new JavaTimeModule());
-		mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-	}
-	
+		
 	@Test
 	@DisplayName("Must save a review")
 	public void saveReviewTest() throws Exception {
@@ -67,7 +55,7 @@ public class ReviewControllerTest {
 		
 		BDDMockito.given(reviewService.save(Mockito.any(ReviewNewDTO.class))).willReturn(savedReview);
 		
-		String json = mapper.writeValueAsString(newReview);
+		String json = new ObjectMapper().writeValueAsString(newReview);
 		
 		// Execution
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -89,7 +77,7 @@ public class ReviewControllerTest {
 		// Scenario
 		ReviewNewDTO newReview = new ReviewNewDTO();
 		
-		String json = mapper.writeValueAsString(newReview);
+		String json = new ObjectMapper().writeValueAsString(newReview);
 				
 		// Execution
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -172,7 +160,7 @@ public class ReviewControllerTest {
 		
 		BDDMockito.given(reviewService.update(Mockito.anyLong(), Mockito.any(ReviewUpdateDTO.class))).willReturn(updatedReview);
 		
-		String json = mapper.writeValueAsString(reviewUpdateDto);
+		String json = new ObjectMapper().writeValueAsString(reviewUpdateDto);
 		
 		// Execution
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -201,7 +189,7 @@ public class ReviewControllerTest {
 		
 		ReviewUpdateDTO review = new ReviewUpdateDTO();
 		
-		String json = mapper.writeValueAsString(review);
+		String json = new ObjectMapper().writeValueAsString(review);
 		
 		// Execution
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
