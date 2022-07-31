@@ -167,6 +167,29 @@ public class CommentControllerTest {
 			.andExpect(MockMvcResultMatchers.jsonPath("content").value("Review muito interessante, talvez um dia eu adquira essa a HQ!"));		
 	}
 	
+	@Test
+	@DisplayName("Should throw validation error when there is not enough data for comment updating")
+	public void updateInvalidCommentTest() throws Exception {
+		// Scenario
+		Long id = 2l;
+		
+		CommentUpdateDTO comment = new CommentUpdateDTO();
+		
+		String json = new ObjectMapper().writeValueAsString(comment);
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.put(COMMENT_API.concat("/"+id))
+													.contentType(MediaType.APPLICATION_JSON)
+													.accept(MediaType.APPLICATION_JSON)
+													.content(json);
+		
+		// Verification
+		mvc.perform(request)
+			.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+			.andExpect(MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(2)));
+	}
+	
 	private CommentNewDTO createCommentNewDTO() {
 		return new CommentNewDTO("Ótimo review", "Parabéns pelo review, com certeza irei adquirir essa HQ!", 1l, 1l);
 	}
