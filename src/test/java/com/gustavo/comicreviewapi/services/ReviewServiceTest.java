@@ -169,6 +169,7 @@ public class ReviewServiceTest {
 						+ "família.", null, null);
 		
 		Mockito.when(reviewRepository.save(Mockito.any(Review.class))).thenReturn(updatedReview);
+		Mockito.doReturn(LocalDateTime.of(2022, 11, 21, 19, 29)).when(reviewService).getDateTime();
 		Mockito.doReturn(foundReview).when(reviewService).findById(id);
 		
 		// Execution
