@@ -1,6 +1,5 @@
 package com.gustavo.comicreviewapi.repositories;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
@@ -13,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.gustavo.comicreviewapi.builders.CommentBuilder;
 import com.gustavo.comicreviewapi.entities.Comment;
 
 @ExtendWith(SpringExtension.class)
@@ -30,7 +30,7 @@ public class CommentRepositoryTest {
 	@DisplayName("Must save a comment")
 	public void saveCommentTest() {
 		// Scenario
-		Comment newComment = createComment();
+		Comment newComment = CommentBuilder.aComment().now();
 	
 		// Execution
 		Comment savedComment = commentRepository.save(newComment);
@@ -43,7 +43,7 @@ public class CommentRepositoryTest {
 	@DisplayName("Must get one comment per id")
 	public void findByIdTest() {
 		// Scenario
-		Comment comment = createComment();
+		Comment comment = CommentBuilder.aComment().now();
 		entityManager.persist(comment);
 		
 		// Execution
@@ -51,10 +51,6 @@ public class CommentRepositoryTest {
 		
 		// Verification
 		Assertions.assertThat(foundComment.isPresent()).isTrue();		
-	}
-	
-	private Comment createComment() {
-		return new Comment(null, "Ótimo review", LocalDateTime.now(), "Parabéns pelo review, com certeza irei adquirir essa HQ!", null, null);
 	}
 
 }

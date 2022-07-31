@@ -14,6 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.gustavo.comicreviewapi.builders.CommentBuilder;
 import com.gustavo.comicreviewapi.builders.ReviewBuilder;
 import com.gustavo.comicreviewapi.builders.UserBuilder;
 import com.gustavo.comicreviewapi.dtos.CommentDTO;
@@ -54,8 +55,7 @@ public class CommentServiceTest {
 		CommentNewDTO newComment = createCommentNewDTO();
 		User user = UserBuilder.aUser().withId(id).now();
 		Review review = ReviewBuilder.aReview().withId(id).now();
-		Comment savedComment = createComment();
-		savedComment.setId(id);
+		Comment savedComment =  CommentBuilder.aComment().withId(id).now();
 		
 		Mockito.when(userService.findById(id)).thenReturn(user);
 		Mockito.when(reviewService.findById(id)).thenReturn(review);
@@ -78,8 +78,7 @@ public class CommentServiceTest {
 		// Scenario
 		Long id = 2l;
 		
-		Comment comment = createComment();
-		comment.setId(id);
+		Comment comment = CommentBuilder.aComment().withId(id).now();
 		
 		Mockito.when(commentRepository.findById(id)).thenReturn(Optional.of(comment));
 		
@@ -115,8 +114,7 @@ public class CommentServiceTest {
 		// Scenario
 		long id = 2l;
 		
-		Comment comment = createComment();
-		comment.setId(id);
+		Comment comment = CommentBuilder.aComment().withId(id).now();
 		
 		Mockito.doReturn(comment).when(commentService).findById(id);
 		
@@ -138,8 +136,7 @@ public class CommentServiceTest {
 		
 		CommentUpdateDTO commentDto = new CommentUpdateDTO("Review maneiro", "Review muito interessante, talvez um dia eu adquira essa a HQ!");
 		
-		Comment foundComment = createComment();
-		foundComment.setId(id);
+		Comment foundComment = CommentBuilder.aComment().withId(id).now();
 		
 		Comment updatedComment = new Comment(id, "Review maneiro", LocalDateTime.of(2022, 11, 22, 20, 12), 
 									"Review muito interessante, talvez um dia eu adquira essa a HQ!", null, null);
@@ -161,9 +158,5 @@ public class CommentServiceTest {
 	private CommentNewDTO createCommentNewDTO() {
 		return new CommentNewDTO("Ótimo review", "Parabéns pelo review, com certeza irei adquirir essa HQ!", 1l, 1l);
 	}
-	
-	private Comment createComment() {
-		return new Comment(null, "Ótimo review", LocalDateTime.of(2022, 11, 20, 22, 10), "Parabéns pelo review, com certeza irei adquirir essa HQ!", null, null);
-	}
-	
+		
 }
