@@ -17,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.gustavo.comicreviewapi.dtos.CommentDTO;
 import com.gustavo.comicreviewapi.dtos.CommentNewDTO;
+import com.gustavo.comicreviewapi.dtos.CommentUpdateDTO;
 import com.gustavo.comicreviewapi.entities.Comment;
 import com.gustavo.comicreviewapi.entities.Review;
 import com.gustavo.comicreviewapi.entities.User;
@@ -128,6 +129,34 @@ public class CommentServiceTest {
 		Assertions.assertThat(foundComment.getTitle()).isEqualTo("Ótimo review");
 		Assertions.assertThat(foundComment.getDate()).isEqualTo(LocalDateTime.of(2022, 11, 20, 22, 10));
 		Assertions.assertThat(foundComment.getContent()).isEqualTo("Parabéns pelo review, com certeza irei adquirir essa HQ!");		
+	}
+	
+	@Test
+	@DisplayName("Must update a comment")
+	public void updateCommentTest() {
+		// Scenario
+		Long id = 2l;
+		
+		CommentUpdateDTO commentDto = new CommentUpdateDTO("Review maneiro", "Review muito interessante, talvez um dia eu adquira essa a HQ!");
+		
+		Comment foundComment = createComment();
+		foundComment.setId(id);
+		
+		Comment updatedComment = new Comment(id, "Review maneiro", LocalDateTime.of(2022, 11, 22, 20, 12), 
+									"Review muito interessante, talvez um dia eu adquira essa a HQ!", null, null);
+		
+		Mockito.when(commentRepository.save(Mockito.any(Comment.class))).thenReturn(updatedComment);
+		Mockito.doReturn(LocalDateTime.of(2022, 11, 22, 20, 12)).when(reviewService).getDateTime();
+		Mockito.doReturn(foundComment).when(commentService).findById(id);
+		
+		// Execution
+		CommentDTO updatedCommentDto = commentService.update(id, commentDto);
+		
+		// Verification
+		Assertions.assertThat(updatedCommentDto.getId()).isEqualTo(id);
+		Assertions.assertThat(updatedCommentDto.getTitle()).isEqualTo("Review maneiro");
+		Assertions.assertThat(updatedCommentDto.getDate()).isEqualTo(LocalDateTime.of(2022, 11, 22, 20, 12));
+		Assertions.assertThat(updatedCommentDto.getContent()).isEqualTo("Review muito interessante, talvez um dia eu adquira essa a HQ!");			
 	}
 	
 	private Review createReview() {					

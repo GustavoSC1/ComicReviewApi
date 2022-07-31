@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.gustavo.comicreviewapi.dtos.CommentDTO;
 import com.gustavo.comicreviewapi.dtos.CommentNewDTO;
+import com.gustavo.comicreviewapi.dtos.CommentUpdateDTO;
 import com.gustavo.comicreviewapi.entities.Comment;
 import com.gustavo.comicreviewapi.entities.Review;
 import com.gustavo.comicreviewapi.entities.User;
@@ -49,6 +50,18 @@ public class CommentService {
 		Comment comment = commentOptional.orElseThrow(() -> new ObjectNotFoundException("Object not found! Id: " + id + ", Type: " + Comment.class.getName()));
 		
 		return comment;
+	}
+	
+	public CommentDTO update(Long id, CommentUpdateDTO commentDto) {
+		Comment comment = findById(id);
+		
+		comment.setTitle(commentDto.getTitle());
+		comment.setContent(commentDto.getContent());
+		comment.setDate(getDateTime());
+		
+		comment = commentRepository.save(comment);
+		
+		return new CommentDTO(comment);
 	}
 	
 	public LocalDateTime getDateTime() {
