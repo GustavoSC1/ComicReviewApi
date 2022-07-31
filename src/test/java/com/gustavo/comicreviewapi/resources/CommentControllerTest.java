@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gustavo.comicreviewapi.dtos.CommentDTO;
 import com.gustavo.comicreviewapi.dtos.CommentNewDTO;
+import com.gustavo.comicreviewapi.dtos.CommentUpdateDTO;
 import com.gustavo.comicreviewapi.entities.Comment;
 import com.gustavo.comicreviewapi.services.CommentService;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
@@ -133,6 +134,37 @@ public class CommentControllerTest {
 			.andExpect(MockMvcResultMatchers.status().isNotFound())
 			.andExpect(MockMvcResultMatchers.jsonPath("error").value("Not found"))
 			.andExpect(MockMvcResultMatchers.jsonPath("message").value("Object not found! Id: " + id + ", Type: " + Comment.class.getName()));
+	}
+	
+	@Test
+	@DisplayName("Must update a comment")
+	public void updateCommentTest() throws Exception {
+		// Scenario
+		Long id = 2l;
+		
+		CommentUpdateDTO commentUpdateDto = new CommentUpdateDTO("Review maneiro", "Review muito interessante, talvez um dia eu adquira essa a HQ!");
+		
+		CommentDTO updatedComment = new CommentDTO(id, "Review maneiro", LocalDateTime.of(2022, 11, 22, 20, 12), 
+													"Review muito interessante, talvez um dia eu adquira essa a HQ!");
+		
+		BDDMockito.given(commentService.update(Mockito.anyLong(), Mockito.any(CommentUpdateDTO.class))).willReturn(updatedComment);
+		
+		String json = new ObjectMapper().writeValueAsString(commentUpdateDto);
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.put(COMMENT_API.concat("/"+id))
+													.contentType(MediaType.APPLICATION_JSON)
+													.accept(MediaType.APPLICATION_JSON)
+													.content(json);
+		
+		// Verification
+		mvc.perform(request)
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.jsonPath("id").value(id))
+			.andExpect(MockMvcResultMatchers.jsonPath("title").value("Review maneiro"))
+			.andExpect(MockMvcResultMatchers.jsonPath("date").value("2022-11-22T20:12:00"))
+			.andExpect(MockMvcResultMatchers.jsonPath("content").value("Review muito interessante, talvez um dia eu adquira essa a HQ!"));		
 	}
 	
 	private CommentNewDTO createCommentNewDTO() {
