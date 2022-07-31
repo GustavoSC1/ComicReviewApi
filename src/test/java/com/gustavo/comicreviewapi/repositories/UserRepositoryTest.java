@@ -1,6 +1,5 @@
 package com.gustavo.comicreviewapi.repositories;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
@@ -13,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.gustavo.comicreviewapi.builders.UserBuilder;
 import com.gustavo.comicreviewapi.entities.User;
 
 @ExtendWith(SpringExtension.class)
@@ -30,7 +30,7 @@ public class UserRepositoryTest {
 	@DisplayName("Must save a user")
 	public void saveUserTest() {
 		// Scenario
-		User newUser = new User(null,"Gustavo Silva Cruz", LocalDate.of(1996, 10, 17), "998123899", "gu.cruz17@hotmail.com");
+		User newUser = UserBuilder.aUser().now();
 		
 		// Execution
 		User savedUser = userRepository.save(newUser);
@@ -43,7 +43,7 @@ public class UserRepositoryTest {
 	@DisplayName("Must check if there is a user with the email provided")
 	public void existsByEmailTest() {
 		// Scenario
-		User newUser = new User(null,"Gustavo Silva Cruz", LocalDate.of(1996, 10, 17), "998123899", "gu.cruz17@hotmail.com");
+		User newUser = UserBuilder.aUser().now();
 		entityManager.persist(newUser);
 		
 		// Execution
@@ -57,7 +57,7 @@ public class UserRepositoryTest {
 	@DisplayName("Must get one user per id")
 	public void findByIdTest() {
 		// Scenario
-		User user = new User(null,"Gustavo Silva Cruz", LocalDate.of(1996, 10, 17), "998123899", "gu.cruz17@hotmail.com");
+		User user = UserBuilder.aUser().now();
 		entityManager.persist(user);
 		
 		// Execution
