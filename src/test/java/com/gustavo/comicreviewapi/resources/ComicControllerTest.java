@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gustavo.comicreviewapi.builders.ComicDtoBuilder;
 import com.gustavo.comicreviewapi.dtos.AuthorDTO;
 import com.gustavo.comicreviewapi.dtos.CharacterDTO;
 import com.gustavo.comicreviewapi.dtos.ComicDTO;
@@ -49,8 +50,8 @@ public class ComicControllerTest {
 		Integer id = 1;
 		
 		ComicNewDTO newComic = new ComicNewDTO(id);
-		ComicDTO savedComic = createComicDTO();
-		savedComic.setId(Long.valueOf(id));
+		ComicDTO savedComic = ComicDtoBuilder.aComicDTO().withCharactersDtoList(new CharacterDTO(null, "Homem Aranha"))
+				.withAuthorsList(new AuthorDTO(null, "Stefan Petrucha")).withId(Long.valueOf(id)).now();
 		
 		BDDMockito.given(comicService.save(Mockito.any(ComicNewDTO.class))).willReturn(savedComic);
 		
@@ -96,8 +97,8 @@ public class ComicControllerTest {
 		// Scenario
 		Long id = 2l;
 		
-		ComicDTO comic = createComicDTO();
-		comic.setId(id);
+		ComicDTO comic = ComicDtoBuilder.aComicDTO().withCharactersDtoList(new CharacterDTO(null, "Homem Aranha"))
+				.withAuthorsList(new AuthorDTO(null, "Stefan Petrucha")).withId(Long.valueOf(id)).now();
 		
 		BDDMockito.given(comicService.find(id)).willReturn(comic);
 		
@@ -140,23 +141,6 @@ public class ComicControllerTest {
 		.andExpect(MockMvcResultMatchers.status().isNotFound())
 		.andExpect(MockMvcResultMatchers.jsonPath("error").value("Not found"))
 		.andExpect(MockMvcResultMatchers.jsonPath("message").value("Object not found! Id: " + id + ", Type: " + Comic.class.getName()));
-	}
-	
-	private ComicDTO createComicDTO() {
-		AuthorDTO authorDto = new AuthorDTO(null, "Stefan Petrucha");
-		CharacterDTO characterDto = new CharacterDTO(null, "Homem Aranha");
-		
-		ComicDTO comicDto = new ComicDTO(null, "Homem-Aranha: Eternamente jovem", 38.61F, "9786555612752", 
-				"Na esperança de obter algumas fotos de seu alter "
-				+ "ego aracnídeo em ação, Peter Parker "
-				+ "sai em busca de problemas – e os encontra na forma de uma placa de pedra misteriosa e "
-				+ "mítica cobiçada pelo Rei do Crime e pelos facínoras da Maggia, o maior sindicato criminal "
-				+ "da cidade.", false);
-		
-		comicDto.getAuthors().add(authorDto);
-		comicDto.getCharacters().add(characterDto);
-		
-		return comicDto;
 	}
 	
 }
