@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gustavo.comicreviewapi.builders.ReviewDtoBuilder;
 import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewNewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewUpdateDTO;
@@ -50,8 +51,7 @@ public class ReviewControllerTest {
 		long id = 2l;
 		
 		ReviewNewDTO newReview = createReviewNewDTO();
-		ReviewDTO savedReview = createReviewDTO();
-		savedReview.setId(id);
+		ReviewDTO savedReview = ReviewDtoBuilder.aReviewDTO().withId(id).now();
 		
 		BDDMockito.given(reviewService.save(Mockito.any(ReviewNewDTO.class))).willReturn(savedReview);
 		
@@ -97,8 +97,7 @@ public class ReviewControllerTest {
 		// Scenario
 		Long id = 2l;
 		
-		ReviewDTO review = createReviewDTO();
-		review.setId(id);
+		ReviewDTO review = ReviewDtoBuilder.aReviewDTO().withId(id).now();
 		
 		BDDMockito.given(reviewService.find(id)).willReturn(review);
 		
@@ -211,14 +210,5 @@ public class ReviewControllerTest {
 				+ "com seus problemas e torcer pela sua vitória. É tudo que se espera de uma boa aventura de super-heróis e "
 				+ "um roteiro perfeito para um filme do Aracnídeo.", 1l, 1l);
 	}
-	
-	private ReviewDTO createReviewDTO() {					
-		return new ReviewDTO(null,"Ótima história", LocalDateTime.of(2022, 11, 20, 21, 50), "A HQ mostra o Homem-Aranha em sua essência: "
-				+ "cheio de problemas, tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
-				+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
-				+ "família. É maravilhoso ver a determinação do herói e impossível não se identificar com ele, não se agoniar "
-				+ "com seus problemas e torcer pela sua vitória. É tudo que se espera de uma boa aventura de super-heróis e "
-				+ "um roteiro perfeito para um filme do Aracnídeo.");		
-	}
-	
+		
 }
