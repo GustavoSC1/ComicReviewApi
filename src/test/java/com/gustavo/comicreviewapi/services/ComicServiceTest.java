@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.gustavo.comicreviewapi.builders.ComicBuilder;
+import com.gustavo.comicreviewapi.builders.ComicDtoBuilder;
 import com.gustavo.comicreviewapi.dtos.AuthorDTO;
 import com.gustavo.comicreviewapi.dtos.CharacterDTO;
 import com.gustavo.comicreviewapi.dtos.ComicDTO;
@@ -266,8 +267,8 @@ public class ComicServiceTest {
 			+ "user is making the request")
 	public void checkDiscountTest() {
 		// Scenario
-		ComicDTO comicDto = createComicDto();
-		comicDto.setId(2l);
+		ComicDTO comicDto = ComicDtoBuilder.aComicDTO().withCharactersDtoList(new CharacterDTO(null, "Homem Aranha"))
+				.withAuthorsList(new AuthorDTO(null, "Stefan Petrucha")).withId(Long.valueOf(2l)).now();
 						
 		Mockito.doReturn(obterData(15,11,2022)).when(comicService).getDate();
 		
@@ -287,23 +288,6 @@ public class ComicServiceTest {
 		Assertions.assertThat(comicDto.getAuthors().stream().findFirst().get().getName()).isEqualTo("Stefan Petrucha");
 		Assertions.assertThat(comicDto.getPrice()).isEqualTo(34.75F);
 		Assertions.assertThat(comicDto.getActiveDiscount()).isEqualTo(true);
-	}
-		
-	private ComicDTO createComicDto() {
-		AuthorDTO authorDto = new AuthorDTO(null, "Stefan Petrucha");
-		CharacterDTO characterDto = new CharacterDTO(null, "Homem Aranha");
-		
-		ComicDTO comicDto = new ComicDTO(null, "Homem-Aranha: Eternamente jovem", 38.61F, "9786555612752", 
-				"Na esperança de obter algumas fotos de seu alter "
-				+ "ego aracnídeo em ação, Peter Parker "
-				+ "sai em busca de problemas – e os encontra na forma de uma placa de pedra misteriosa e "
-				+ "mítica cobiçada pelo Rei do Crime e pelos facínoras da Maggia, o maior sindicato criminal "
-				+ "da cidade.", false);
-		
-		comicDto.getAuthors().add(authorDto);
-		comicDto.getCharacters().add(characterDto);
-		
-		return comicDto;
 	}
 		
 	private MarvelAPIModelDTO createMarvelAPIModelDTO() {
