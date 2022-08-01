@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gustavo.comicreviewapi.builders.CommentDtoBuilder;
+import com.gustavo.comicreviewapi.builders.CommentNewDtoBuilder;
 import com.gustavo.comicreviewapi.dtos.CommentDTO;
 import com.gustavo.comicreviewapi.dtos.CommentNewDTO;
 import com.gustavo.comicreviewapi.dtos.CommentUpdateDTO;
@@ -50,7 +51,7 @@ public class CommentControllerTest {
 		// Scenario
 		long id = 2l;
 		
-		CommentNewDTO newComment = createCommentNewDTO();
+		CommentNewDTO newComment = CommentNewDtoBuilder.aCommentNewDTO().now();
 		CommentDTO savedComment = CommentDtoBuilder.aCommentDTO().withId(id).now();
 		
 		BDDMockito.given(commentService.save(Mockito.any(CommentNewDTO.class))).willReturn(savedComment);
@@ -189,8 +190,4 @@ public class CommentControllerTest {
 			.andExpect(MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(2)));
 	}
 	
-	private CommentNewDTO createCommentNewDTO() {
-		return new CommentNewDTO("Ótimo review", "Parabéns pelo review, com certeza irei adquirir essa HQ!", 1l, 1l);
-	}
-
 }
