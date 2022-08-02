@@ -15,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.gustavo.comicreviewapi.builders.CommentBuilder;
+import com.gustavo.comicreviewapi.builders.CommentNewDtoBuilder;
 import com.gustavo.comicreviewapi.builders.ReviewBuilder;
 import com.gustavo.comicreviewapi.builders.UserBuilder;
 import com.gustavo.comicreviewapi.dtos.CommentDTO;
@@ -52,7 +53,7 @@ public class CommentServiceTest {
 		// Scenario
 		Long id = 1l;
 		
-		CommentNewDTO newComment = createCommentNewDTO();
+		CommentNewDTO newComment = CommentNewDtoBuilder.aCommentNewDTO().now();
 		User user = UserBuilder.aUser().withId(id).now();
 		Review review = ReviewBuilder.aReview().withId(id).now();
 		Comment savedComment =  CommentBuilder.aComment().withId(id).now();
@@ -154,9 +155,5 @@ public class CommentServiceTest {
 		Assertions.assertThat(updatedCommentDto.getDate()).isEqualTo(LocalDateTime.of(2022, 11, 22, 20, 12));
 		Assertions.assertThat(updatedCommentDto.getContent()).isEqualTo("Review muito interessante, talvez um dia eu adquira essa a HQ!");			
 	}
-		
-	private CommentNewDTO createCommentNewDTO() {
-		return new CommentNewDTO("Ótimo review", "Parabéns pelo review, com certeza irei adquirir essa HQ!", 1l, 1l);
-	}
-		
+			
 }
