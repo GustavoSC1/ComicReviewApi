@@ -18,15 +18,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.gustavo.comicreviewapi.builders.ComicBuilder;
 import com.gustavo.comicreviewapi.builders.ComicDtoBuilder;
+import com.gustavo.comicreviewapi.builders.FeignComicDtoBuilder;
+import com.gustavo.comicreviewapi.builders.FeignMarvelAPIModelDtoBuilder;
 import com.gustavo.comicreviewapi.dtos.AuthorDTO;
 import com.gustavo.comicreviewapi.dtos.CharacterDTO;
 import com.gustavo.comicreviewapi.dtos.ComicDTO;
 import com.gustavo.comicreviewapi.dtos.ComicNewDTO;
-import com.gustavo.comicreviewapi.dtos.feignDtos.CharacterListDTO;
 import com.gustavo.comicreviewapi.dtos.feignDtos.CharacterSummaryDTO;
-import com.gustavo.comicreviewapi.dtos.feignDtos.ComicDataContainerDTO;
 import com.gustavo.comicreviewapi.dtos.feignDtos.ComicPriceDTO;
-import com.gustavo.comicreviewapi.dtos.feignDtos.CreatorListDTO;
 import com.gustavo.comicreviewapi.dtos.feignDtos.CreatorSummaryDTO;
 import com.gustavo.comicreviewapi.dtos.feignDtos.MarvelAPIModelDTO;
 import com.gustavo.comicreviewapi.entities.Author;
@@ -81,9 +80,12 @@ public class ComicServiceTest {
 	@Test
 	@DisplayName("Must return a MarvelAPIModelDTO obtained by MarvelClient")
 	public void getComicByApiTest() {
-		// Scenario
-		MarvelAPIModelDTO foundMarvelAPIModelDTO = createMarvelAPIModelDTO();
-		
+		// Scenario		
+		com.gustavo.comicreviewapi.dtos.feignDtos.ComicDTO comicDTO = FeignComicDtoBuilder.aFeignComicDTO().withCharactersList(new CharacterSummaryDTO("Homem Aranha"))
+				.withCreatorsList(new CreatorSummaryDTO("Stefan Petrucha")).withPrice(new ComicPriceDTO(38.61F)).withId(1).now();
+			
+		MarvelAPIModelDTO foundMarvelAPIModelDTO = FeignMarvelAPIModelDtoBuilder.aMarvelAPIModelDTO().withComicDtoList(comicDTO).now();
+				
 		Mockito.when(clock.millis()).thenReturn(1655238166000l);
 		
 		Mockito.doReturn("c6fc42667498ea8081a22f4570b42d03").when(comicService).getHash("1655238166");
@@ -94,25 +96,30 @@ public class ComicServiceTest {
 		MarvelAPIModelDTO marvelAPIModelDTO = comicService.getComicByApi(1);
 		
 		// Verification
-		Assertions.assertThat(marvelAPIModelDTO.getData().getResults().get(0).getId()).isEqualTo(1);
-		Assertions.assertThat(marvelAPIModelDTO.getData().getResults().get(0).getTitle()).isEqualTo("Homem-Aranha: Eternamente jovem");
+		
+		Assertions.assertThat(marvelAPIModelDTO.getData().getResults().get(0).getId()).isEqualTo(1);		
+		Assertions.assertThat(marvelAPIModelDTO.getData().getResults().get(0).getTitle()).isEqualTo("Homem-Aranha: Eternamente jovem");		
 		Assertions.assertThat(marvelAPIModelDTO.getData().getResults().get(0).getIsbn()).isEqualTo("9786555612752");
 		Assertions.assertThat(marvelAPIModelDTO.getData().getResults().get(0).getDescription()).isEqualTo("Na esperança de obter algumas fotos de seu alter "
 				+ "ego aracnídeo em ação, Peter Parker "
 				+ "sai em busca de problemas – e os encontra na forma de uma placa de pedra misteriosa e "
 				+ "mítica cobiçada pelo Rei do Crime e pelos facínoras da Maggia, o maior sindicato criminal "
-				+ "da cidade.");
-		Assertions.assertThat(marvelAPIModelDTO.getData().getResults().get(0).getPrices().get(0).getPrice()).isEqualTo(38.61F);
+				+ "da cidade.");		
+		Assertions.assertThat(marvelAPIModelDTO.getData().getResults().get(0).getPrices().get(0).getPrice()).isEqualTo(38.61F);		
 		Assertions.assertThat(marvelAPIModelDTO.getData().getResults().get(0).getCharacters().getItems().get(0).getName()).isEqualTo("Homem Aranha");
 		Assertions.assertThat(marvelAPIModelDTO.getData().getResults().get(0).getCreators().getItems().get(0).getName()).isEqualTo("Stefan Petrucha");
+	
 	}
 	
 	@Test
 	@DisplayName("Must pass the values of MarvelAPIModelDTO to a Comic")
 	public void fromDTOTest() {
-		// Scenario
-		MarvelAPIModelDTO foundMarvelAPIModelDTO = createMarvelAPIModelDTO();
+		// Scenario		
+		com.gustavo.comicreviewapi.dtos.feignDtos.ComicDTO comicDTO = FeignComicDtoBuilder.aFeignComicDTO().withCharactersList(new CharacterSummaryDTO("Homem Aranha"))
+			.withCreatorsList(new CreatorSummaryDTO("Stefan Petrucha")).withPrice(new ComicPriceDTO(38.61F)).withId(1).now();
 		
+		MarvelAPIModelDTO foundMarvelAPIModelDTO = FeignMarvelAPIModelDtoBuilder.aMarvelAPIModelDTO().withComicDtoList(comicDTO).now();
+						
 		ComicNewDTO comicNewDTO = new ComicNewDTO();
 		comicNewDTO.setIdComicMarvel(1);
 		
@@ -288,39 +295,6 @@ public class ComicServiceTest {
 		Assertions.assertThat(comicDto.getAuthors().stream().findFirst().get().getName()).isEqualTo("Stefan Petrucha");
 		Assertions.assertThat(comicDto.getPrice()).isEqualTo(34.75F);
 		Assertions.assertThat(comicDto.getActiveDiscount()).isEqualTo(true);
-	}
-		
-	private MarvelAPIModelDTO createMarvelAPIModelDTO() {
-		ComicPriceDTO comicPriceDTO = new ComicPriceDTO(38.61F);
-		
-		CreatorSummaryDTO creatorSummaryDTO = new CreatorSummaryDTO("Stefan Petrucha");
-		
-		CharacterSummaryDTO characterSummaryDTO = new CharacterSummaryDTO("Homem Aranha");
-		
-		CreatorListDTO creatorListDTO = new CreatorListDTO();
-		creatorListDTO.getItems().add(creatorSummaryDTO);
-		
-		CharacterListDTO characterListDTO = new CharacterListDTO();
-		characterListDTO.getItems().add(characterSummaryDTO);
-		
-		com.gustavo.comicreviewapi.dtos.feignDtos.ComicDTO comicDTO = new 
-				com.gustavo.comicreviewapi.dtos.feignDtos.ComicDTO(1, "Homem-Aranha: Eternamente jovem", "9786555612752", 
-				"Na esperança de obter algumas fotos de seu alter "
-				+ "ego aracnídeo em ação, Peter Parker "
-				+ "sai em busca de problemas – e os encontra na forma de uma placa de pedra misteriosa e "
-				+ "mítica cobiçada pelo Rei do Crime e pelos facínoras da Maggia, o maior sindicato criminal "
-				+ "da cidade.");
-		
-		comicDTO.setCharacters(characterListDTO);
-		comicDTO.setCreators(creatorListDTO);
-		comicDTO.getPrices().add(comicPriceDTO);
-		
-		ComicDataContainerDTO comicDataContainerDTO = new ComicDataContainerDTO();
-		comicDataContainerDTO.getResults().add(comicDTO);
-		
-		MarvelAPIModelDTO marvelAPIModelDTO = new MarvelAPIModelDTO(comicDataContainerDTO);
-		
-		return marvelAPIModelDTO;		
 	}
 	
 	public static Date obterData(int day, int mounth, int year){
