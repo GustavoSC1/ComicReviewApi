@@ -9,6 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -51,7 +54,7 @@ public class ComicRepositoryTest {
 		Long id = 1l;
 		
 		Comic comic = ComicBuilder.aComic().withAuthorsList(new Author(null, "Stefan Petrucha"))
-				.withCharactersList(new Character(null, "Homem Aranha")).withId(1l).now();
+				.withCharactersList(new Character(null, "Homem Aranha")).withId(id).now();
 		
 		entityManager.persist(comic);
 		
@@ -61,5 +64,27 @@ public class ComicRepositoryTest {
 		// Verification
 		Assertions.assertThat(foundComic.isPresent()).isTrue();
 	}	
+	
+	@Test
+	@DisplayName("Must filter comics")
+	public void findByTitleTest() {
+		// Scenario
+		Long id = 1l;
+		
+		PageRequest pageRequest = PageRequest.of(0, 24, Direction.valueOf("ASC"), "title");
+		
+		Comic comic = ComicBuilder.aComic().withAuthorsList(new Author(null, "Stefan Petrucha"))
+				.withCharactersList(new Character(null, "Homem Aranha")).withId(id).now();
+		
+		entityManager.persist(comic);
+		
+		// Execution
+		Page<Comic> foundComics = comicRepository.findByTitle("Eternamente", pageRequest);
+		
+		// Verification
+		Assertions.assertThat(foundComics.getNumberOfElements()).isEqualTo(1);
+		Assertions.assertThat(foundComics.getTotalElements()).isEqualTo(1);
+		Assertions.assertThat(foundComics.getTotalPages()).isEqualTo(1);
+	}
 
 }
