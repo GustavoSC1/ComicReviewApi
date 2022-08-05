@@ -3,6 +3,8 @@ package com.gustavo.comicreviewapi.services;
 import java.time.Clock;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -13,6 +15,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -295,6 +300,38 @@ public class ComicServiceTest {
 		Assertions.assertThat(comicDto.getAuthors().stream().findFirst().get().getName()).isEqualTo("Stefan Petrucha");
 		Assertions.assertThat(comicDto.getPrice()).isEqualTo(34.75F);
 		Assertions.assertThat(comicDto.getActiveDiscount()).isEqualTo(true);
+	}
+	
+	@Test
+	@DisplayName("Must filter comics")
+	public void findByTitleTest() {
+		// Scenario
+		Long id = 2l;
+		
+		Comic comic = ComicBuilder.aComic().withAuthorsList(new Author(null, "Stefan Petrucha"))
+				.withCharactersList(new Character(null, "Homem Aranha")).withId(id).now();
+		
+		List<Comic> list = Arrays.asList(comic);
+		
+			// Informações de paginação
+		PageRequest pageRequest = PageRequest.of(0, 24);//(pagina, quantidade maxima de elementos retornados na pagina)
+		
+			// PageImpl: Cria uma página utilziando uma lista 
+		Page<Comic> page = new PageImpl<Comic>(list, pageRequest, list.size()); //(conteúdo desta página, informações de paginação, quantidade total de resultados encontrados)
+		
+		Mockito.when(comicRepository.findByTitle(Mockito.anyString(), Mockito.any(PageRequest.class))).thenReturn(page);
+		
+		// Execution
+		Page<ComicDTO> foundComics = comicService.findByTitle("Eternamente", 0, 24, "title", "ASC");
+		
+		// Verification
+		Assertions.assertThat(foundComics.getTotalElements()).isEqualTo(1);		
+		Assertions.assertThat(foundComics.getPageable().getPageNumber()).isEqualTo(0);
+		Assertions.assertThat(foundComics.getPageable().getPageSize()).isEqualTo(24);		
+		Assertions.assertThat(foundComics.getContent().get(0).getId()).isEqualTo(id);
+		Assertions.assertThat(foundComics.getContent().get(0).getTitle()).isEqualTo(comic.getTitle());
+		Assertions.assertThat(foundComics.getContent().get(0).getPrice()).isEqualTo(comic.getPrice());
+		Assertions.assertThat(foundComics.getContent().get(0).getDescription()).isEqualTo(comic.getDescription());
 	}
 	
 	public static Date obterData(int day, int mounth, int year){
