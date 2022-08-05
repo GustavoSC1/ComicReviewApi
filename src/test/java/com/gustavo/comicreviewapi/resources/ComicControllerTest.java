@@ -1,5 +1,8 @@
 package com.gustavo.comicreviewapi.resources;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -141,6 +147,38 @@ public class ComicControllerTest {
 		.andExpect(MockMvcResultMatchers.status().isNotFound())
 		.andExpect(MockMvcResultMatchers.jsonPath("error").value("Not found"))
 		.andExpect(MockMvcResultMatchers.jsonPath("message").value("Object not found! Id: " + id + ", Type: " + Comic.class.getName()));
+	}
+	
+	@Test
+	@DisplayName("Must filter comics")
+	public void findByTitleTest() throws Exception {
+		// Scenario
+		Long id = 2l;
+		
+		ComicDTO comic = ComicDtoBuilder.aComicDTO().withCharactersDtoList(new CharacterDTO(null, "Homem Aranha"))
+				.withAuthorsList(new AuthorDTO(null, "Stefan Petrucha")).withId(Long.valueOf(id)).now();
+		
+		List<ComicDTO> list = Arrays.asList(comic);
+		
+		PageRequest pageRequest = PageRequest.of(0, 24);
+		
+		Page<ComicDTO> page = new PageImpl<ComicDTO>(list, pageRequest, list.size());
+		
+		BDDMockito.given(comicService.findByTitle("Eternamente", 0, 24, "title", "ASC")).willReturn(page);
+		
+		String queryString = String.format("?title=%s&page=0&linesPerPage=24&orderBy=%s&direction=%s", "Eternamente", "title", "ASC");
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(COMIC_API.concat(queryString))
+													.accept(MediaType.APPLICATION_JSON);
+		
+		// Verification
+		mvc.perform(request)
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.jsonPath("content", Matchers.hasSize(1)))
+			.andExpect(MockMvcResultMatchers.jsonPath("totalElements").value(1))
+			.andExpect(MockMvcResultMatchers.jsonPath("pageable.pageSize").value(24))
+			.andExpect(MockMvcResultMatchers.jsonPath("pageable.pageNumber").value(0));
 	}
 	
 }
