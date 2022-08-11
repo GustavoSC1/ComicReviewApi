@@ -1,6 +1,8 @@
 package com.gustavo.comicreviewapi.services;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -11,6 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -154,6 +159,35 @@ public class CommentServiceTest {
 		Assertions.assertThat(updatedCommentDto.getTitle()).isEqualTo("Review maneiro");
 		Assertions.assertThat(updatedCommentDto.getDate()).isEqualTo(LocalDateTime.of(2022, 11, 22, 20, 12));
 		Assertions.assertThat(updatedCommentDto.getContent()).isEqualTo("Review muito interessante, talvez um dia eu adquira essa a HQ!");			
+	}
+	
+	@Test
+	@DisplayName("Must filter comments by review")
+	public void findByReviewTest() {
+		// Scenario
+		Long id = 2l;
+		
+		Comment comment = CommentBuilder.aComment().withId(id).now();
+		
+		List<Comment> list = Arrays.asList(comment);
+		
+		PageRequest pageRequest = PageRequest.of(0, 24);
+		
+		Page<Comment> page = new PageImpl<Comment>(list, pageRequest, list.size());
+		
+		Mockito.when(commentRepository.findByReview(Mockito.anyLong(), Mockito.any(PageRequest.class))).thenReturn(page);
+		
+		// Execution
+		Page<CommentDTO> foundComments = commentService.findByReview(id, 0, 24, "date", "DESC");
+		
+		// Verification
+		Assertions.assertThat(foundComments.getTotalElements()).isEqualTo(1);		
+		Assertions.assertThat(foundComments.getPageable().getPageNumber()).isEqualTo(0);
+		Assertions.assertThat(foundComments.getPageable().getPageSize()).isEqualTo(24);		
+		Assertions.assertThat(foundComments.getContent().get(0).getId()).isEqualTo(id);
+		Assertions.assertThat(foundComments.getContent().get(0).getTitle()).isEqualTo(comment.getTitle());
+		Assertions.assertThat(foundComments.getContent().get(0).getContent()).isEqualTo(comment.getContent());
+		Assertions.assertThat(foundComments.getContent().get(0).getDate()).isEqualTo(comment.getDate());
 	}
 			
 }
