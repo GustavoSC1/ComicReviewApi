@@ -3,6 +3,7 @@ package com.gustavo.comicreviewapi.builders;
 import java.time.LocalDateTime;
 
 import com.gustavo.comicreviewapi.entities.Comment;
+import com.gustavo.comicreviewapi.entities.Review;
 
 public class CommentBuilder {
 	
@@ -18,6 +19,11 @@ public class CommentBuilder {
 		builder.comment.setContent("Parabéns pelo review, com certeza irei adquirir essa HQ!");
 		
 		return builder;
+	}
+	
+	public CommentBuilder withReview(Review review) {
+		comment.setReview(review);
+		return this;
 	}
 	
 	public CommentBuilder withId(Long id) {
