@@ -73,6 +73,12 @@ public class ReviewService {
 		return reviewRepository.findReviewsByComic(comicId, pageRequest).map(obj -> new ReviewDTO(obj));
 	}
 	
+	public Page<ReviewDTO> findByTitle(String title, Integer page, Integer linesPerPage, String orderBy, String direction) {
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
+		
+		return reviewRepository.findByTitle(title, pageRequest).map(obj -> new ReviewDTO(obj));
+	}
+	
 	public LocalDateTime getDateTime() {
 		return LocalDateTime.now();
 	}
