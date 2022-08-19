@@ -3,6 +3,9 @@ package com.gustavo.comicreviewapi.services;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.gustavo.comicreviewapi.dtos.ReviewDTO;
@@ -62,6 +65,12 @@ public class ReviewService {
 		review = reviewRepository.save(review);
 		
 		return new ReviewDTO(review);		
+	}
+	
+	public Page<ReviewDTO> findReviewsByComic(Long comicId, Integer page, Integer linesPerPage, String orderBy, String direction) {
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
+		
+		return reviewRepository.findReviewsByComic(comicId, pageRequest).map(obj -> new ReviewDTO(obj));
 	}
 	
 	public LocalDateTime getDateTime() {

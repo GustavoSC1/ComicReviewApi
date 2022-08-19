@@ -70,8 +70,7 @@ public class CommentService {
 	public Page<CommentDTO> findCommentsByReview(Long reviewId,Integer page, Integer linesPerPage, String orderBy, String direction) {
 		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
 		
-		return commentRepository.findCommentsByReview(reviewId, pageRequest).map(obj -> new CommentDTO(obj));
-		
+		return commentRepository.findCommentsByReview(reviewId, pageRequest).map(obj -> new CommentDTO(obj));		
 	}
 	
 	public LocalDateTime getDateTime() {

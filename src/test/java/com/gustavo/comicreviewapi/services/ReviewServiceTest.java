@@ -1,6 +1,8 @@
 package com.gustavo.comicreviewapi.services;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -11,6 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -181,6 +186,35 @@ public class ReviewServiceTest {
 				+ "deveria mostrar mais sobre os seus problemas, ele tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
 				+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
 				+ "família.");
+	}
+	
+	@Test
+	@DisplayName("Must filter reviews by comic")
+	public void findReviewsByComicTest() {
+		// Scenario
+		Long id = 2l;
+		
+		Review review = ReviewBuilder.aReview().withId(id).now();
+		
+		List<Review> list = Arrays.asList(review);
+		
+		PageRequest pageRequest = PageRequest.of(0, 24);
+		
+		Page<Review> page = new PageImpl<Review>(list, pageRequest, list.size());
+		
+		Mockito.when(reviewRepository.findReviewsByComic(Mockito.anyLong(), Mockito.any(PageRequest.class))).thenReturn(page);
+		
+		// Execution
+		Page<ReviewDTO> foundReviews = reviewService.findReviewsByComic(id, 0, 24, "date", "DESC");
+		
+		// Verification
+		Assertions.assertThat(foundReviews.getTotalElements()).isEqualTo(1);		
+		Assertions.assertThat(foundReviews.getPageable().getPageNumber()).isEqualTo(0);
+		Assertions.assertThat(foundReviews.getPageable().getPageSize()).isEqualTo(24);		
+		Assertions.assertThat(foundReviews.getContent().get(0).getId()).isEqualTo(id);
+		Assertions.assertThat(foundReviews.getContent().get(0).getTitle()).isEqualTo(review.getTitle());
+		Assertions.assertThat(foundReviews.getContent().get(0).getContent()).isEqualTo(review.getContent());
+		Assertions.assertThat(foundReviews.getContent().get(0).getDate()).isEqualTo(review.getDate());	
 	}
 	
 }
