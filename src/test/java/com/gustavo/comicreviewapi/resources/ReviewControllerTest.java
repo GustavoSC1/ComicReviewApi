@@ -1,6 +1,8 @@
 package com.gustavo.comicreviewapi.resources;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -22,12 +27,15 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gustavo.comicreviewapi.builders.CommentDtoBuilder;
 import com.gustavo.comicreviewapi.builders.ReviewDtoBuilder;
 import com.gustavo.comicreviewapi.builders.ReviewNewDtoBuilder;
+import com.gustavo.comicreviewapi.dtos.CommentDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewNewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewUpdateDTO;
 import com.gustavo.comicreviewapi.entities.Review;
+import com.gustavo.comicreviewapi.services.CommentService;
 import com.gustavo.comicreviewapi.services.ReviewService;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 
@@ -44,6 +52,9 @@ public class ReviewControllerTest {
 	
 	@MockBean
 	ReviewService reviewService;
+	
+	@MockBean
+	CommentService commentService;
 		
 	@Test
 	@DisplayName("Must save a review")
@@ -201,6 +212,35 @@ public class ReviewControllerTest {
 		mvc.perform(request)
 			.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
 			.andExpect(MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(2)));
+	}
+	
+	@Test
+	@DisplayName("Must filter comments by review")
+	public void findCommentsByReviewTest() throws Exception {
+		// Scenario
+		Long id = 2l;
+		
+		CommentDTO comment = CommentDtoBuilder.aCommentDTO().withId(id).now();
+		
+		List<CommentDTO> list = Arrays.asList(comment);
+		
+		PageRequest pageRequest = PageRequest.of(0, 24);
+		
+		Page<CommentDTO> page = new PageImpl<CommentDTO>(list, pageRequest, list.size());
+		
+		BDDMockito.given(commentService.findCommentsByReview(id, 0, 24, "date", "DESC")).willReturn(page);
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(REVIEW_API.concat("/"+id+"/comments"))
+													.accept(MediaType.APPLICATION_JSON);
+		
+		// Verification
+		mvc.perform(request)
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.jsonPath("content", Matchers.hasSize(1)))
+			.andExpect(MockMvcResultMatchers.jsonPath("totalElements").value(1))
+			.andExpect(MockMvcResultMatchers.jsonPath("pageable.pageSize").value(24))
+			.andExpect(MockMvcResultMatchers.jsonPath("pageable.pageNumber").value(0));		
 	}
 			
 }
