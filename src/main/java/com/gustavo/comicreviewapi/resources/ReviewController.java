@@ -70,5 +70,18 @@ public class ReviewController {
 		
 		return ResponseEntity.ok().body(list);		
 	}
+	
+	@GetMapping
+	public ResponseEntity<Page <ReviewDTO>> findByTitle(
+					@RequestParam(value="title", defaultValue="") String title,
+					@RequestParam(value="page", defaultValue="0") Integer page,
+					@RequestParam(value="linesPerPage", defaultValue="24") Integer linesPerPage,
+					@RequestParam(value="orderBy", defaultValue="date") String orderBy,
+					@RequestParam(value="direction", defaultValue="DESC") String direction) {
+		
+		Page<ReviewDTO> list = reviewService.findByTitle(title, page, linesPerPage, orderBy, direction);
+		
+		return ResponseEntity.ok().body(list);
+	}
 
 }

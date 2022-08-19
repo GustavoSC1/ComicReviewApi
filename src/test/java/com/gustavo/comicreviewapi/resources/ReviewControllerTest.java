@@ -242,5 +242,36 @@ public class ReviewControllerTest {
 			.andExpect(MockMvcResultMatchers.jsonPath("pageable.pageSize").value(24))
 			.andExpect(MockMvcResultMatchers.jsonPath("pageable.pageNumber").value(0));		
 	}
+	
+	@Test
+	@DisplayName("Must filter review")
+	public void findByTitleTest() throws Exception {
+		// Scenario
+		Long id = 2l;
+		
+		ReviewDTO review = ReviewDtoBuilder.aReviewDTO().withId(id).now();
+		
+		List<ReviewDTO> list = Arrays.asList(review);
+		
+		PageRequest pageRequest = PageRequest.of(0, 24);
+		
+		Page<ReviewDTO> page = new PageImpl<ReviewDTO>(list, pageRequest, list.size());
+		
+		BDDMockito.given(reviewService.findByTitle("história", 0, 24, "date", "DESC")).willReturn(page);
+		
+		String queryString = String.format("?title=%s&page=0&linesPerPage=24&orderBy=%s&direction=%s", "história", "date", "DESC");
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(REVIEW_API.concat(queryString))
+														.accept(MediaType.APPLICATION_JSON);
+		
+		// Verification
+		mvc.perform(request)
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.jsonPath("content", Matchers.hasSize(1)))
+			.andExpect(MockMvcResultMatchers.jsonPath("totalElements").value(1))
+			.andExpect(MockMvcResultMatchers.jsonPath("pageable.pageSize").value(24))
+			.andExpect(MockMvcResultMatchers.jsonPath("pageable.pageNumber").value(0));
+	}
 			
 }
