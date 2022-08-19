@@ -163,7 +163,7 @@ public class CommentServiceTest {
 	
 	@Test
 	@DisplayName("Must filter comments by review")
-	public void findByReviewTest() {
+	public void findCommentsByReviewTest() {
 		// Scenario
 		Long id = 2l;
 		
@@ -175,10 +175,10 @@ public class CommentServiceTest {
 		
 		Page<Comment> page = new PageImpl<Comment>(list, pageRequest, list.size());
 		
-		Mockito.when(commentRepository.findByReview(Mockito.anyLong(), Mockito.any(PageRequest.class))).thenReturn(page);
+		Mockito.when(commentRepository.findCommentsByReview(Mockito.anyLong(), Mockito.any(PageRequest.class))).thenReturn(page);
 		
 		// Execution
-		Page<CommentDTO> foundComments = commentService.findByReview(id, 0, 24, "date", "DESC");
+		Page<CommentDTO> foundComments = commentService.findCommentsByReview(id, 0, 24, "date", "DESC");
 		
 		// Verification
 		Assertions.assertThat(foundComments.getTotalElements()).isEqualTo(1);		

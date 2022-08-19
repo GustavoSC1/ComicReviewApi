@@ -13,6 +13,6 @@ import com.gustavo.comicreviewapi.entities.Comment;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 	
 	@Query("SELECT obj FROM Comment obj WHERE obj.review.id = :reviewId")
-	Page<Comment> findByReview(@Param("reviewId") Long reviewId, Pageable pageable);
+	Page<Comment> findCommentsByReview(@Param("reviewId") Long reviewId, Pageable pageable);
 	
 }

@@ -67,10 +67,10 @@ public class CommentService {
 		return new CommentDTO(comment);
 	}
 	
-	public Page<CommentDTO> findByReview(Long reviewId,Integer page, Integer linesPerPage, String orderBy, String direction) {
+	public Page<CommentDTO> findCommentsByReview(Long reviewId,Integer page, Integer linesPerPage, String orderBy, String direction) {
 		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
 		
-		return commentRepository.findByReview(reviewId, pageRequest).map(obj -> new CommentDTO(obj));
+		return commentRepository.findCommentsByReview(reviewId, pageRequest).map(obj -> new CommentDTO(obj));
 		
 	}
 	
