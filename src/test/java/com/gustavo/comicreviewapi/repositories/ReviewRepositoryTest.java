@@ -81,5 +81,24 @@ public class ReviewRepositoryTest {
 		Assertions.assertThat(foundReviews.getTotalElements()).isEqualTo(1);
 		Assertions.assertThat(foundReviews.getTotalPages()).isEqualTo(1);
 	}
+	
+	@Test
+	@DisplayName("Must filter review")
+	public void findByTitleTest() {
+		// Scenario		
+		PageRequest pageRequest = PageRequest.of(0, 24, Direction.valueOf("DESC"), "date");
+		
+		Review review = ReviewBuilder.aReview().now();
+		
+		entityManager.persist(review);
+		
+		// Execution
+		Page<Review> foundReviews = reviewRepository.findByTitle("história", pageRequest);
+		
+		// Verification
+		Assertions.assertThat(foundReviews.getNumberOfElements()).isEqualTo(1);
+		Assertions.assertThat(foundReviews.getTotalElements()).isEqualTo(1);
+		Assertions.assertThat(foundReviews.getTotalPages()).isEqualTo(1);
+	}	
 
 }
