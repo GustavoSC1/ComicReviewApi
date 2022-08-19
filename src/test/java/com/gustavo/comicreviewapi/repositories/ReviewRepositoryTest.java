@@ -9,10 +9,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.gustavo.comicreviewapi.builders.ComicBuilder;
 import com.gustavo.comicreviewapi.builders.ReviewBuilder;
+import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.entities.Review;
 
 @ExtendWith(SpringExtension.class)
@@ -51,6 +56,30 @@ public class ReviewRepositoryTest {
 		
 		// Verification
 		Assertions.assertThat(foundReview.isPresent()).isTrue();
+	}
+	
+	@Test
+	@DisplayName("Must filter reviews by comic")
+	public void findReviewsByComicTest() {
+		// Scenario
+		Long id = 1l;
+		
+		Comic comic = ComicBuilder.aComic().withId(id).now();
+		comic = entityManager.persist(comic);
+		
+		PageRequest pageRequest = PageRequest.of(0, 24, Direction.valueOf("DESC"), "date");
+		
+		Review review = ReviewBuilder.aReview().withComic(comic).now();
+		
+		entityManager.persist(review);
+		
+		// Execution
+		Page<Review> foundReviews = reviewRepository.findReviewsByComic(id, pageRequest);
+		
+		// Verification
+		Assertions.assertThat(foundReviews.getNumberOfElements()).isEqualTo(1);
+		Assertions.assertThat(foundReviews.getTotalElements()).isEqualTo(1);
+		Assertions.assertThat(foundReviews.getTotalPages()).isEqualTo(1);
 	}
 
 }
