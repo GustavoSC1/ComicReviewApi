@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.gustavo.comicreviewapi.services.ComicService;
+import com.gustavo.comicreviewapi.services.ReviewService;
 import com.gustavo.comicreviewapi.dtos.ComicDTO;
 import com.gustavo.comicreviewapi.dtos.ComicNewDTO;
+import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 
 @RestController
 @RequestMapping("/comics")
@@ -26,6 +28,9 @@ public class ComicController {
 	
 	@Autowired
 	private ComicService comicService;
+	
+	@Autowired
+	private ReviewService reviewService;
 	
 	@PostMapping
 	public ResponseEntity<ComicDTO> save(@Valid @RequestBody ComicNewDTO comicNewDto) {
@@ -55,6 +60,19 @@ public class ComicController {
 		Page<ComicDTO> list = comicService.findByTitle(title, page, linesPerPage, orderBy, direction);
 	
 		return ResponseEntity.ok().body(list);
+	}
+	
+	@GetMapping("/{comicId}/reviews")
+	public ResponseEntity<Page <ReviewDTO>> findReviewsByComic(
+					@PathVariable Long comicId,
+					@RequestParam(value="page", defaultValue="0") Integer page,
+					@RequestParam(value="linesPerPage", defaultValue="24") Integer linesPerPage,
+					@RequestParam(value="orderBy", defaultValue="date") String orderBy,
+					@RequestParam(value="direction", defaultValue="DESC") String direction) {
+		
+		Page<ReviewDTO> list = reviewService.findReviewsByComic(comicId, page, linesPerPage, orderBy, direction);
+		
+		return ResponseEntity.ok().body(list);		
 	}
 
 }

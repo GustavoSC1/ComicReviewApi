@@ -27,12 +27,15 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gustavo.comicreviewapi.builders.ComicDtoBuilder;
+import com.gustavo.comicreviewapi.builders.ReviewDtoBuilder;
 import com.gustavo.comicreviewapi.dtos.AuthorDTO;
 import com.gustavo.comicreviewapi.dtos.CharacterDTO;
 import com.gustavo.comicreviewapi.dtos.ComicDTO;
 import com.gustavo.comicreviewapi.dtos.ComicNewDTO;
+import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.services.ComicService;
+import com.gustavo.comicreviewapi.services.ReviewService;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 
 @ExtendWith(SpringExtension.class)
@@ -48,6 +51,9 @@ public class ComicControllerTest {
 	
 	@MockBean
 	ComicService comicService;
+	
+	@MockBean
+	ReviewService reviewService;
 	
 	@Test
 	@DisplayName("Must save a comic")
@@ -179,6 +185,35 @@ public class ComicControllerTest {
 			.andExpect(MockMvcResultMatchers.jsonPath("totalElements").value(1))
 			.andExpect(MockMvcResultMatchers.jsonPath("pageable.pageSize").value(24))
 			.andExpect(MockMvcResultMatchers.jsonPath("pageable.pageNumber").value(0));
+	}
+	
+	@Test
+	@DisplayName("Must filter reviews by comic")
+	public void findReviewsByComicTest() throws Exception {
+		// Scenario
+		Long id = 2l;
+		
+		ReviewDTO review = ReviewDtoBuilder.aReviewDTO().withId(id).now();
+		
+		List<ReviewDTO> list = Arrays.asList(review);
+		
+		PageRequest pageRequest = PageRequest.of(0, 24);
+		
+		Page<ReviewDTO> page = new PageImpl<ReviewDTO>(list, pageRequest, list.size());
+		
+		BDDMockito.given(reviewService.findReviewsByComic(id, 0, 24, "date", "DESC")).willReturn(page);
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(COMIC_API.concat("/"+id+"/reviews"))
+													.accept(MediaType.APPLICATION_JSON);
+		
+		// Verification
+		mvc.perform(request)
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.jsonPath("content", Matchers.hasSize(1)))
+			.andExpect(MockMvcResultMatchers.jsonPath("totalElements").value(1))
+			.andExpect(MockMvcResultMatchers.jsonPath("pageable.pageSize").value(24))
+			.andExpect(MockMvcResultMatchers.jsonPath("pageable.pageNumber").value(0));		
 	}
 	
 }
