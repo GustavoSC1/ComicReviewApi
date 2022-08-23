@@ -29,6 +29,24 @@ public class RateRepositoryTest {
 	TestEntityManager entityManager;
 	
 	@Test
+	@DisplayName("Must save a rate")
+	public void saveUserTest() {
+		// Scenario
+		Comic comic = new Comic();
+		comic.setId(1l);
+		User user = new User();
+		user.setId(1l);
+		Rate rate = new Rate(user, comic, 4);
+		
+		// Execution
+		Rate savedRate = rateRepository.save(rate);
+		
+		// Verification
+		Assertions.assertThat(savedRate.getId().getUser().getId()).isNotNull();
+		Assertions.assertThat(savedRate.getId().getComic().getId()).isNotNull();
+	}
+	
+	@Test
 	@DisplayName("Must get one rate per composite id")
 	public void findByIdTest() {
 		// Scenario
