@@ -14,18 +14,12 @@ import com.gustavo.comicreviewapi.repositories.RateRepository;
 public class RateService {
 	
 	private RateRepository rateRepository;
-	private UserService userService;
-	private ComicService comicService;	
 	
-	public RateService(RateRepository rateRepository, UserService userService, ComicService comicService) {
-		this.rateRepository = rateRepository;		
-		this.userService = userService;
-		this.comicService = comicService;
+	public RateService(RateRepository rateRepository) {
+		this.rateRepository = rateRepository;	
 	}
 	
-	public Rate findById(Long userId, Long comicId) {
-		User user = userService.findById(userId);
-		Comic comic = comicService.findById(comicId);
+	public Rate findById(User user, Comic comic) {
 		Optional<Rate> rateOptional = rateRepository.findById(new RatePK(user, comic));
 		
 		return rateOptional.orElse(null);

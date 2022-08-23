@@ -28,16 +28,10 @@ public class RateServiceTest {
 	
 	@MockBean
 	RateRepository rateRepository;
-	
-	@MockBean
-	UserService userService;
-	
-	@MockBean
-	ComicService comicService;
-	
+		
 	@BeforeEach
 	public void setUp() {
-		this.rateService = new RateService(rateRepository, userService, comicService);
+		this.rateService = new RateService(rateRepository);
 	}
 	
 	@Test
@@ -51,12 +45,10 @@ public class RateServiceTest {
 		
 		Rate rate = new Rate(user, comic, 4);
 		
-		Mockito.when(userService.findById(id)).thenReturn(user);
-		Mockito.when(comicService.findById(id)).thenReturn(comic);
 		Mockito.when(rateRepository.findById(Mockito.any(RatePK.class))).thenReturn(Optional.of(rate));
 		
 		// Execution
-		Rate foundRate = rateService.findById(id, id);
+		Rate foundRate = rateService.findById(user, comic);
 		
 		// Verification		
 		Assertions.assertThat(foundRate.getId().getUser().getId()).isEqualTo(id);
