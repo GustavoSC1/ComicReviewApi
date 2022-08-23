@@ -26,6 +26,9 @@ public class User {
 	
 	@OneToMany(mappedBy = "user")
 	private Set<Comment> comments = new HashSet<>();
+	
+	@OneToMany(mappedBy = "id.user")
+	private Set<Rate> rates = new HashSet<>();
 		
 	public User() {
 		
@@ -68,6 +71,10 @@ public class User {
 		return comments;
 	}
 
+	public Set<Rate> getRates() {
+		return rates;
+	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -94,6 +101,10 @@ public class User {
 
 	public void setComments(Set<Comment> comments) {
 		this.comments = comments;
+	}	
+
+	public void setRates(Set<Rate> rates) {
+		this.rates = rates;
 	}
 
 	@Override

@@ -41,6 +41,9 @@ public class Comic implements Serializable {
 	@OneToMany(mappedBy = "comic")
 	private Set<Review> reviews = new HashSet<>();
 	
+	@OneToMany(mappedBy = "id.comic")
+	private Set<Rate> rates = new HashSet<>();
+	
 	public Comic() {
 		
 	}
@@ -86,6 +89,10 @@ public class Comic implements Serializable {
 		return reviews;
 	}
 
+	public Set<Rate> getRates() {
+		return rates;
+	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -116,6 +123,10 @@ public class Comic implements Serializable {
 	
 	public void setReviews(Set<Review> reviews) {
 		this.reviews = reviews;
+	}
+
+	public void setRates(Set<Rate> rates) {
+		this.rates = rates;
 	}
 
 	@Override

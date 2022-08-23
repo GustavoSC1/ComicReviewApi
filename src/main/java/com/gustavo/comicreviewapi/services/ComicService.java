@@ -145,6 +145,7 @@ public class ComicService {
 		return comic;
 	}
 	
+	@Transactional(readOnly = true)
 	public Page<ComicDTO> findByTitle(String title, Integer page, Integer linesPerPage, String orderBy, String direction) {
 		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
 		
