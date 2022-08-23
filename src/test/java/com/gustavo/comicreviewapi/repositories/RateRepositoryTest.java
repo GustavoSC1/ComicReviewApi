@@ -30,7 +30,7 @@ public class RateRepositoryTest {
 	
 	@Test
 	@DisplayName("Must save a rate")
-	public void saveUserTest() {
+	public void saveRateTest() {
 		// Scenario
 		Comic comic = new Comic();
 		comic.setId(1l);
