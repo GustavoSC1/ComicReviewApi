@@ -2,6 +2,7 @@ package com.gustavo.comicreviewapi.services;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +21,7 @@ import com.gustavo.comicreviewapi.entities.Rate;
 import com.gustavo.comicreviewapi.entities.RatePK;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.RateRepository;
+import com.gustavo.comicreviewapi.services.exceptions.BusinessException;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -38,7 +40,7 @@ public class RateServiceTest {
 	
 	@BeforeEach
 	public void setUp() {
-		this.rateService = new RateService(rateRepository, userService, comicService);
+		this.rateService = Mockito.spy(new RateService(rateRepository, userService, comicService));
 	}
 		
 	@Test
@@ -56,11 +58,42 @@ public class RateServiceTest {
 		
 		Mockito.when(comicService.findById(id)).thenReturn(comic);
 		
+		Mockito.doReturn(null).when(rateService).findById(user, comic);
+		
 		// Execution
 		rateService.save(id, newRate);
 		
 		// Verification
 		Mockito.verify(rateRepository, Mockito.times(1)).save(Mockito.any(Rate.class));
+	}
+	
+	@Test
+	@DisplayName("Should throw business error when trying to rate a comic more than once")
+	public void shouldNotRateAComicMoreThanOnce() {
+		// Scenario
+		Long id = 2l;
+		
+		User user = UserBuilder.aUser().withId(id).now();
+		Comic comic = ComicBuilder.aComic().withId(id).now();
+		
+		Rate rate = new Rate(user, comic, 4);
+		
+		RateNewDTO newRate = new RateNewDTO(id, 4);
+		
+		Mockito.when(userService.findById(id)).thenReturn(user);
+		
+		Mockito.when(comicService.findById(id)).thenReturn(comic);
+		
+		Mockito.doReturn(rate).when(rateService).findById(user, comic);
+		
+		// Execution and Verification
+		Exception exception = assertThrows(BusinessException.class, () -> {rateService.save(id, newRate);});
+		
+		String expectedMessage = "User has already rated this comic!";
+		String actualMessage = exception.getMessage();
+		
+		Assertions.assertThat(actualMessage).isEqualTo(expectedMessage);
+		Mockito.verify(rateRepository, Mockito.never()).save(Mockito.any(Rate.class));
 	}
 	
 	@Test
