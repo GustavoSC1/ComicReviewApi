@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.gustavo.comicreviewapi.dtos.RateNewDTO;
 import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.entities.Rate;
 import com.gustavo.comicreviewapi.entities.RatePK;
@@ -14,12 +15,25 @@ import com.gustavo.comicreviewapi.repositories.RateRepository;
 public class RateService {
 	
 	private RateRepository rateRepository;
+	private UserService userService;
+	private ComicService comicService;	
 	
-	public RateService(RateRepository rateRepository) {
-		this.rateRepository = rateRepository;	
+	public RateService(RateRepository rateRepository, UserService userService, ComicService comicService) {
+		this.rateRepository = rateRepository;		
+		this.userService = userService;
+		this.comicService = comicService;
 	}
 	
-	public Rate findById(User user, Comic comic) {
+	public void save(Long comicId, RateNewDTO rateDto) {		
+		User user = userService.findById(rateDto.getUserId());
+		Comic comic = comicService.findById(comicId);
+		
+		Rate rate = new Rate(user, comic, rateDto.getRate());
+				
+		rateRepository.save(rate);		
+	}
+	
+	public Rate findById(User user, Comic comic) {		
 		Optional<Rate> rateOptional = rateRepository.findById(new RatePK(user, comic));
 		
 		return rateOptional.orElse(null);

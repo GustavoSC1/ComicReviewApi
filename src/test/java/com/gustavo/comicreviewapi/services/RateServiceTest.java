@@ -14,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.gustavo.comicreviewapi.builders.ComicBuilder;
 import com.gustavo.comicreviewapi.builders.UserBuilder;
+import com.gustavo.comicreviewapi.dtos.RateNewDTO;
 import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.entities.Rate;
 import com.gustavo.comicreviewapi.entities.RatePK;
@@ -28,10 +29,38 @@ public class RateServiceTest {
 	
 	@MockBean
 	RateRepository rateRepository;
-		
+	
+	@MockBean
+	UserService userService;
+	
+	@MockBean
+	ComicService comicService;
+	
 	@BeforeEach
 	public void setUp() {
-		this.rateService = new RateService(rateRepository);
+		this.rateService = new RateService(rateRepository, userService, comicService);
+	}
+		
+	@Test
+	@DisplayName("Must save a rate")
+	public void saveRateTest() {
+		// Scenario
+		Long id = 2l;
+		
+		User user = UserBuilder.aUser().withId(id).now();
+		Comic comic = ComicBuilder.aComic().withId(id).now();
+		
+		RateNewDTO newRate = new RateNewDTO(id, 4);
+		
+		Mockito.when(userService.findById(id)).thenReturn(user);
+		
+		Mockito.when(comicService.findById(id)).thenReturn(comic);
+		
+		// Execution
+		rateService.save(id, newRate);
+		
+		// Verification
+		Mockito.verify(rateRepository, Mockito.times(1)).save(Mockito.any(Rate.class));
 	}
 	
 	@Test
