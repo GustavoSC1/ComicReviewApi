@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.gustavo.comicreviewapi.entities.Comic;
+import com.gustavo.comicreviewapi.entities.Rate;
 
 public class ComicDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -16,6 +17,7 @@ public class ComicDTO implements Serializable {
 	private String isbn;
 	private String description;
 	private Boolean activeDiscount;
+	private Double averageRating;
 	
 	private Set<AuthorDTO> authors = new HashSet<>();
 	private Set<CharacterDTO> characters = new HashSet<>();
@@ -24,13 +26,14 @@ public class ComicDTO implements Serializable {
 
 	}
 
-	public ComicDTO(Long id, String title, Float price, String isbn, String description, Boolean activeDiscount) {
+	public ComicDTO(Long id, String title, Float price, String isbn, String description, Boolean activeDiscount, Double averageRating) {
 		this.id = id;
 		this.title = title;
 		this.price = price;
 		this.isbn = isbn;
 		this.description = description;
 		this.activeDiscount = activeDiscount;
+		this.averageRating = averageRating;
 	}
 
 	public ComicDTO(Comic comic) {
@@ -41,6 +44,17 @@ public class ComicDTO implements Serializable {
 		this.description = comic.getDescription();
 		this.authors = comic.getAuthors().stream().map(x -> new AuthorDTO(x)).collect(Collectors.toSet());
 		this.characters = comic.getCharacters().stream().map(x -> new CharacterDTO(x)).collect(Collectors.toSet());
+		
+		this.averageRating = 0.0;
+						
+		for(Rate x : comic.getRatings()) {
+			this.averageRating += x.getRate();
+		}
+		
+		if(comic.getRatings().size() > 0) {
+			this.averageRating = this.averageRating / comic.getRatings().size();
+		}
+		
 	}
 
 	public Long getId() {
@@ -62,7 +76,11 @@ public class ComicDTO implements Serializable {
 	public String getDescription() {
 		return description;
 	}
-	
+		
+	public Double getAverageRating() {
+		return averageRating;
+	}
+
 	public Boolean getActiveDiscount() {
 		return activeDiscount;
 	}
@@ -93,6 +111,10 @@ public class ComicDTO implements Serializable {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	public void setAverageRating(Double averageRating) {
+		this.averageRating = averageRating;
 	}
 
 	public void setActiveDiscount(Boolean activeDiscount) {

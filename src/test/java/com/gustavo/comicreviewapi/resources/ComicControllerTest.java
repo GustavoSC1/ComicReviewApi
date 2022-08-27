@@ -137,6 +137,7 @@ public class ComicControllerTest {
 				+ "sai em busca de problemas – e os encontra na forma de uma placa de pedra misteriosa e "
 				+ "mítica cobiçada pelo Rei do Crime e pelos facínoras da Maggia, o maior sindicato criminal "
 				+ "da cidade."))
+		.andExpect(MockMvcResultMatchers.jsonPath("averageRating").value(0.0))
 		.andExpect(MockMvcResultMatchers.jsonPath("characters[0].name").value("Homem Aranha"))
 		.andExpect(MockMvcResultMatchers.jsonPath("authors[0].name").value("Stefan Petrucha"));
 	}

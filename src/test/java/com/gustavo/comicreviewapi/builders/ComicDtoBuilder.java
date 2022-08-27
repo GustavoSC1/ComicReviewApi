@@ -24,8 +24,9 @@ public class ComicDtoBuilder {
 				+ "sai em busca de problemas – e os encontra na forma de uma placa de pedra misteriosa e "
 				+ "mítica cobiçada pelo Rei do Crime e pelos facínoras da Maggia, o maior sindicato criminal "
 				+ "da cidade.");
+		builder.comicDto.setAverageRating(0.0);
 		builder.comicDto.setActiveDiscount(false);
-				
+						
 		return builder;
 	}
 	
