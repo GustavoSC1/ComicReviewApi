@@ -32,9 +32,11 @@ import com.gustavo.comicreviewapi.dtos.AuthorDTO;
 import com.gustavo.comicreviewapi.dtos.CharacterDTO;
 import com.gustavo.comicreviewapi.dtos.ComicDTO;
 import com.gustavo.comicreviewapi.dtos.ComicNewDTO;
+import com.gustavo.comicreviewapi.dtos.RateNewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.services.ComicService;
+import com.gustavo.comicreviewapi.services.RateService;
 import com.gustavo.comicreviewapi.services.ReviewService;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 
@@ -54,6 +56,9 @@ public class ComicControllerTest {
 	
 	@MockBean
 	ReviewService reviewService;
+	
+	@MockBean
+	RateService rateService;
 	
 	@Test
 	@DisplayName("Must save a comic")
@@ -81,6 +86,31 @@ public class ComicControllerTest {
 		.perform(request)
 		.andExpect( MockMvcResultMatchers.status().isCreated() )
 		.andExpect( MockMvcResultMatchers.header().string(HttpHeaders.LOCATION, Matchers.containsString("/comics/"+id)) );
+	}
+	
+	@Test
+	@DisplayName("Must save a rate")
+	public void saveRateTest() throws Exception {
+		// Scenario
+		Long id = 1l;
+		
+		RateNewDTO newRate = new RateNewDTO(id, 4);
+		
+		String json = new ObjectMapper().writeValueAsString(newRate);
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.post(COMIC_API.concat("/"+id+"/ratings"))
+													.contentType(MediaType.APPLICATION_JSON)
+													.accept(MediaType.APPLICATION_JSON)
+													.content(json);
+		
+		// Verification
+		mvc
+		.perform(request)
+		.andExpect(MockMvcResultMatchers.status().isOk());
+		
+		Mockito.verify(rateService, Mockito.times(1)).save(Mockito.anyLong(), Mockito.any(RateNewDTO.class));
 	}
 	
 	@Test

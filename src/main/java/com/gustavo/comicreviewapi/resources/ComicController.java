@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.gustavo.comicreviewapi.services.ComicService;
+import com.gustavo.comicreviewapi.services.RateService;
 import com.gustavo.comicreviewapi.services.ReviewService;
 import com.gustavo.comicreviewapi.dtos.ComicDTO;
 import com.gustavo.comicreviewapi.dtos.ComicNewDTO;
+import com.gustavo.comicreviewapi.dtos.RateNewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 
 @RestController
@@ -31,6 +33,9 @@ public class ComicController {
 	
 	@Autowired
 	private ReviewService reviewService;
+	
+	@Autowired
+	private RateService rateService;
 	
 	@PostMapping
 	public ResponseEntity<ComicDTO> save(@Valid @RequestBody ComicNewDTO comicNewDto) {
@@ -73,6 +78,13 @@ public class ComicController {
 		Page<ReviewDTO> list = reviewService.findReviewsByComic(comicId, page, linesPerPage, orderBy, direction);
 		
 		return ResponseEntity.ok().body(list);		
+	}
+	
+	@PostMapping("/{comicId}/ratings")
+	public ResponseEntity<Void> saveRate(@PathVariable Long comicId, @RequestBody RateNewDTO rateDto) {
+		rateService.save(comicId, rateDto);
+		
+		return ResponseEntity.ok().build();
 	}
 
 }
