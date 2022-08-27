@@ -81,7 +81,7 @@ public class ComicController {
 	}
 	
 	@PostMapping("/{comicId}/ratings")
-	public ResponseEntity<Void> saveRate(@PathVariable Long comicId, @RequestBody RateNewDTO rateDto) {
+	public ResponseEntity<Void> saveRate(@PathVariable Long comicId, @Valid @RequestBody RateNewDTO rateDto) {
 		rateService.save(comicId, rateDto);
 		
 		return ResponseEntity.ok().build();

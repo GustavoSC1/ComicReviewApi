@@ -88,30 +88,7 @@ public class ComicControllerTest {
 		.andExpect( MockMvcResultMatchers.header().string(HttpHeaders.LOCATION, Matchers.containsString("/comics/"+id)) );
 	}
 	
-	@Test
-	@DisplayName("Must save a rate")
-	public void saveRateTest() throws Exception {
-		// Scenario
-		Long id = 1l;
-		
-		RateNewDTO newRate = new RateNewDTO(id, 4);
-		
-		String json = new ObjectMapper().writeValueAsString(newRate);
-		
-		// Execution
-		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-													.post(COMIC_API.concat("/"+id+"/ratings"))
-													.contentType(MediaType.APPLICATION_JSON)
-													.accept(MediaType.APPLICATION_JSON)
-													.content(json);
-		
-		// Verification
-		mvc
-		.perform(request)
-		.andExpect(MockMvcResultMatchers.status().isOk());
-		
-		Mockito.verify(rateService, Mockito.times(1)).save(Mockito.anyLong(), Mockito.any(RateNewDTO.class));
-	}
+	
 	
 	@Test
 	@DisplayName("Should throw validation error when there is not enough data for comic creation")
@@ -244,6 +221,55 @@ public class ComicControllerTest {
 			.andExpect(MockMvcResultMatchers.jsonPath("totalElements").value(1))
 			.andExpect(MockMvcResultMatchers.jsonPath("pageable.pageSize").value(24))
 			.andExpect(MockMvcResultMatchers.jsonPath("pageable.pageNumber").value(0));		
+	}
+	
+	@Test
+	@DisplayName("Must save a rate")
+	public void saveRateTest() throws Exception {
+		// Scenario
+		Long id = 1l;
+		
+		RateNewDTO newRate = new RateNewDTO(id, 4);
+		
+		String json = new ObjectMapper().writeValueAsString(newRate);
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.post(COMIC_API.concat("/"+id+"/ratings"))
+													.contentType(MediaType.APPLICATION_JSON)
+													.accept(MediaType.APPLICATION_JSON)
+													.content(json);
+		
+		// Verification
+		mvc
+		.perform(request)
+		.andExpect(MockMvcResultMatchers.status().isOk());
+		
+		Mockito.verify(rateService, Mockito.times(1)).save(Mockito.anyLong(), Mockito.any(RateNewDTO.class));
+	}
+	
+	@Test
+	@DisplayName("Should throw validation error when there is not enough data for rate creation")
+	public void saveInvalidRateTest() throws Exception {
+		// Scenario
+		Long id = 1l;
+		
+		RateNewDTO newRate = new RateNewDTO();
+		newRate.setRate(6);
+		
+		String json = new ObjectMapper().writeValueAsString(newRate);
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.post(COMIC_API.concat("/"+id+"/ratings"))
+													.contentType(MediaType.APPLICATION_JSON)
+													.accept(MediaType.APPLICATION_JSON)
+													.content(json);
+		
+		// Verification
+		mvc.perform(request)
+		 .andExpect( MockMvcResultMatchers.status().isUnprocessableEntity() )
+		 .andExpect( MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(2)) );
 	}
 	
 }
