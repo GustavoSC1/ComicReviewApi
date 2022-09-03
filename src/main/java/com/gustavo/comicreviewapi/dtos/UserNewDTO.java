@@ -27,17 +27,22 @@ public class UserNewDTO implements Serializable {
 	@NotEmpty(message="The email field is required")
 	@Email(message="Invalid email")
 	private String email;
+	
+	@NotEmpty(message="The password field is required")
+	@Length(min=8, max=18, message="The length must be between 8 and 18 characters")
+	private String password;
 		
 	public UserNewDTO() {
 		super();
 	}
 
-	public UserNewDTO(String name, LocalDate birthDate, String phone, String email) {
+	public UserNewDTO(String name, LocalDate birthDate, String phone, String email, String password) {
 		super();
 		this.name = name;
 		this.birthDate = birthDate;
 		this.phone = phone;
 		this.email = email;
+		this.password = password;
 	}
 
 	public String getName() {
@@ -56,6 +61,10 @@ public class UserNewDTO implements Serializable {
 		return email;
 	}
 
+	public String getPassword() {
+		return password;
+	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -70,6 +79,10 @@ public class UserNewDTO implements Serializable {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	
 }

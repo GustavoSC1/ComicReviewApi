@@ -19,6 +19,7 @@ public class UserBuilder {
 		builder.user.setBirthDate(LocalDate.of(1996, 10, 17));
 		builder.user.setPhone("998123899");
 		builder.user.setEmail("gu.cruz17@hotmail.com");
+		builder.user.setPassword("Password1.");
 		
 		return builder;
 	}

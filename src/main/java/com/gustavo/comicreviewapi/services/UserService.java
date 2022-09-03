@@ -2,6 +2,7 @@ package com.gustavo.comicreviewapi.services;
 
 import java.util.Optional;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.gustavo.comicreviewapi.dtos.UserDTO;
@@ -16,8 +17,11 @@ public class UserService {
 	
 	private UserRepository userRepository;
 	
-	public UserService(UserRepository userRepository) {
+	private BCryptPasswordEncoder pe;
+	
+	public UserService(UserRepository userRepository, BCryptPasswordEncoder pe) {
 		this.userRepository = userRepository;
+		this.pe = pe;
 	}
 	
 	public UserDTO save(UserNewDTO userDto) {
@@ -25,8 +29,8 @@ public class UserService {
 		if(userRepository.existsByEmail(userDto.getEmail())) {
 			throw new BusinessException("E-mail already registered!");
 		}
-		
-		User user = new User(null, userDto.getName(), userDto.getBirthDate(), userDto.getPhone(), userDto.getEmail());
+				
+		User user = new User(null, userDto.getName(), userDto.getBirthDate(), userDto.getPhone(), userDto.getEmail(), pe.encode(userDto.getPassword()));
 		
 		user = userRepository.save(user);
 		

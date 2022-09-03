@@ -21,6 +21,8 @@ public class User {
 	private String phone;
 	private String email;
 	
+	private String password;
+	
 	@OneToMany(mappedBy="user")
 	private Set<Review> reviews = new HashSet<>();
 	
@@ -34,13 +36,14 @@ public class User {
 		
 	}
 	
-	public User(Long id, String name, LocalDate birthDate, String phone, String email) {
+	public User(Long id, String name, LocalDate birthDate, String phone, String email, String password) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.birthDate = birthDate;
 		this.phone = phone;
 		this.email = email;
+		this.password = password;
 	}
 	
 	public Long getId() {
@@ -63,6 +66,10 @@ public class User {
 		return email;
 	}
 	
+	public String getPassword() {
+		return password;
+	}
+
 	public Set<Review> getReviews() {
 		return reviews;
 	}
@@ -95,6 +102,10 @@ public class User {
 		this.email = email;
 	}
 	
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 	public void setReviews(Set<Review> reviews) {
 		this.reviews = reviews;
 	}
