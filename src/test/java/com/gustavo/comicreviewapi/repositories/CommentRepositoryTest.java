@@ -41,7 +41,7 @@ public class CommentRepositoryTest {
 		Comment savedComment = commentRepository.save(newComment);
 		
 		// Verification
-		Assertions.assertThat(savedComment.getId()).isEqualTo(1l);
+		Assertions.assertThat(savedComment.getId()).isNotNull();
 	}
 	
 	@Test

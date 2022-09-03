@@ -41,7 +41,7 @@ public class ReviewRepositoryTest {
 		Review savedReview = reviewRepository.save(newReview);
 		
 		// Verification
-		Assertions.assertThat(savedReview.getId()).isEqualTo(1l);
+		Assertions.assertThat(savedReview.getId()).isNotNull();
 	}
 	
 	@Test

@@ -44,7 +44,7 @@ public class ComicRepositoryTest {
 		Comic savedComic = comicRepository.save(newComic);
 		
 		// Verification
-		Assertions.assertThat(savedComic.getId()).isEqualTo(1l);
+		Assertions.assertThat(savedComic.getId()).isNotNull();
 	}
 	
 	@Test
