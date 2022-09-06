@@ -3,6 +3,7 @@ package com.gustavo.comicreviewapi.builders;
 import java.time.LocalDate;
 
 import com.gustavo.comicreviewapi.entities.User;
+import com.gustavo.comicreviewapi.entities.enums.Profile;
 
 public class UserBuilder {
 	
@@ -20,6 +21,7 @@ public class UserBuilder {
 		builder.user.setPhone("998123899");
 		builder.user.setEmail("gu.cruz17@hotmail.com");
 		builder.user.setPassword("Password1.");
+		builder.user.addProfile(Profile.USER);
 		
 		return builder;
 	}

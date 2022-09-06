@@ -3,12 +3,17 @@ package com.gustavo.comicreviewapi.entities;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+
+import com.gustavo.comicreviewapi.entities.enums.Profile;
 
 @Entity
 public class User {
@@ -23,6 +28,10 @@ public class User {
 	
 	private String password;
 	
+	@ElementCollection()
+	@CollectionTable(name="PROFILES")
+	private Set<Integer> profiles = new HashSet<>();
+	
 	@OneToMany(mappedBy="user")
 	private Set<Review> reviews = new HashSet<>();
 	
@@ -33,7 +42,7 @@ public class User {
 	private Set<Rate> ratings = new HashSet<>();
 		
 	public User() {
-		
+		addProfile(Profile.USER);
 	}
 	
 	public User(Long id, String name, LocalDate birthDate, String phone, String email, String password) {
@@ -44,6 +53,7 @@ public class User {
 		this.phone = phone;
 		this.email = email;
 		this.password = password;
+		addProfile(Profile.USER);
 	}
 	
 	public Long getId() {
@@ -68,6 +78,10 @@ public class User {
 	
 	public String getPassword() {
 		return password;
+	}
+	
+	public Set<Profile> getProfiles() {
+		return profiles.stream().map(x -> Profile.toEnum(x)).collect(Collectors.toSet());
 	}
 
 	public Set<Review> getReviews() {
@@ -104,6 +118,10 @@ public class User {
 	
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	
+	public void addProfile(Profile profile) {
+		profiles.add(profile.getCod());
 	}
 
 	public void setReviews(Set<Review> reviews) {

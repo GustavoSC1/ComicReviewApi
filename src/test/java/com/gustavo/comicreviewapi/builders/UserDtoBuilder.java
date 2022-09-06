@@ -3,6 +3,7 @@ package com.gustavo.comicreviewapi.builders;
 import java.time.LocalDate;
 
 import com.gustavo.comicreviewapi.dtos.UserDTO;
+import com.gustavo.comicreviewapi.entities.enums.Profile;
 
 public class UserDtoBuilder {
 	
@@ -17,6 +18,7 @@ public class UserDtoBuilder {
 		builder.userDto.setBirthDate(LocalDate.of(1996, 10, 17));
 		builder.userDto.setPhone("998123899");
 		builder.userDto.setEmail("gu.cruz17@hotmail.com");
+		builder.userDto.addProfile(Profile.USER);
 		
 		return builder;
 	}

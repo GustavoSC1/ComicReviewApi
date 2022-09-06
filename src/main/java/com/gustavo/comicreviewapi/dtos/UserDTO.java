@@ -2,6 +2,8 @@ package com.gustavo.comicreviewapi.dtos;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
@@ -12,6 +14,7 @@ import javax.validation.constraints.Past;
 import org.hibernate.validator.constraints.Length;
 
 import com.gustavo.comicreviewapi.entities.User;
+import com.gustavo.comicreviewapi.entities.enums.Profile;
 
 public class UserDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -34,6 +37,8 @@ public class UserDTO implements Serializable {
 	@NotEmpty(message="The email field is required")
 	@Email(message="Invalid email")
 	private String email;
+	
+	private Set<Profile> profiles = new HashSet<>();
 		
 	public UserDTO() {
 		
@@ -53,6 +58,7 @@ public class UserDTO implements Serializable {
 		this.birthDate = user.getBirthDate();
 		this.phone = user.getPhone();
 		this.email = user.getEmail();
+		this.profiles = user.getProfiles();
 	}
 
 	public Long getId() {
@@ -75,6 +81,10 @@ public class UserDTO implements Serializable {
 		return email;
 	}
 
+	public Set<Profile> getProfiles() {
+		return profiles;
+	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -93,6 +103,10 @@ public class UserDTO implements Serializable {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public void addProfile(Profile profile) {
+		profiles.add(profile);
 	}
 	
 }
