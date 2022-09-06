@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.gustavo.comicreviewapi.dtos.UserDTO;
 import com.gustavo.comicreviewapi.dtos.UserNewDTO;
+import com.gustavo.comicreviewapi.dtos.UserUpdateDTO;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.UserRepository;
 import com.gustavo.comicreviewapi.services.exceptions.BusinessException;
@@ -43,7 +44,7 @@ public class UserService {
 		return new UserDTO(user);
 	}
 	
-	public UserDTO update(Long id, UserDTO userDto) {
+	public UserDTO update(Long id, UserUpdateDTO userDto) {
 		User user = findById(id);
 		
 		user.setName(userDto.getName());
