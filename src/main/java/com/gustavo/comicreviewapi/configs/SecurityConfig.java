@@ -53,7 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	public static final String[] PUBLIC_MATCHERS_POST = {
 			"/users/**"
-		};
+	};
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -83,8 +83,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	//CORS é uma especificação de uma tecnologia de navegadores que define meios para um servidor permitir que 
 	//seus recursos sejam acessados por uma página web de um domínio diferente.
 	CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
+		// Lista de métodos permitidos pelo CORS
+		configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
 		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+		source.registerCorsConfiguration("/**", configuration);
 		return source;
 	}
 	
