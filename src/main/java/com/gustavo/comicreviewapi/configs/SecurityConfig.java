@@ -34,7 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private UserDetailsService userDetailsService;
 	
-	//O Spring vai buscar a implementação UserDetailsServideImpl
+	//Interface que representa o ambiente em que o aplicativo atual está sendo executado.
 	@Autowired
 	private Environment env;
 	
@@ -76,12 +76,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 	
 	// Determina qual é o userDetailsService utilizado e o algoritmo de codificação
+	@Override
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
 	}
 	
 	//CORS é uma especificação de uma tecnologia de navegadores que define meios para um servidor permitir que 
 	//seus recursos sejam acessados por uma página web de um domínio diferente.
+	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
 		// Lista de métodos permitidos pelo CORS
