@@ -1,5 +1,6 @@
 package com.gustavo.comicreviewapi.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,11 +13,8 @@ import com.gustavo.comicreviewapi.repositories.UserRepository;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 	
+	@Autowired
 	private UserRepository userRepository;
-	
-	public UserDetailsServiceImpl(UserRepository userRepository) {
-		this.userRepository = userRepository;
-	}
 	
 	// Classe de serviço conforme contrato do Spring Security (implements UserDetailsService). 
 	// Permite a busca do usuário pelo email.

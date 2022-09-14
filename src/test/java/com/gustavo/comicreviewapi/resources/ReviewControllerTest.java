@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,6 +36,7 @@ import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewNewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewUpdateDTO;
 import com.gustavo.comicreviewapi.entities.Review;
+import com.gustavo.comicreviewapi.security.JWTUtil;
 import com.gustavo.comicreviewapi.services.CommentService;
 import com.gustavo.comicreviewapi.services.ReviewService;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
@@ -55,6 +57,12 @@ public class ReviewControllerTest {
 	
 	@MockBean
 	CommentService commentService;
+	
+	@MockBean
+	JWTUtil jwtUtil;
+	
+	@MockBean
+	UserDetailsService userDetailsService;
 		
 	@Test
 	@DisplayName("Must save a review")

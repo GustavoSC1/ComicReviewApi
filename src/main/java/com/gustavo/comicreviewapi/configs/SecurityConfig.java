@@ -30,11 +30,11 @@ import com.gustavo.comicreviewapi.security.JWTUtil;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
-	//O Spring vai buscar a implementação UserDetailsServideImpl
+	// O Spring vai buscar a implementação UserDetailsServideImpl
 	@Autowired
 	private UserDetailsService userDetailsService;
 	
-	//Interface que representa o ambiente em que o aplicativo atual está sendo executado.
+	// Interface que representa o ambiente em que o aplicativo atual está sendo executado.
 	@Autowired
 	private Environment env;
 	
@@ -81,8 +81,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
 	}
 	
-	//CORS é uma especificação de uma tecnologia de navegadores que define meios para um servidor permitir que 
-	//seus recursos sejam acessados por uma página web de um domínio diferente.
+	// CORS é uma especificação de uma tecnologia de navegadores que define meios para um servidor permitir que 
+	// seus recursos sejam acessados por uma página web de um domínio diferente.
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();

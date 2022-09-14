@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,6 +36,7 @@ import com.gustavo.comicreviewapi.dtos.ComicNewDTO;
 import com.gustavo.comicreviewapi.dtos.RateNewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 import com.gustavo.comicreviewapi.entities.Comic;
+import com.gustavo.comicreviewapi.security.JWTUtil;
 import com.gustavo.comicreviewapi.services.ComicService;
 import com.gustavo.comicreviewapi.services.RateService;
 import com.gustavo.comicreviewapi.services.ReviewService;
@@ -59,6 +61,12 @@ public class ComicControllerTest {
 	
 	@MockBean
 	RateService rateService;
+	
+	@MockBean
+	JWTUtil jwtUtil;
+	
+	@MockBean
+	UserDetailsService userDetailsService;
 	
 	@Test
 	@DisplayName("Must save a comic")

@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,6 +29,7 @@ import com.gustavo.comicreviewapi.dtos.CommentDTO;
 import com.gustavo.comicreviewapi.dtos.CommentNewDTO;
 import com.gustavo.comicreviewapi.dtos.CommentUpdateDTO;
 import com.gustavo.comicreviewapi.entities.Comment;
+import com.gustavo.comicreviewapi.security.JWTUtil;
 import com.gustavo.comicreviewapi.services.CommentService;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 
@@ -44,6 +46,12 @@ public class CommentControllerTest {
 	
 	@MockBean
 	CommentService commentService;
+	
+	@MockBean
+	JWTUtil jwtUtil;
+	
+	@MockBean
+	UserDetailsService userDetailsService;
 	
 	@Test
 	@DisplayName("Must save a comment")
