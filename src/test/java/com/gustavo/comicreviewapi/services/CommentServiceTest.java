@@ -151,12 +151,11 @@ public class CommentServiceTest {
 			foundComment.setUser(user);
 			
 			UserSS userSS = new UserSS(id, user.getEmail(), user.getPassword(), user.getProfiles());
-			
-			mockedStatic.when(UserService::authenticated).thenReturn(userSS);
-			
+						
 			Comment updatedComment = new Comment(id, "Review maneiro", LocalDateTime.of(2022, 11, 22, 20, 12), 
 										"Review muito interessante, talvez um dia eu adquira essa a HQ!", null, null);
 			
+			mockedStatic.when(UserService::authenticated).thenReturn(userSS);
 			Mockito.when(commentRepository.save(Mockito.any(Comment.class))).thenReturn(updatedComment);
 			Mockito.doReturn(LocalDateTime.of(2022, 11, 22, 20, 12)).when(reviewService).getDateTime();
 			Mockito.doReturn(foundComment).when(commentService).findById(id);

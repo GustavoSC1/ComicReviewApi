@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
@@ -32,6 +33,7 @@ import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.entities.Review;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.ReviewRepository;
+import com.gustavo.comicreviewapi.security.UserSS;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 
 @ExtendWith(SpringExtension.class)
@@ -155,37 +157,45 @@ public class ReviewServiceTest {
 	@Test
 	@DisplayName("Must update a review")
 	public void updateReviewTest() {
-		// Scenario
-		Long id = 2l;
-		
-		ReviewUpdateDTO reviewDto = new ReviewUpdateDTO("História fraca", "A HQ não mostra quase nada sobre o Homem-Aranha: "
-				+ "deveria mostrar mais sobre os seus problemas, ele tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
-				+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
-				+ "família.");
-		
-		Review foundReview = ReviewBuilder.aReview().withId(id).now();
-		
-		Review updatedReview = new Review(id, "História fraca", LocalDateTime.of(2022, 11, 21, 19, 29), 
-						"A HQ não mostra quase nada sobre o Homem-Aranha: "
-						+ "deveria mostrar mais sobre os seus problemas, ele tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
-						+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
-						+ "família.", null, null);
-		
-		Mockito.when(reviewRepository.save(Mockito.any(Review.class))).thenReturn(updatedReview);
-		Mockito.doReturn(LocalDateTime.of(2022, 11, 21, 19, 29)).when(reviewService).getDateTime();
-		Mockito.doReturn(foundReview).when(reviewService).findById(id);
-		
-		// Execution
-		ReviewDTO updatedReviewDto = reviewService.update(id, reviewDto);
-		
-		// Verification
-		Assertions.assertThat(updatedReviewDto.getId()).isEqualTo(id);
-		Assertions.assertThat(updatedReviewDto.getTitle()).isEqualTo("História fraca");
-		Assertions.assertThat(updatedReviewDto.getDate()).isEqualTo(LocalDateTime.of(2022, 11, 21, 19, 29));
-		Assertions.assertThat(updatedReviewDto.getContent()).isEqualTo("A HQ não mostra quase nada sobre o Homem-Aranha: "
-				+ "deveria mostrar mais sobre os seus problemas, ele tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
-				+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
-				+ "família.");
+		try(MockedStatic<UserService> mockedStatic = Mockito.mockStatic(UserService.class)) {
+			// Scenario
+			Long id = 2l;
+			
+			ReviewUpdateDTO reviewDto = new ReviewUpdateDTO("História fraca", "A HQ não mostra quase nada sobre o Homem-Aranha: "
+					+ "deveria mostrar mais sobre os seus problemas, ele tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
+					+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
+					+ "família.");
+			
+			User user = UserBuilder.aUser().withId(id).now();
+			
+			Review foundReview = ReviewBuilder.aReview().withId(id).now();
+			foundReview.setUser(user);
+			
+			UserSS userSS = new UserSS(id, user.getEmail(), user.getPassword(), user.getProfiles());
+			
+			Review updatedReview = new Review(id, "História fraca", LocalDateTime.of(2022, 11, 21, 19, 29), 
+							"A HQ não mostra quase nada sobre o Homem-Aranha: "
+							+ "deveria mostrar mais sobre os seus problemas, ele tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
+							+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
+							+ "família.", null, null);
+			
+			mockedStatic.when(UserService::authenticated).thenReturn(userSS);
+			Mockito.when(reviewRepository.save(Mockito.any(Review.class))).thenReturn(updatedReview);
+			Mockito.doReturn(LocalDateTime.of(2022, 11, 21, 19, 29)).when(reviewService).getDateTime();
+			Mockito.doReturn(foundReview).when(reviewService).findById(id);
+			
+			// Execution
+			ReviewDTO updatedReviewDto = reviewService.update(id, reviewDto);
+			
+			// Verification
+			Assertions.assertThat(updatedReviewDto.getId()).isEqualTo(id);
+			Assertions.assertThat(updatedReviewDto.getTitle()).isEqualTo("História fraca");
+			Assertions.assertThat(updatedReviewDto.getDate()).isEqualTo(LocalDateTime.of(2022, 11, 21, 19, 29));
+			Assertions.assertThat(updatedReviewDto.getContent()).isEqualTo("A HQ não mostra quase nada sobre o Homem-Aranha: "
+					+ "deveria mostrar mais sobre os seus problemas, ele tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
+					+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
+					+ "família.");
+		}
 	}
 	
 	@Test

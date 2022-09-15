@@ -15,6 +15,8 @@ import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.entities.Review;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.ReviewRepository;
+import com.gustavo.comicreviewapi.security.UserSS;
+import com.gustavo.comicreviewapi.services.exceptions.AuthorizationException;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 
 @Service
@@ -57,6 +59,11 @@ public class ReviewService {
 	
 	public ReviewDTO update(Long id, ReviewUpdateDTO reviewDto) {
 		Review review = findById(id);
+		
+		UserSS userAuthenticated = UserService.authenticated();		
+		if(userAuthenticated==null || !review.getUser().getId().equals(userAuthenticated.getId())) {
+			throw new AuthorizationException("Access denied");
+		}
 		
 		review.setTitle(reviewDto.getTitle());
 		review.setContent(reviewDto.getContent());
