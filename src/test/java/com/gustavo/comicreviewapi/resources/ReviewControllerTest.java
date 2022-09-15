@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -65,6 +66,7 @@ public class ReviewControllerTest {
 	UserDetailsService userDetailsService;
 		
 	@Test
+	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER"})
 	@DisplayName("Must save a review")
 	public void saveReviewTest() throws Exception {
 		// Scenario
@@ -92,6 +94,7 @@ public class ReviewControllerTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER"})
 	@DisplayName("Should throw validation error when there is not enough data for review creation")
 	public void saveInvalidReviewTest() throws Exception {
 		// Scenario
@@ -161,6 +164,7 @@ public class ReviewControllerTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER"})
 	@DisplayName("Must update a review")
 	public void updateReviewTest() throws Exception {
 		// Scenario
@@ -201,6 +205,7 @@ public class ReviewControllerTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER"})
 	@DisplayName("Should throw validation error when there is not enough data for review updating")
 	public void updateInvalidReviewTest() throws Exception {
 		// Scenario

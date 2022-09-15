@@ -52,13 +52,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	};
 	
 	public static final String[] PUBLIC_MATCHERS_POST = {
-			"/users/**"
+		"/users/**"
 	};
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		
-		//Importante para o h2 funcionar
+		// Importante para o h2 funcionar
 		if (Arrays.asList(env.getActiveProfiles()).contains("test")) {
 			http.headers().frameOptions().disable();
 		}
@@ -71,7 +71,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.anyRequest().authenticated();
 		http.addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtUtil));
 		http.addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtUtil, userDetailsService));
-		//nenhuma sessão será criada ou usada pelo Spring Security
+		// Nenhuma sessão será criada ou usada pelo Spring Security
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}
 	

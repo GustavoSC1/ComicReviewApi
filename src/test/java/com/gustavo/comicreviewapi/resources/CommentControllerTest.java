@@ -15,6 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -54,6 +55,7 @@ public class CommentControllerTest {
 	UserDetailsService userDetailsService;
 	
 	@Test
+	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER"})
 	@DisplayName("Must save a comment")
 	public void saveCommentTest() throws Exception {
 		// Scenario
@@ -81,6 +83,7 @@ public class CommentControllerTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER"})
 	@DisplayName("Should throw validation error when there is not enough data for comment creation")
 	public void saveInvalidCommentTest() throws Exception {
 		// Scenario
@@ -145,6 +148,7 @@ public class CommentControllerTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER"})
 	@DisplayName("Must update a comment")
 	public void updateCommentTest() throws Exception {
 		// Scenario
@@ -176,6 +180,7 @@ public class CommentControllerTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER"})
 	@DisplayName("Should throw validation error when there is not enough data for comment updating")
 	public void updateInvalidCommentTest() throws Exception {
 		// Scenario

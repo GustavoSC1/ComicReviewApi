@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -69,6 +70,7 @@ public class ComicControllerTest {
 	UserDetailsService userDetailsService;
 	
 	@Test
+	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER", "ADMIN"})
 	@DisplayName("Must save a comic")
 	public void saveComicTest() throws Exception {
 		// Scenario
@@ -99,6 +101,7 @@ public class ComicControllerTest {
 	
 	
 	@Test
+	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER"})
 	@DisplayName("Should throw validation error when there is not enough data for comic creation")
 	public void createInvalidComicTest() throws Exception {
 		// Scenario
@@ -233,6 +236,7 @@ public class ComicControllerTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER"})
 	@DisplayName("Must save a rate")
 	public void saveRateTest() throws Exception {
 		// Scenario
@@ -258,6 +262,7 @@ public class ComicControllerTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER"})
 	@DisplayName("Should throw validation error when there is not enough data for rate creation")
 	public void saveInvalidRateTest() throws Exception {
 		// Scenario
