@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,7 @@ import com.gustavo.comicreviewapi.entities.Comment;
 import com.gustavo.comicreviewapi.entities.Review;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.CommentRepository;
+import com.gustavo.comicreviewapi.security.UserSS;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 
 @ExtendWith(SpringExtension.class)
@@ -137,28 +139,37 @@ public class CommentServiceTest {
 	@Test
 	@DisplayName("Must update a comment")
 	public void updateCommentTest() {
-		// Scenario
-		Long id = 2l;
-		
-		CommentUpdateDTO commentDto = new CommentUpdateDTO("Review maneiro", "Review muito interessante, talvez um dia eu adquira essa a HQ!");
-		
-		Comment foundComment = CommentBuilder.aComment().withId(id).now();
-		
-		Comment updatedComment = new Comment(id, "Review maneiro", LocalDateTime.of(2022, 11, 22, 20, 12), 
-									"Review muito interessante, talvez um dia eu adquira essa a HQ!", null, null);
-		
-		Mockito.when(commentRepository.save(Mockito.any(Comment.class))).thenReturn(updatedComment);
-		Mockito.doReturn(LocalDateTime.of(2022, 11, 22, 20, 12)).when(reviewService).getDateTime();
-		Mockito.doReturn(foundComment).when(commentService).findById(id);
-		
-		// Execution
-		CommentDTO updatedCommentDto = commentService.update(id, commentDto);
-		
-		// Verification
-		Assertions.assertThat(updatedCommentDto.getId()).isEqualTo(id);
-		Assertions.assertThat(updatedCommentDto.getTitle()).isEqualTo("Review maneiro");
-		Assertions.assertThat(updatedCommentDto.getDate()).isEqualTo(LocalDateTime.of(2022, 11, 22, 20, 12));
-		Assertions.assertThat(updatedCommentDto.getContent()).isEqualTo("Review muito interessante, talvez um dia eu adquira essa a HQ!");			
+		try(MockedStatic<UserService> mockedStatic = Mockito.mockStatic(UserService.class)) {
+			// Scenario
+			Long id = 2l;
+			
+			CommentUpdateDTO commentDto = new CommentUpdateDTO("Review maneiro", "Review muito interessante, talvez um dia eu adquira essa a HQ!");
+			
+			User user = UserBuilder.aUser().withId(id).now();
+						
+			Comment foundComment = CommentBuilder.aComment().withId(id).now();
+			foundComment.setUser(user);
+			
+			UserSS userSS = new UserSS(id, user.getEmail(), user.getPassword(), user.getProfiles());
+			
+			mockedStatic.when(UserService::authenticated).thenReturn(userSS);
+			
+			Comment updatedComment = new Comment(id, "Review maneiro", LocalDateTime.of(2022, 11, 22, 20, 12), 
+										"Review muito interessante, talvez um dia eu adquira essa a HQ!", null, null);
+			
+			Mockito.when(commentRepository.save(Mockito.any(Comment.class))).thenReturn(updatedComment);
+			Mockito.doReturn(LocalDateTime.of(2022, 11, 22, 20, 12)).when(reviewService).getDateTime();
+			Mockito.doReturn(foundComment).when(commentService).findById(id);
+			
+			// Execution
+			CommentDTO updatedCommentDto = commentService.update(id, commentDto);
+			
+			// Verification
+			Assertions.assertThat(updatedCommentDto.getId()).isEqualTo(id);
+			Assertions.assertThat(updatedCommentDto.getTitle()).isEqualTo("Review maneiro");
+			Assertions.assertThat(updatedCommentDto.getDate()).isEqualTo(LocalDateTime.of(2022, 11, 22, 20, 12));
+			Assertions.assertThat(updatedCommentDto.getContent()).isEqualTo("Review muito interessante, talvez um dia eu adquira essa a HQ!");	
+		}
 	}
 	
 	@Test

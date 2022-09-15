@@ -15,6 +15,8 @@ import com.gustavo.comicreviewapi.entities.Comment;
 import com.gustavo.comicreviewapi.entities.Review;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.CommentRepository;
+import com.gustavo.comicreviewapi.security.UserSS;
+import com.gustavo.comicreviewapi.services.exceptions.AuthorizationException;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 
 @Service
@@ -57,6 +59,11 @@ public class CommentService {
 	
 	public CommentDTO update(Long id, CommentUpdateDTO commentDto) {
 		Comment comment = findById(id);
+		
+		UserSS userAuthenticated = UserService.authenticated();		
+		if(userAuthenticated==null || !comment.getUser().getId().equals(userAuthenticated.getId())) {
+			throw new AuthorizationException("Access denied");
+		}
 		
 		comment.setTitle(commentDto.getTitle());
 		comment.setContent(commentDto.getContent());
