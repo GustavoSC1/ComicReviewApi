@@ -81,5 +81,23 @@ public class CommentRepositoryTest {
 		Assertions.assertThat(foundComments.getTotalElements()).isEqualTo(1);
 		Assertions.assertThat(foundComments.getTotalPages()).isEqualTo(1);
 	}
+	
+	@Test
+	@DisplayName("Must delete a comment")
+	public void deleteCommentTest() {
+		// Scenario
+		Comment comment = CommentBuilder.aComment().now();
+		entityManager.persist(comment);
+		
+		Comment foundComment = entityManager.find(Comment.class, comment.getId());
+		
+		// Execution
+		commentRepository.delete(foundComment);
+		
+		Comment deletedComment = entityManager.find(Comment.class, comment.getId());
+		
+		// Verification
+		Assertions.assertThat(deletedComment).isNull();
+	}
 
 }
