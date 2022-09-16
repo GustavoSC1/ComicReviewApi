@@ -203,4 +203,17 @@ public class CommentControllerTest {
 			.andExpect(MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(2)));
 	}
 	
+	@Test
+	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER"})
+	@DisplayName("Must delete a comment")
+	public void deleteCommentTest() throws Exception {		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+				.delete(COMMENT_API.concat("/" + 1));
+		
+		// Verification
+		mvc.perform(request)
+			.andExpect(MockMvcResultMatchers.status().isNoContent());
+	}
+	
 }
