@@ -200,5 +200,30 @@ public class CommentServiceTest {
 		Assertions.assertThat(foundComments.getContent().get(0).getContent()).isEqualTo(comment.getContent());
 		Assertions.assertThat(foundComments.getContent().get(0).getDate()).isEqualTo(comment.getDate());
 	}
+	
+	@Test
+	@DisplayName("Must delete a comment")
+	public void deleteCommentTest() {
+		try(MockedStatic<UserService> mockedStatic = Mockito.mockStatic(UserService.class)) {
+			// Scenario
+			Long id = 2l;
+			
+			User user = UserBuilder.aUser().withId(id).now();
+			
+			Comment foundComment = CommentBuilder.aComment().withId(id).now();
+			foundComment.setUser(user);
+			
+			UserSS userSS = new UserSS(id, user.getEmail(), user.getPassword(), user.getProfiles());
+			
+			mockedStatic.when(UserService::authenticated).thenReturn(userSS);
+			Mockito.doReturn(foundComment).when(commentService).findById(id);
+			
+			// Execution
+			commentService.delete(id);
+			
+			// Verification
+			Mockito.verify(commentRepository, Mockito.times(1)).delete(foundComment);
+		}
+	}
 			
 }

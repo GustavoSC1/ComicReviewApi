@@ -14,6 +14,7 @@ import com.gustavo.comicreviewapi.dtos.CommentUpdateDTO;
 import com.gustavo.comicreviewapi.entities.Comment;
 import com.gustavo.comicreviewapi.entities.Review;
 import com.gustavo.comicreviewapi.entities.User;
+import com.gustavo.comicreviewapi.entities.enums.Profile;
 import com.gustavo.comicreviewapi.repositories.CommentRepository;
 import com.gustavo.comicreviewapi.security.UserSS;
 import com.gustavo.comicreviewapi.services.exceptions.AuthorizationException;
@@ -82,6 +83,17 @@ public class CommentService {
 		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
 		
 		return commentRepository.findCommentsByReview(reviewId, pageRequest).map(obj -> new CommentDTO(obj));		
+	}
+	
+	public void delete(Long id) {
+		Comment foundComment = findById(id);
+		
+		UserSS userAuthenticated = UserService.authenticated();		
+		if(userAuthenticated==null || !userAuthenticated.hasRole(Profile.ADMIN) && !foundComment.getUser().getId().equals(userAuthenticated.getId())) {
+			throw new AuthorizationException("Access denied");
+		}
+		
+		commentRepository.delete(foundComment);
 	}
 	
 	public LocalDateTime getDateTime() {
