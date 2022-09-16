@@ -46,46 +46,47 @@ public class ReviewServiceTest {
 	ReviewRepository reviewRepository;
 	
 	@MockBean
-	UserService userService;
-	
-	@MockBean
 	ComicService comicService;
 	
 	@BeforeEach
 	public void setUp() {
-		this.reviewService = Mockito.spy(new ReviewService(reviewRepository, userService, comicService));
+		this.reviewService = Mockito.spy(new ReviewService(reviewRepository, comicService));
 	}
 	
 	@Test
 	@DisplayName("Must save a review")
 	public void saveReviewTest() {
-		// Scenario
-		Long id = 1l;
+		try(MockedStatic<UserService> mockedStatic = Mockito.mockStatic(UserService.class)) {
+			// Scenario
+			Long id = 1l;
+			
+			ReviewNewDTO newReview = ReviewNewDtoBuilder.aReviewNewDTO().now();
+			Comic comic = ComicBuilder.aComic().withAuthorsList(new Author(null, "Stefan Petrucha"))
+					.withCharactersList(new Character(null, "Homem Aranha")).withId(id).now();
+			Review savedReview = ReviewBuilder.aReview().withId(id).now();			
+			User user = UserBuilder.aUser().withId(id).now();
+			
+			UserSS userSS = new UserSS(id, user.getEmail(), user.getPassword(), user.getProfiles());
+			
+			mockedStatic.when(UserService::authenticated).thenReturn(userSS);			
+			Mockito.when(comicService.findById(id)).thenReturn(comic);
+			Mockito.doReturn(LocalDateTime.of(2022, 11, 20, 21, 50)).when(reviewService).getDateTime();
+			Mockito.when(reviewRepository.save(Mockito.any(Review.class))).thenReturn(savedReview);
+			
+			// Execution		
+			ReviewDTO savedReviewDto = reviewService.save(newReview);
 		
-		ReviewNewDTO newReview = ReviewNewDtoBuilder.aReviewNewDTO().now();
-		User user = UserBuilder.aUser().withId(id).now();
-		Comic comic = ComicBuilder.aComic().withAuthorsList(new Author(null, "Stefan Petrucha"))
-				.withCharactersList(new Character(null, "Homem Aranha")).withId(id).now();
-		Review savedReview = ReviewBuilder.aReview().withId(id).now();
-		
-		Mockito.when(userService.findById(id)).thenReturn(user);
-		Mockito.when(comicService.findById(id)).thenReturn(comic);
-		Mockito.doReturn(LocalDateTime.of(2022, 11, 20, 21, 50)).when(reviewService).getDateTime();
-		Mockito.when(reviewRepository.save(Mockito.any(Review.class))).thenReturn(savedReview);
-		
-		// Execution		
-		ReviewDTO savedReviewDto = reviewService.save(newReview);
-	
-		// Verification
-		Assertions.assertThat(savedReviewDto.getId()).isEqualTo(id);
-		Assertions.assertThat(savedReviewDto.getTitle()).isEqualTo("Ótima história");
-		Assertions.assertThat(savedReviewDto.getDate()).isEqualTo(LocalDateTime.of(2022, 11, 20, 21, 50));
-		Assertions.assertThat(savedReviewDto.getContent()).isEqualTo("A HQ mostra o Homem-Aranha em sua essência: "
-				+ "cheio de problemas, tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
-				+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
-				+ "família. É maravilhoso ver a determinação do herói e impossível não se identificar com ele, não se agoniar "
-				+ "com seus problemas e torcer pela sua vitória. É tudo que se espera de uma boa aventura de super-heróis e "
-				+ "um roteiro perfeito para um filme do Aracnídeo.");
+			// Verification
+			Assertions.assertThat(savedReviewDto.getId()).isEqualTo(id);
+			Assertions.assertThat(savedReviewDto.getTitle()).isEqualTo("Ótima história");
+			Assertions.assertThat(savedReviewDto.getDate()).isEqualTo(LocalDateTime.of(2022, 11, 20, 21, 50));
+			Assertions.assertThat(savedReviewDto.getContent()).isEqualTo("A HQ mostra o Homem-Aranha em sua essência: "
+					+ "cheio de problemas, tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
+					+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
+					+ "família. É maravilhoso ver a determinação do herói e impossível não se identificar com ele, não se agoniar "
+					+ "com seus problemas e torcer pela sua vitória. É tudo que se espera de uma boa aventura de super-heróis e "
+					+ "um roteiro perfeito para um filme do Aracnídeo.");
+		}
 	}
 	
 	@Test

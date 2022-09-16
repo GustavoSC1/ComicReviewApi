@@ -18,7 +18,6 @@ public class ReviewNewDtoBuilder {
 				+ "família. É maravilhoso ver a determinação do herói e impossível não se identificar com ele, não se agoniar "
 				+ "com seus problemas e torcer pela sua vitória. É tudo que se espera de uma boa aventura de super-heróis e "
 				+ "um roteiro perfeito para um filme do Aracnídeo.");
-		builder.reviewNewDto.setUserId(1l);
 		builder.reviewNewDto.setComicId(1l);
 		
 		return builder;

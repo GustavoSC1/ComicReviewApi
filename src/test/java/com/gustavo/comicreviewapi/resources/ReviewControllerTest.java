@@ -111,7 +111,7 @@ public class ReviewControllerTest {
 		// Verification
 		mvc.perform(request)	
 			.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
-			.andExpect(MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(4)));
+			.andExpect(MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(3)));
 	}
 	
 	@Test

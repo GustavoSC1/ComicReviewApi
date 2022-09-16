@@ -23,19 +23,23 @@ import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 public class ReviewService {
 	
 	private ReviewRepository reviewRepository;
-	
-	private UserService userService;
-	
+		
 	private ComicService comicService;
 
-	public ReviewService(ReviewRepository reviewRepository, UserService userService, ComicService comicService) {		
+	public ReviewService(ReviewRepository reviewRepository, ComicService comicService) {		
 		this.reviewRepository = reviewRepository;
-		this.userService = userService;
 		this.comicService = comicService;
 	}
 
 	public ReviewDTO save(ReviewNewDTO reviewDto) {
-		User user = userService.findById(reviewDto.getUserId());
+
+		UserSS userAuthenticated = UserService.authenticated();		
+		if(userAuthenticated==null) {
+			throw new AuthorizationException("Access denied");
+		}
+		
+		User user = new User();
+		user.setId(userAuthenticated.getId());
 		Comic comic = comicService.findById(reviewDto.getComicId());
 		
 		Review review = new Review(null, reviewDto.getTitle(), getDateTime(), reviewDto.getContent(), user, comic);

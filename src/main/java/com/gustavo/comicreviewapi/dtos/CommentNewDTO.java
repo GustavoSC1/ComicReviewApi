@@ -19,10 +19,6 @@ public class CommentNewDTO implements Serializable {
 	@Length(min=40, message="Content field cannot be less than 40 characters")
 	private String content;
 	
-	@NotNull(message="The user id field is required")
-	@Min(value=1, message="User id cannot be less than 1")
-	private Long userId;
-	
 	@NotNull(message="The review id field is required")
 	@Min(value=1, message="Review id cannot be less than 1")
 	private Long reviewId;
@@ -31,10 +27,9 @@ public class CommentNewDTO implements Serializable {
 		
 	}
 	
-	public CommentNewDTO(String title, String content, Long userId, Long reviewId) {
+	public CommentNewDTO(String title, String content, Long reviewId) {
 		this.title = title;
 		this.content = content;
-		this.userId = userId;
 		this.reviewId = reviewId;
 	}
 
@@ -44,10 +39,6 @@ public class CommentNewDTO implements Serializable {
 
 	public String getContent() {
 		return content;
-	}
-
-	public Long getUserId() {
-		return userId;
 	}
 
 	public Long getReviewId() {
@@ -60,10 +51,6 @@ public class CommentNewDTO implements Serializable {
 
 	public void setContent(String content) {
 		this.content = content;
-	}
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
 	}
 
 	public void setReviewId(Long reviewId) {

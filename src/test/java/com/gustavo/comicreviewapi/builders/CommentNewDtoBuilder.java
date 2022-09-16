@@ -11,7 +11,6 @@ public class CommentNewDtoBuilder {
 		builder.commentNewDto = new CommentNewDTO();
 		builder.commentNewDto.setTitle("Ótimo review");
 		builder.commentNewDto.setContent("Parabéns pelo review, com certeza irei adquirir essa HQ!");
-		builder.commentNewDto.setUserId(1l);
 		builder.commentNewDto.setReviewId(1l);
 		
 		return builder;

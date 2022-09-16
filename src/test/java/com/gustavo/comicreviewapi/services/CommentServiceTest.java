@@ -44,40 +44,41 @@ public class CommentServiceTest {
 	CommentRepository commentRepository;
 	
 	@MockBean
-	UserService userService;
-	
-	@MockBean
 	ReviewService reviewService;
 	
 	@BeforeEach
 	public void setUp() {
-		this.commentService = Mockito.spy(new CommentService(commentRepository, userService, reviewService));
+		this.commentService = Mockito.spy(new CommentService(commentRepository, reviewService));
 	}
 	
 	@Test
 	@DisplayName("Must save a comment")
 	public void saveCommentTest() {
-		// Scenario
-		Long id = 1l;
-		
-		CommentNewDTO newComment = CommentNewDtoBuilder.aCommentNewDTO().now();
-		User user = UserBuilder.aUser().withId(id).now();
-		Review review = ReviewBuilder.aReview().withId(id).now();
-		Comment savedComment =  CommentBuilder.aComment().withId(id).now();
-		
-		Mockito.when(userService.findById(id)).thenReturn(user);
-		Mockito.when(reviewService.findById(id)).thenReturn(review);
-		Mockito.doReturn(LocalDateTime.of(2022, 11, 20, 22, 10)).when(reviewService).getDateTime();
-		Mockito.when(commentRepository.save(Mockito.any(Comment.class))).thenReturn(savedComment);
-		
-		// Execution
-		CommentDTO savedCommentDto = commentService.save(newComment);
-		
-		// Verification
-		Assertions.assertThat(savedCommentDto.getId()).isEqualTo(id);
-		Assertions.assertThat(savedCommentDto.getTitle()).isEqualTo("Ótimo review");
-		Assertions.assertThat(savedCommentDto.getDate()).isEqualTo(LocalDateTime.of(2022, 11, 20, 22, 10));
-		Assertions.assertThat(savedCommentDto.getContent()).isEqualTo("Parabéns pelo review, com certeza irei adquirir essa HQ!");
+		try(MockedStatic<UserService> mockedStatic = Mockito.mockStatic(UserService.class)) {
+			// Scenario
+			Long id = 1l;
+			
+			CommentNewDTO newComment = CommentNewDtoBuilder.aCommentNewDTO().now();			
+			Review review = ReviewBuilder.aReview().withId(id).now();
+			Comment savedComment =  CommentBuilder.aComment().withId(id).now();
+			User user = UserBuilder.aUser().withId(id).now();
+			
+			UserSS userSS = new UserSS(id, user.getEmail(), user.getPassword(), user.getProfiles());
+			
+			mockedStatic.when(UserService::authenticated).thenReturn(userSS);
+			Mockito.when(reviewService.findById(id)).thenReturn(review);
+			Mockito.doReturn(LocalDateTime.of(2022, 11, 20, 22, 10)).when(reviewService).getDateTime();
+			Mockito.when(commentRepository.save(Mockito.any(Comment.class))).thenReturn(savedComment);
+			
+			// Execution
+			CommentDTO savedCommentDto = commentService.save(newComment);
+			
+			// Verification
+			Assertions.assertThat(savedCommentDto.getId()).isEqualTo(id);
+			Assertions.assertThat(savedCommentDto.getTitle()).isEqualTo("Ótimo review");
+			Assertions.assertThat(savedCommentDto.getDate()).isEqualTo(LocalDateTime.of(2022, 11, 20, 22, 10));
+			Assertions.assertThat(savedCommentDto.getContent()).isEqualTo("Parabéns pelo review, com certeza irei adquirir essa HQ!");
+		}
 	}
 	
 	@Test

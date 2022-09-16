@@ -23,19 +23,23 @@ import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 public class CommentService {
 	
 	private CommentRepository commentRepository;
-	
-	private UserService userService;
-	
+		
 	private ReviewService reviewService;
 
-	public CommentService(CommentRepository commentRepository, UserService userService, ReviewService reviewService) {
+	public CommentService(CommentRepository commentRepository, ReviewService reviewService) {
 		this.commentRepository = commentRepository;
-		this.userService = userService;
 		this.reviewService = reviewService;
 	}
 	
 	public CommentDTO save(CommentNewDTO commentDto) {
-		User user = userService.findById(commentDto.getUserId());
+		
+		UserSS userAuthenticated = UserService.authenticated();		
+		if(userAuthenticated==null) {
+			throw new AuthorizationException("Access denied");
+		}
+		
+		User user = new User();
+		user.setId(userAuthenticated.getId());
 		Review review = reviewService.findById(commentDto.getReviewId());
 	
 		Comment comment = new Comment(null, commentDto.getTitle(), getDateTime(), commentDto.getContent(), review, user);
