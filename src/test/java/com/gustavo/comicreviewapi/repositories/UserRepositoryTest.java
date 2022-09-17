@@ -76,8 +76,8 @@ public class UserRepositoryTest {
 	}
 	
 	@Test
-	@DisplayName("Must delete a review")
-	public void deleteReviewTest() {
+	@DisplayName("Must delete a user")
+	public void deleteUserTest() {
 		// Scenario
 		User user = UserBuilder.aUser().now();
 		user = entityManager.persist(user);

@@ -74,6 +74,12 @@ public class UserService {
 		return user;
 	}
 	
+	public void delete(Long id) {
+		User foundUser = findById(id);
+				
+		userRepository.delete(foundUser);
+	}
+	
 	public static UserSS authenticated() {
 		try {
 			// Obtem o usuário atual logado
