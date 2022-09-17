@@ -228,6 +228,19 @@ public class ReviewControllerTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER"})
+	@DisplayName("Must delete a review")
+	public void deleteReviewTest() throws Exception {
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+				.delete(REVIEW_API.concat("/" + 1));
+		
+		// Verification
+		mvc.perform(request)
+			.andExpect(MockMvcResultMatchers.status().isNoContent());
+	}
+	
+	@Test
 	@DisplayName("Must filter comments by review")
 	public void findCommentsByReviewTest() throws Exception {
 		// Scenario
