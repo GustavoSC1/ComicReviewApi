@@ -16,8 +16,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.gustavo.comicreviewapi.builders.ComicBuilder;
+import com.gustavo.comicreviewapi.builders.CommentBuilder;
 import com.gustavo.comicreviewapi.builders.ReviewBuilder;
 import com.gustavo.comicreviewapi.entities.Comic;
+import com.gustavo.comicreviewapi.entities.Comment;
 import com.gustavo.comicreviewapi.entities.Review;
 
 @ExtendWith(SpringExtension.class)
@@ -100,5 +102,28 @@ public class ReviewRepositoryTest {
 		Assertions.assertThat(foundReviews.getTotalElements()).isEqualTo(1);
 		Assertions.assertThat(foundReviews.getTotalPages()).isEqualTo(1);
 	}	
+	
+	@Test
+	@DisplayName("Must delete a review")
+	public void deleteReviewTest() {
+		// Scenario
+		Review review = ReviewBuilder.aReview().now();
+		review = entityManager.persist(review);
+		
+		Comment comment = CommentBuilder.aComment().withReview(review).now();		
+		comment = entityManager.persist(comment);
+		
+		Review foundReview = entityManager.find(Review.class, review.getId());
+		
+		// Execution
+		reviewRepository.delete(foundReview);
+		
+		Review deletedReview = entityManager.find(Review.class, review.getId());
+		Comment foundComment = entityManager.find(Comment.class, comment.getId());
+		
+		// Verification
+		Assertions.assertThat(deletedReview).isNull();
+		Assertions.assertThat(foundComment).isNotNull(); // Os commentárioso do review não devem ser apagados
+	}
 
 }
