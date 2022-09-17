@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.entities.Review;
+import com.gustavo.comicreviewapi.entities.User;
 
 public class ReviewBuilder {
 	
@@ -24,6 +25,11 @@ public class ReviewBuilder {
 				+ "um roteiro perfeito para um filme do Aracnídeo.");
 		
 		return builder;
+	}
+	
+	public ReviewBuilder withUser(User user) {
+		review.setUser(user);
+		return this;
 	}
 	
 	public ReviewBuilder withComic(Comic comic) {

@@ -108,11 +108,11 @@ public class ComicRepositoryTest {
 		comicRepository.delete(foundComic);
 		
 		Comic deletedComic = entityManager.find(Comic.class, comic.getId());
-		Review deletedReview = entityManager.find(Review.class, review.getId());
+		Review foundReview = entityManager.find(Review.class, review.getId());
 		
 		// Verification
 		Assertions.assertThat(deletedComic).isNull();
-		Assertions.assertThat(deletedReview).isNotNull(); // Os reviews do comic não devem ser apagados
+		Assertions.assertThat(foundReview).isNotNull(); // Os reviews do comic não devem ser apagados
 	}
 
 }

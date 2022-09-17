@@ -12,7 +12,15 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.gustavo.comicreviewapi.builders.ComicBuilder;
+import com.gustavo.comicreviewapi.builders.CommentBuilder;
+import com.gustavo.comicreviewapi.builders.ReviewBuilder;
 import com.gustavo.comicreviewapi.builders.UserBuilder;
+import com.gustavo.comicreviewapi.entities.Author;
+import com.gustavo.comicreviewapi.entities.Character;
+import com.gustavo.comicreviewapi.entities.Comic;
+import com.gustavo.comicreviewapi.entities.Comment;
+import com.gustavo.comicreviewapi.entities.Review;
 import com.gustavo.comicreviewapi.entities.User;
 
 @ExtendWith(SpringExtension.class)
@@ -65,6 +73,38 @@ public class UserRepositoryTest {
 		
 		// Verification
 		Assertions.assertThat(foundUser.isPresent()).isTrue();
+	}
+	
+	@Test
+	@DisplayName("Must delete a review")
+	public void deleteReviewTest() {
+		// Scenario
+		User user = UserBuilder.aUser().now();
+		user = entityManager.persist(user);
+		
+		Comic comic = ComicBuilder.aComic().withAuthorsList(new Author(null, "Stefan Petrucha"))
+				.withCharactersList(new Character(null, "Homem Aranha")).withId(1l).now();
+		comic = entityManager.persist(comic);
+		
+		Review review = ReviewBuilder.aReview().withComic(comic).withUser(user).now();
+		review = entityManager.persist(review);
+		
+		Comment comment = CommentBuilder.aComment().withReview(review).withUser(user).now();		
+		comment = entityManager.persist(comment);
+		
+		User foundUser = entityManager.find(User.class, user.getId());
+		
+		// Execution
+		userRepository.delete(foundUser);
+		
+		User deletedUser = entityManager.find(User.class, user.getId());
+		Review foundReview = entityManager.find(Review.class, review.getId());
+		Comment foundComment = entityManager.find(Comment.class, comment.getId());
+		
+		// Verification
+		Assertions.assertThat(deletedUser).isNull();
+		Assertions.assertThat(foundReview).isNotNull(); // Os reviews do usuário não devem ser apagados
+		Assertions.assertThat(foundComment).isNotNull(); // Os comentários do usuário não devem ser apagados
 	}
 	
 }

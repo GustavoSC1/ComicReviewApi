@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.gustavo.comicreviewapi.entities.Comment;
 import com.gustavo.comicreviewapi.entities.Review;
+import com.gustavo.comicreviewapi.entities.User;
 
 public class CommentBuilder {
 	
@@ -19,6 +20,11 @@ public class CommentBuilder {
 		builder.comment.setContent("Parabéns pelo review, com certeza irei adquirir essa HQ!");
 		
 		return builder;
+	}
+	
+	public CommentBuilder withUser(User user) {
+		comment.setUser(user);
+		return this;
 	}
 	
 	public CommentBuilder withReview(Review review) {
