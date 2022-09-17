@@ -334,6 +334,23 @@ public class ComicServiceTest {
 		Assertions.assertThat(foundComics.getContent().get(0).getDescription()).isEqualTo(comic.getDescription());
 	}
 	
+	@Test
+	@DisplayName("Must delete a comic")
+	public void deleteComicTest() {
+		// Scenario
+		Long id = 2l;
+		
+		Comic foundComic = ComicBuilder.aComic().withId(id).now();
+		
+		Mockito.doReturn(foundComic).when(comicService).findById(id);
+		
+		// Execution
+		comicService.delete(id);
+		
+		// Verification
+		Mockito.verify(comicRepository, Mockito.times(1)).delete(foundComic);
+	}
+	
 	public static Date obterData(int day, int mounth, int year){
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.DAY_OF_MONTH, day);

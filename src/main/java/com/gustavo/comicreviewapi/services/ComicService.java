@@ -152,6 +152,12 @@ public class ComicService {
 		return comicRepository.findByTitle(title, pageRequest).map(obj -> new ComicDTO(obj));
 	}
 	
+	public void delete(Long id) {
+		Comic foundComic = findById(id);
+		
+		comicRepository.delete(foundComic);
+	}
+	
 	public void checkDiscount(ComicDTO comicDto) {
 		Double percentual = 10.0 / 100.0; 
 		
