@@ -101,7 +101,7 @@ public class ComicControllerTest {
 	
 	
 	@Test
-	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER"})
+	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER", "ADMIN"})
 	@DisplayName("Should throw validation error when there is not enough data for comic creation")
 	public void createInvalidComicTest() throws Exception {
 		// Scenario
@@ -284,6 +284,19 @@ public class ComicControllerTest {
 		mvc.perform(request)
 		 .andExpect( MockMvcResultMatchers.status().isUnprocessableEntity() )
 		 .andExpect( MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(2)) );
+	}
+	
+	@Test
+	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER", "ADMIN"})
+	@DisplayName("Must delete a comic")
+	public void deleteComicTest() throws Exception {
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+				.delete(COMIC_API.concat("/" + 1));
+		
+		// Verification
+		mvc.perform(request)
+			.andExpect(MockMvcResultMatchers.status().isNoContent());
 	}
 	
 }
