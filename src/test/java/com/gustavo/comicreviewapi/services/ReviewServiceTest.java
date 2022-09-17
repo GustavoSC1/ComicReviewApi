@@ -257,4 +257,29 @@ public class ReviewServiceTest {
 		Assertions.assertThat(foundReviews.getContent().get(0).getDate()).isEqualTo(review.getDate());
 	}
 	
+	@Test
+	@DisplayName("Must delete a review")
+	public void deleteReviewTest() {
+		try(MockedStatic<UserService> mockedStatic = Mockito.mockStatic(UserService.class)) {
+			// Scenario
+			Long id = 2l;
+		
+			User user = UserBuilder.aUser().withId(id).now();
+			
+			Review foundReview = ReviewBuilder.aReview().withId(id).now();
+			foundReview.setUser(user);
+			
+			UserSS userSS = new UserSS(id, user.getEmail(), user.getPassword(), user.getProfiles());
+			
+			mockedStatic.when(UserService::authenticated).thenReturn(userSS);
+			Mockito.doReturn(foundReview).when(reviewService).findById(id);
+				
+			// Execution
+			reviewService.delete(id);
+			
+			// Verification
+			Mockito.verify(reviewRepository, Mockito.times(1)).delete(foundReview);				
+		}
+	}
+	
 }
