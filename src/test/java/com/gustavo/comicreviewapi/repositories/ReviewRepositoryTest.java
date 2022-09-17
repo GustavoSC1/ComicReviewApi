@@ -123,7 +123,7 @@ public class ReviewRepositoryTest {
 		
 		// Verification
 		Assertions.assertThat(deletedReview).isNull();
-		Assertions.assertThat(foundComment).isNotNull(); // Os commentárioso do review não devem ser apagados
+		Assertions.assertThat(foundComment).isNotNull(); // Os comentários do review não devem ser apagados
 	}
 
 }

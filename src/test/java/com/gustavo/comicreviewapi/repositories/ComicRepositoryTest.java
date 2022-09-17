@@ -16,9 +16,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.gustavo.comicreviewapi.builders.ComicBuilder;
+import com.gustavo.comicreviewapi.builders.ReviewBuilder;
 import com.gustavo.comicreviewapi.entities.Author;
 import com.gustavo.comicreviewapi.entities.Character;
 import com.gustavo.comicreviewapi.entities.Comic;
+import com.gustavo.comicreviewapi.entities.Review;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -85,6 +87,32 @@ public class ComicRepositoryTest {
 		Assertions.assertThat(foundComics.getNumberOfElements()).isEqualTo(1);
 		Assertions.assertThat(foundComics.getTotalElements()).isEqualTo(1);
 		Assertions.assertThat(foundComics.getTotalPages()).isEqualTo(1);
+	}
+	
+	@Test
+	@DisplayName("Must delete a comic")
+	public void deleteComicTest() {
+		// Scenario
+		Long id = 1l;
+		
+		Comic comic = ComicBuilder.aComic().withAuthorsList(new Author(null, "Stefan Petrucha"))
+				.withCharactersList(new Character(null, "Homem Aranha")).withId(id).now();
+		comic = entityManager.persist(comic);
+		
+		Review review = ReviewBuilder.aReview().withComic(comic).now();
+		review = entityManager.persist(review);
+		
+		Comic foundComic = entityManager.find(Comic.class, comic.getId());
+		
+		// Execution
+		comicRepository.delete(foundComic);
+		
+		Comic deletedComic = entityManager.find(Comic.class, comic.getId());
+		Review deletedReview = entityManager.find(Review.class, review.getId());
+		
+		// Verification
+		Assertions.assertThat(deletedComic).isNull();
+		Assertions.assertThat(deletedReview).isNotNull(); // Os reviews do comic não devem ser apagados
 	}
 
 }
