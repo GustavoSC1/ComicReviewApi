@@ -82,7 +82,19 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>			
 			<artifactId>spring-security-test</artifactId>			
-		</dependency>		
+		</dependency>	
+		
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-mock</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-jackson</artifactId>
+			<scope>test</scope>
+		</dependency>	
 	</dependencies>
 	
 	<dependencyManagement>
