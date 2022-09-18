@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
@@ -21,6 +22,7 @@ import com.gustavo.comicreviewapi.entities.Rate;
 import com.gustavo.comicreviewapi.entities.RatePK;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.RateRepository;
+import com.gustavo.comicreviewapi.security.UserSS;
 import com.gustavo.comicreviewapi.services.exceptions.BusinessException;
 
 @ExtendWith(SpringExtension.class)
@@ -46,25 +48,30 @@ public class RateServiceTest {
 	@Test
 	@DisplayName("Must save a rate")
 	public void saveRateTest() {
-		// Scenario
-		Long id = 2l;
-		
-		User user = UserBuilder.aUser().withId(id).now();
-		Comic comic = ComicBuilder.aComic().withId(id).now();
-		
-		RateNewDTO newRate = new RateNewDTO(id, 4);
-		
-		Mockito.when(userService.findById(id)).thenReturn(user);
-		
-		Mockito.when(comicService.findById(id)).thenReturn(comic);
-		
-		Mockito.doReturn(null).when(rateService).findById(user, comic);
-		
-		// Execution
-		rateService.save(id, newRate);
-		
-		// Verification
-		Mockito.verify(rateRepository, Mockito.times(1)).save(Mockito.any(Rate.class));
+		try(MockedStatic<UserService> mockedStatic = Mockito.mockStatic(UserService.class)) {
+			// Scenario
+			Long id = 2l;
+			
+			User user = UserBuilder.aUser().withId(id).now();
+			Comic comic = ComicBuilder.aComic().withId(id).now();
+			UserSS userSS = new UserSS(id, user.getEmail(), user.getPassword(), user.getProfiles());
+			
+			RateNewDTO newRate = new RateNewDTO(id, 4);
+						
+			mockedStatic.when(UserService::authenticated).thenReturn(userSS);
+			
+			Mockito.when(userService.findById(id)).thenReturn(user);
+			
+			Mockito.when(comicService.findById(id)).thenReturn(comic);
+			
+			Mockito.doReturn(null).when(rateService).findById(user, comic);
+			
+			// Execution
+			rateService.save(id, newRate);
+			
+			// Verification
+			Mockito.verify(rateRepository, Mockito.times(1)).save(Mockito.any(Rate.class));
+		}
 	}
 	
 	@Test
