@@ -62,8 +62,6 @@ public class CommentRepositoryTest {
 	@DisplayName("Must filter comments by review")
 	public void findCommentsByReviewTest() {
 		// Scenario
-		Long id = 1l;
-		
 		Review review = ReviewBuilder.aReview().now();
 		review = entityManager.persist(review);
 		
@@ -74,7 +72,7 @@ public class CommentRepositoryTest {
 		entityManager.persist(comment);
 		
 		// Execution
-		Page<Comment> foundComments = commentRepository.findCommentsByReview(id, pageRequest);
+		Page<Comment> foundComments = commentRepository.findCommentsByReview(review.getId(), pageRequest);
 		
 		// Verification
 		Assertions.assertThat(foundComments.getNumberOfElements()).isEqualTo(1);
