@@ -56,7 +56,7 @@ public class RateServiceTest {
 			Comic comic = ComicBuilder.aComic().withId(id).now();
 			UserSS userSS = new UserSS(id, user.getEmail(), user.getPassword(), user.getProfiles());
 			
-			RateNewDTO newRate = new RateNewDTO(id, 4);
+			RateNewDTO newRate = new RateNewDTO(4);
 						
 			mockedStatic.when(UserService::authenticated).thenReturn(userSS);
 			
@@ -87,7 +87,7 @@ public class RateServiceTest {
 			
 			Rate rate = new Rate(user, comic, 4);
 			
-			RateNewDTO newRate = new RateNewDTO(id, 4);
+			RateNewDTO newRate = new RateNewDTO(4);
 			
 			mockedStatic.when(UserService::authenticated).thenReturn(userSS);
 			

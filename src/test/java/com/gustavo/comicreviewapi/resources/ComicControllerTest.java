@@ -242,7 +242,7 @@ public class ComicControllerTest {
 		// Scenario
 		Long id = 1l;
 		
-		RateNewDTO newRate = new RateNewDTO(id, 4);
+		RateNewDTO newRate = new RateNewDTO(4);
 		
 		String json = new ObjectMapper().writeValueAsString(newRate);
 		
@@ -283,7 +283,7 @@ public class ComicControllerTest {
 		// Verification
 		mvc.perform(request)
 		 .andExpect( MockMvcResultMatchers.status().isUnprocessableEntity() )
-		 .andExpect( MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(2)) );
+		 .andExpect( MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(1)) );
 	}
 	
 	@Test

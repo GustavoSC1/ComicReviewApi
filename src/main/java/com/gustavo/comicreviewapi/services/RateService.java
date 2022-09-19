@@ -28,12 +28,14 @@ public class RateService {
 	}
 	
 	public void save(Long comicId, RateNewDTO rateDto) {		
-		User user = userService.findById(rateDto.getUserId());
-				
-		UserSS userAuthenticated = UserService.authenticated();		
-		if(userAuthenticated==null || !user.getId().equals(userAuthenticated.getId())) {
+						
+		UserSS userAuthenticated = UserService.authenticated();
+		
+		if(userAuthenticated==null) {
 			throw new AuthorizationException("Access denied");
 		}
+		
+		User user = userService.findById(userAuthenticated.getId());
 		
 		Comic comic = comicService.findById(comicId);
 		
