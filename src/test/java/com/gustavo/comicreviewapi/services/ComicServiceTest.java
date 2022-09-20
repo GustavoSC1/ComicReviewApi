@@ -179,6 +179,7 @@ public class ComicServiceTest {
 		Comic comic = ComicBuilder.aComic().withAuthorsList(new Author(null, "Stefan Petrucha"))
 				.withCharactersList(new Character(null, "Homem Aranha")).withId(Long.valueOf(id)).now();
 		
+		Mockito.doReturn(getDate(16,11,2022)).when(comicService).getDate();
 		Mockito.doReturn(comic).when(comicService).fromDTO(comicNewDto);
 		Mockito.when(comicRepository.save(Mockito.any(Comic.class))).thenReturn(comic);
 		
@@ -195,6 +196,7 @@ public class ComicServiceTest {
 				+ "mítica cobiçada pelo Rei do Crime e pelos facínoras da Maggia, o maior sindicato criminal "
 				+ "da cidade.");
 		Assertions.assertThat(savedComic.getPrice()).isEqualTo(38.61F);
+		Assertions.assertThat(savedComic.getActiveDiscount()).isEqualTo(false);
 		Assertions.assertThat(savedComic.getCharacters().stream().findFirst().get().getName()).isEqualTo("Homem Aranha");
 		Assertions.assertThat(savedComic.getAuthors().stream().findFirst().get().getName()).isEqualTo("Stefan Petrucha");
 	}

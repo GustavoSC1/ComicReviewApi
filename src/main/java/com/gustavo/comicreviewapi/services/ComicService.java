@@ -62,8 +62,10 @@ public class ComicService {
 	public ComicDTO save(ComicNewDTO objDto) {
 		Comic comic = fromDTO(objDto);
 		comic = comicRepository.save(comic);
+		ComicDTO comicDto= new ComicDTO(comic);
+		checkDiscount(comicDto);
 		
-		return new ComicDTO(comic);
+		return comicDto;
 	}
 		
 	public Comic fromDTO(ComicNewDTO objDto) {		
