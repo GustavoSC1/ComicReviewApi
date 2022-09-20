@@ -149,7 +149,13 @@ public class ComicService {
 	public Page<ComicDTO> findByTitle(String title, Integer page, Integer linesPerPage, String orderBy, String direction) {
 		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
 		
-		return comicRepository.findByTitle(title, pageRequest).map(obj -> new ComicDTO(obj));
+		Page<ComicDTO> comicDTO = comicRepository.findByTitle(title, pageRequest).map(obj -> new ComicDTO(obj));
+		
+		for(ComicDTO objDto: comicDTO) {
+			checkDiscount(objDto);
+		}			
+		
+		return comicDTO;
 	}
 	
 	public void delete(Long id) {

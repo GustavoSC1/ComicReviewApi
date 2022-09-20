@@ -252,7 +252,7 @@ public class ComicServiceTest {
 		Comic comic = ComicBuilder.aComic().withAuthorsList(new Author(null, "Stefan Petrucha"))
 				.withCharactersList(new Character(null, "Homem Aranha")).withId(id).now();
 		
-		Mockito.doReturn(obterData(16,11,2022)).when(comicService).getDate();
+		Mockito.doReturn(getDate(16,11,2022)).when(comicService).getDate();
 		
 		Mockito.doReturn(comic).when(comicService).findById(id);
 		
@@ -282,7 +282,7 @@ public class ComicServiceTest {
 		ComicDTO comicDto = ComicDtoBuilder.aComicDTO().withCharactersDtoList(new CharacterDTO(null, "Homem Aranha"))
 				.withAuthorsList(new AuthorDTO(null, "Stefan Petrucha")).withId(Long.valueOf(2l)).now();
 						
-		Mockito.doReturn(obterData(15,11,2022)).when(comicService).getDate();
+		Mockito.doReturn(getDate(15,11,2022)).when(comicService).getDate();
 		
 		// Execution
 		comicService.checkDiscount(comicDto);
@@ -320,6 +320,7 @@ public class ComicServiceTest {
 		Page<Comic> page = new PageImpl<Comic>(list, pageRequest, list.size()); //(conteúdo desta página, informações de paginação, quantidade total de resultados encontrados)
 		
 		Mockito.when(comicRepository.findByTitle(Mockito.anyString(), Mockito.any(PageRequest.class))).thenReturn(page);
+		Mockito.doReturn(getDate(15,11,2022)).when(comicService).getDate();
 		
 		// Execution
 		Page<ComicDTO> foundComics = comicService.findByTitle("Eternamente", 0, 24, "title", "ASC");
@@ -330,8 +331,9 @@ public class ComicServiceTest {
 		Assertions.assertThat(foundComics.getPageable().getPageSize()).isEqualTo(24);		
 		Assertions.assertThat(foundComics.getContent().get(0).getId()).isEqualTo(id);
 		Assertions.assertThat(foundComics.getContent().get(0).getTitle()).isEqualTo(comic.getTitle());
-		Assertions.assertThat(foundComics.getContent().get(0).getPrice()).isEqualTo(comic.getPrice());
 		Assertions.assertThat(foundComics.getContent().get(0).getDescription()).isEqualTo(comic.getDescription());
+		Assertions.assertThat(foundComics.getContent().get(0).getPrice()).isEqualTo(34.75F);
+		Assertions.assertThat(foundComics.getContent().get(0).getActiveDiscount()).isEqualTo(true);
 	}
 	
 	@Test
@@ -351,7 +353,7 @@ public class ComicServiceTest {
 		Mockito.verify(comicRepository, Mockito.times(1)).delete(foundComic);
 	}
 	
-	public static Date obterData(int day, int mounth, int year){
+	public static Date getDate(int day, int mounth, int year){
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.DAY_OF_MONTH, day);
 		calendar.set(Calendar.MONTH, mounth - 1);
