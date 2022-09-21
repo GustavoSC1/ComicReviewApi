@@ -17,8 +17,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.gustavo.comicreviewapi.builders.CommentBuilder;
 import com.gustavo.comicreviewapi.builders.ReviewBuilder;
+import com.gustavo.comicreviewapi.builders.UserBuilder;
 import com.gustavo.comicreviewapi.entities.Comment;
 import com.gustavo.comicreviewapi.entities.Review;
+import com.gustavo.comicreviewapi.entities.User;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -73,6 +75,28 @@ public class CommentRepositoryTest {
 		
 		// Execution
 		Page<Comment> foundComments = commentRepository.findCommentsByReview(review.getId(), pageRequest);
+		
+		// Verification
+		Assertions.assertThat(foundComments.getNumberOfElements()).isEqualTo(1);
+		Assertions.assertThat(foundComments.getTotalElements()).isEqualTo(1);
+		Assertions.assertThat(foundComments.getTotalPages()).isEqualTo(1);
+	}
+	
+	@Test
+	@DisplayName("Must filter comments by user")
+	public void findCommentsByUserTest() {
+		// Scenario
+		User user = UserBuilder.aUser().now();
+		user = entityManager.persist(user);
+		
+		PageRequest pageRequest = PageRequest.of(0, 24, Direction.valueOf("DESC"), "date");
+						
+		Comment comment = CommentBuilder.aComment().withUser(user).now();
+		
+		entityManager.persist(comment);
+		
+		// Execution
+		Page<Comment> foundComments = commentRepository.findCommentsByUser(user.getId(), pageRequest);
 		
 		// Verification
 		Assertions.assertThat(foundComments.getNumberOfElements()).isEqualTo(1);
