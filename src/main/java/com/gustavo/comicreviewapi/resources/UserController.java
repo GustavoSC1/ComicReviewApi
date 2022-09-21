@@ -20,10 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.gustavo.comicreviewapi.dtos.CommentDTO;
+import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 import com.gustavo.comicreviewapi.dtos.UserDTO;
 import com.gustavo.comicreviewapi.dtos.UserNewDTO;
 import com.gustavo.comicreviewapi.dtos.UserUpdateDTO;
 import com.gustavo.comicreviewapi.services.CommentService;
+import com.gustavo.comicreviewapi.services.ReviewService;
 import com.gustavo.comicreviewapi.services.UserService;
 
 @RestController
@@ -35,6 +37,9 @@ public class UserController {
 	
 	@Autowired
 	private CommentService commentService;
+	
+	@Autowired
+	private ReviewService reviewService;
 	
 	@PostMapping
 	public ResponseEntity<UserDTO> save(@Valid @RequestBody UserNewDTO userNewDto) {
@@ -79,6 +84,19 @@ public class UserController {
 		Page<CommentDTO> list = commentService.findCommentsByUser(userId, page, linesPerPage, orderBy, direction);
 		
 		return ResponseEntity.ok().body(list);		
+	}
+	
+	@GetMapping("/{userId}/reviews")
+	public ResponseEntity<Page <ReviewDTO>> findReviewsByUser(
+					@PathVariable Long userId,
+					@RequestParam(value="page", defaultValue="0") Integer page,
+					@RequestParam(value="linesPerPage", defaultValue="24") Integer linesPerPage,
+					@RequestParam(value="orderBy", defaultValue="date") String orderBy,
+					@RequestParam(value="direction", defaultValue="DESC") String direction) {
+		
+		Page<ReviewDTO> list = reviewService.findReviewsByUser(userId, page, linesPerPage, orderBy, direction);
+		
+		return ResponseEntity.ok().body(list);	
 	}
 
 }
