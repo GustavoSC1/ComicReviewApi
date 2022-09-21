@@ -5,6 +5,7 @@ import java.net.URI;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,12 +15,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.gustavo.comicreviewapi.dtos.CommentDTO;
 import com.gustavo.comicreviewapi.dtos.UserDTO;
 import com.gustavo.comicreviewapi.dtos.UserNewDTO;
 import com.gustavo.comicreviewapi.dtos.UserUpdateDTO;
+import com.gustavo.comicreviewapi.services.CommentService;
 import com.gustavo.comicreviewapi.services.UserService;
 
 @RestController
@@ -28,6 +32,9 @@ public class UserController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private CommentService commentService;
 	
 	@PostMapping
 	public ResponseEntity<UserDTO> save(@Valid @RequestBody UserNewDTO userNewDto) {
@@ -59,6 +66,19 @@ public class UserController {
 		userService.delete(id);
 		
 		return ResponseEntity.noContent().build();
+	}
+	
+	@GetMapping("/{userId}/comments")
+	public ResponseEntity<Page <CommentDTO>> findCommentsByUser(
+					@PathVariable Long userId,
+					@RequestParam(value="page", defaultValue="0") Integer page,
+					@RequestParam(value="linesPerPage", defaultValue="24") Integer linesPerPage,
+					@RequestParam(value="orderBy", defaultValue="date") String orderBy,
+					@RequestParam(value="direction", defaultValue="DESC") String direction) {
+		
+		Page<CommentDTO> list = commentService.findCommentsByUser(userId, page, linesPerPage, orderBy, direction);
+		
+		return ResponseEntity.ok().body(list);		
 	}
 
 }
