@@ -85,6 +85,12 @@ public class ReviewService {
 		return reviewRepository.findReviewsByComic(comicId, pageRequest).map(obj -> new ReviewDTO(obj));
 	}
 	
+	public Page<ReviewDTO> findReviewsByUser(Long userId, Integer page, Integer linesPerPage, String orderBy, String direction) {
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
+		
+		return reviewRepository.findReviewsByUser(userId, pageRequest).map(obj -> new ReviewDTO(obj));
+	}
+	
 	public Page<ReviewDTO> findByTitle(String title, Integer page, Integer linesPerPage, String orderBy, String direction) {
 		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
 		

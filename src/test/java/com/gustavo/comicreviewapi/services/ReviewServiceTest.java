@@ -229,6 +229,35 @@ public class ReviewServiceTest {
 	}
 	
 	@Test
+	@DisplayName("Must filter reviews by user")
+	public void findReviewsByUserTest() {
+		// Scenario
+		Long id = 2l;
+		
+		Review review = ReviewBuilder.aReview().withId(id).now();
+		
+		List<Review> list = Arrays.asList(review);
+		
+		PageRequest pageRequest = PageRequest.of(0, 24);
+		
+		Page<Review> page = new PageImpl<Review>(list, pageRequest, list.size());
+		
+		Mockito.when(reviewRepository.findReviewsByUser(Mockito.anyLong(), Mockito.any(PageRequest.class))).thenReturn(page);
+		
+		// Execution
+		Page<ReviewDTO> foundReviews = reviewService.findReviewsByUser(id, 0, 24, "date", "DESC");
+		
+		// Verification
+		Assertions.assertThat(foundReviews.getTotalElements()).isEqualTo(1);		
+		Assertions.assertThat(foundReviews.getPageable().getPageNumber()).isEqualTo(0);
+		Assertions.assertThat(foundReviews.getPageable().getPageSize()).isEqualTo(24);		
+		Assertions.assertThat(foundReviews.getContent().get(0).getId()).isEqualTo(id);
+		Assertions.assertThat(foundReviews.getContent().get(0).getTitle()).isEqualTo(review.getTitle());
+		Assertions.assertThat(foundReviews.getContent().get(0).getContent()).isEqualTo(review.getContent());
+		Assertions.assertThat(foundReviews.getContent().get(0).getDate()).isEqualTo(review.getDate());	
+	}
+	
+	@Test
 	@DisplayName("Must filter review")
 	public void findByTitleTest() {
 		// Scenario
