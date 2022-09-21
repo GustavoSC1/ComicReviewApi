@@ -202,6 +202,35 @@ public class CommentServiceTest {
 	}
 	
 	@Test
+	@DisplayName("Must filter comments by user")
+	public void findCommentsByUserTest() {
+		// Scenario
+		Long id = 2l;
+		
+		Comment comment = CommentBuilder.aComment().withId(id).now();
+		
+		List<Comment> list = Arrays.asList(comment);
+		
+		PageRequest pageRequest = PageRequest.of(0, 24);
+		
+		Page<Comment> page = new PageImpl<Comment>(list, pageRequest, list.size());
+		
+		Mockito.when(commentRepository.findCommentsByUser(Mockito.anyLong(), Mockito.any(PageRequest.class))).thenReturn(page);
+		
+		// Execution
+		Page<CommentDTO> foundComments = commentService.findCommentsByUser(id, 0, 24, "date", "DESC");
+		
+		// Verification
+		Assertions.assertThat(foundComments.getTotalElements()).isEqualTo(1);		
+		Assertions.assertThat(foundComments.getPageable().getPageNumber()).isEqualTo(0);
+		Assertions.assertThat(foundComments.getPageable().getPageSize()).isEqualTo(24);		
+		Assertions.assertThat(foundComments.getContent().get(0).getId()).isEqualTo(id);
+		Assertions.assertThat(foundComments.getContent().get(0).getTitle()).isEqualTo(comment.getTitle());
+		Assertions.assertThat(foundComments.getContent().get(0).getContent()).isEqualTo(comment.getContent());
+		Assertions.assertThat(foundComments.getContent().get(0).getDate()).isEqualTo(comment.getDate());
+	}
+	
+	@Test
 	@DisplayName("Must delete a comment")
 	public void deleteCommentTest() {
 		try(MockedStatic<UserService> mockedStatic = Mockito.mockStatic(UserService.class)) {

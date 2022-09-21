@@ -79,10 +79,16 @@ public class CommentService {
 		return new CommentDTO(comment);
 	}
 	
-	public Page<CommentDTO> findCommentsByReview(Long reviewId,Integer page, Integer linesPerPage, String orderBy, String direction) {
+	public Page<CommentDTO> findCommentsByReview(Long reviewId, Integer page, Integer linesPerPage, String orderBy, String direction) {
 		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
 		
 		return commentRepository.findCommentsByReview(reviewId, pageRequest).map(obj -> new CommentDTO(obj));		
+	}
+	
+	public Page<CommentDTO> findCommentsByUser(Long userId, Integer page, Integer linesPerPage, String orderBy, String direction) {
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
+		
+		return commentRepository.findCommentsByUser(userId, pageRequest).map(obj -> new CommentDTO(obj));		
 	}
 	
 	public void delete(Long id) {
