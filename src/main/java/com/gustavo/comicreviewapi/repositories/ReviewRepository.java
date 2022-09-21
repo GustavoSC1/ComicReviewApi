@@ -12,6 +12,9 @@ import com.gustavo.comicreviewapi.entities.Review;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 	
+	@Query("SELECT obj FROM Review obj WHERE obj.user.id = :userId")
+	Page<Review> findReviewsByUser(@Param("userId") Long userId, Pageable pageable);
+	
 	@Query("SELECT obj FROM Review obj WHERE obj.comic.id = :comicId")
 	Page<Review> findReviewsByComic(@Param("comicId") Long comicId, Pageable pageable);
 	

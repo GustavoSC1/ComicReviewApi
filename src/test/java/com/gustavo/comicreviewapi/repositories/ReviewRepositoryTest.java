@@ -18,9 +18,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.gustavo.comicreviewapi.builders.ComicBuilder;
 import com.gustavo.comicreviewapi.builders.CommentBuilder;
 import com.gustavo.comicreviewapi.builders.ReviewBuilder;
+import com.gustavo.comicreviewapi.builders.UserBuilder;
 import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.entities.Comment;
 import com.gustavo.comicreviewapi.entities.Review;
+import com.gustavo.comicreviewapi.entities.User;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -77,6 +79,30 @@ public class ReviewRepositoryTest {
 		
 		// Execution
 		Page<Review> foundReviews = reviewRepository.findReviewsByComic(id, pageRequest);
+		
+		// Verification
+		Assertions.assertThat(foundReviews.getNumberOfElements()).isEqualTo(1);
+		Assertions.assertThat(foundReviews.getTotalElements()).isEqualTo(1);
+		Assertions.assertThat(foundReviews.getTotalPages()).isEqualTo(1);
+	}
+	
+	@Test
+	@DisplayName("Must filter reviews by user")
+	public void findReviewsByUserTest() {
+		// Scenario
+		Long id = 1l;
+		
+		User user = UserBuilder.aUser().now();
+		user = entityManager.persist(user);
+		
+		PageRequest pageRequest = PageRequest.of(0, 24, Direction.valueOf("DESC"), "date");
+		
+		Review review = ReviewBuilder.aReview().withUser(user).now();
+		
+		entityManager.persist(review);
+		
+		// Execution
+		Page<Review> foundReviews = reviewRepository.findReviewsByUser(id, pageRequest);
 		
 		// Verification
 		Assertions.assertThat(foundReviews.getNumberOfElements()).isEqualTo(1);
