@@ -12,7 +12,6 @@ import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.RateRepository;
 import com.gustavo.comicreviewapi.security.UserSS;
 import com.gustavo.comicreviewapi.services.exceptions.AuthorizationException;
-import com.gustavo.comicreviewapi.services.exceptions.BusinessException;
 
 @Service
 public class RateService {
@@ -44,7 +43,7 @@ public class RateService {
 		if(rate == null) {
 			rate = new Rate(user, comic, rateDto.getRate());
 		} else {
-			throw new BusinessException("User has already rated this comic!");
+			rate.setRate(rateDto.getRate());
 		}		
 				
 		rateRepository.save(rate);		

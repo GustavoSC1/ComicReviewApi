@@ -2,7 +2,6 @@ package com.gustavo.comicreviewapi.services;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,7 +22,6 @@ import com.gustavo.comicreviewapi.entities.RatePK;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.RateRepository;
 import com.gustavo.comicreviewapi.security.UserSS;
-import com.gustavo.comicreviewapi.services.exceptions.BusinessException;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -71,40 +69,6 @@ public class RateServiceTest {
 			
 			// Verification
 			Mockito.verify(rateRepository, Mockito.times(1)).save(Mockito.any(Rate.class));
-		}
-	}
-	
-	@Test
-	@DisplayName("Should throw business error when trying to rate a comic more than once")
-	public void shouldNotRateAComicMoreThanOnce() {
-		try(MockedStatic<UserService> mockedStatic = Mockito.mockStatic(UserService.class)) {
-			// Scenario
-			Long id = 2l;
-			
-			User user = UserBuilder.aUser().withId(id).now();
-			Comic comic = ComicBuilder.aComic().withId(id).now();
-			UserSS userSS = new UserSS(id, user.getEmail(), user.getPassword(), user.getProfiles());
-			
-			Rate rate = new Rate(user, comic, 4);
-			
-			RateNewDTO newRate = new RateNewDTO(4);
-			
-			mockedStatic.when(UserService::authenticated).thenReturn(userSS);
-			
-			Mockito.when(userService.findById(id)).thenReturn(user);
-			
-			Mockito.when(comicService.findById(id)).thenReturn(comic);
-			
-			Mockito.doReturn(rate).when(rateService).findById(user, comic);
-			
-			// Execution and Verification
-			Exception exception = assertThrows(BusinessException.class, () -> {rateService.save(id, newRate);});
-			
-			String expectedMessage = "User has already rated this comic!";
-			String actualMessage = exception.getMessage();
-			
-			Assertions.assertThat(actualMessage).isEqualTo(expectedMessage);
-			Mockito.verify(rateRepository, Mockito.never()).save(Mockito.any(Rate.class));
 		}
 	}
 	
