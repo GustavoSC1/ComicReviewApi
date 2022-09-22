@@ -10,7 +10,6 @@ import com.gustavo.comicreviewapi.dtos.UserDTO;
 import com.gustavo.comicreviewapi.dtos.UserNewDTO;
 import com.gustavo.comicreviewapi.dtos.UserUpdateDTO;
 import com.gustavo.comicreviewapi.entities.User;
-import com.gustavo.comicreviewapi.entities.enums.Profile;
 import com.gustavo.comicreviewapi.repositories.UserRepository;
 import com.gustavo.comicreviewapi.security.UserSS;
 import com.gustavo.comicreviewapi.services.exceptions.AuthorizationException;
@@ -49,8 +48,14 @@ public class UserService {
 	}
 	
 	public UserDTO update(Long id, UserUpdateDTO userDto) {
-		User user = findById(id);
+			
+		UserSS userAuthenticated = authenticated();		
+		if(userAuthenticated==null || !id.equals(userAuthenticated.getId())) {
+			throw new AuthorizationException("Access denied");
+		}
 		
+		User user = findById(id);
+				
 		user.setName(userDto.getName());
 		user.setEmail(userDto.getEmail());
 		user.setPhone(userDto.getPhone());
@@ -62,12 +67,7 @@ public class UserService {
 	}
 	
 	public User findById(Long id) {
-		
-		UserSS userAuthenticated = authenticated();		
-		if(userAuthenticated==null || !userAuthenticated.hasRole(Profile.ADMIN) && !id.equals(userAuthenticated.getId())) {
-			throw new AuthorizationException("Access denied");
-		}
-		
+				
 		Optional<User> userOptional = userRepository.findById(id);
 		User user = userOptional.orElseThrow(() -> new ObjectNotFoundException("Object not found! Id: " + id + ", Type: " + User.class.getName()));
 	

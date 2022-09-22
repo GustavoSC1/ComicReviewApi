@@ -90,8 +90,6 @@ public class ReviewRepositoryTest {
 	@DisplayName("Must filter reviews by user")
 	public void findReviewsByUserTest() {
 		// Scenario
-		Long id = 1l;
-		
 		User user = UserBuilder.aUser().now();
 		user = entityManager.persist(user);
 		
@@ -102,7 +100,7 @@ public class ReviewRepositoryTest {
 		entityManager.persist(review);
 		
 		// Execution
-		Page<Review> foundReviews = reviewRepository.findReviewsByUser(id, pageRequest);
+		Page<Review> foundReviews = reviewRepository.findReviewsByUser(user.getId(), pageRequest);
 		
 		// Verification
 		Assertions.assertThat(foundReviews.getNumberOfElements()).isEqualTo(1);
