@@ -44,6 +44,7 @@ public class RateRepositoryTest {
 		// Verification
 		Assertions.assertThat(savedRate.getId().getUser().getId()).isNotNull();
 		Assertions.assertThat(savedRate.getId().getComic().getId()).isNotNull();
+		Assertions.assertThat(savedRate.getRate()).isEqualTo(4);
 	}
 	
 	@Test

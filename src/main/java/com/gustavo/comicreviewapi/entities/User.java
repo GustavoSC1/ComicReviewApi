@@ -41,6 +41,9 @@ public class User {
 	
 	@OneToMany(mappedBy = "id.user")
 	private Set<Rate> ratings = new HashSet<>();
+	
+	@OneToMany(mappedBy = "id.user")
+	private Set<Like> likes = new HashSet<>();
 		
 	public User() {
 		addProfile(Profile.USER);
@@ -97,6 +100,10 @@ public class User {
 		return ratings;
 	}
 
+	public Set<Like> getLikes() {
+		return likes;
+	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -135,6 +142,10 @@ public class User {
 
 	public void setRatings(Set<Rate> ratings) {
 		this.ratings = ratings;
+	}
+
+	public void setLikes(Set<Like> likes) {
+		this.likes = likes;
 	}
 
 	@Override
