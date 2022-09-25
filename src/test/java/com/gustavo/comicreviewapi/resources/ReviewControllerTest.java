@@ -330,5 +330,29 @@ public class ReviewControllerTest {
 		
 		Mockito.verify(likeService, Mockito.times(1)).save(Mockito.anyLong(), Mockito.any(LikeNewDTO.class));
 	}
+	
+	@Test
+	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER"})
+	@DisplayName("Should throw a validation error when there is not enough data to save the like")
+	public void saveInvalidLikeTest() throws Exception {
+		// Scenario
+		Long id = 1l;
+		
+		LikeNewDTO newLike = new LikeNewDTO();
+		
+		String json = new ObjectMapper().writeValueAsString(newLike);
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.post(REVIEW_API.concat("/"+id+"/likes"))
+													.contentType(MediaType.APPLICATION_JSON)
+													.accept(MediaType.APPLICATION_JSON)
+													.content(json);
+		
+		// Verification		
+		mvc.perform(request)
+		 .andExpect( MockMvcResultMatchers.status().isUnprocessableEntity() )
+		 .andExpect( MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(1)) );
+	}
 			
 }

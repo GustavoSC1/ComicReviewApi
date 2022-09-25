@@ -98,7 +98,7 @@ public class ReviewController {
 	}
 	
 	@PostMapping("/{reviewId}/likes")
-	public ResponseEntity<Void> saveLike(@PathVariable Long reviewId, @RequestBody LikeNewDTO likeDto) {
+	public ResponseEntity<Void> saveLike(@PathVariable Long reviewId, @Valid @RequestBody LikeNewDTO likeDto) {
 		likeService.save(reviewId, likeDto);
 		
 		return ResponseEntity.ok().build();
