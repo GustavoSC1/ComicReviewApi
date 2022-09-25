@@ -96,7 +96,7 @@ public class ComicController {
 	}
 	
 	@PostMapping("/{comicId}/readings")
-	public ResponseEntity<Void> saveReading(@PathVariable Long comicId, @RequestBody ReadingNewDTO readingDto) {
+	public ResponseEntity<Void> saveReading(@PathVariable Long comicId, @Valid @RequestBody ReadingNewDTO readingDto) {
 		readingService.save(comicId, readingDto);
 		
 		return ResponseEntity.ok().build();

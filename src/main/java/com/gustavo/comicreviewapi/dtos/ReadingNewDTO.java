@@ -2,11 +2,15 @@ package com.gustavo.comicreviewapi.dtos;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotNull;
+
 public class ReadingNewDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	@NotNull(message="The reading field is required")
 	private Boolean reading;
 	
+	@NotNull(message="The favourit field is required")
 	private Boolean favourit;
 	
 	public ReadingNewDTO() {

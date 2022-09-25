@@ -318,6 +318,30 @@ public class ComicControllerTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER"})
+	@DisplayName("Should throw validation error when there is not enough data for reading creation")
+	public void saveInvalidReadingTest() throws Exception {
+		// Scenario
+		Long id = 1l;
+		
+		ReadingNewDTO newReading = new ReadingNewDTO();
+		
+		String json = new ObjectMapper().writeValueAsString(newReading);
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.post(COMIC_API.concat("/"+id+"/readings"))
+													.contentType(MediaType.APPLICATION_JSON)
+													.accept(MediaType.APPLICATION_JSON)
+													.content(json);
+		
+		// Verification
+		mvc.perform(request)
+		 .andExpect( MockMvcResultMatchers.status().isUnprocessableEntity() )
+		 .andExpect( MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(2)) );
+	}
+	
+	@Test
 	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER", "ADMIN"})
 	@DisplayName("Must delete a comic")
 	public void deleteComicTest() throws Exception {
