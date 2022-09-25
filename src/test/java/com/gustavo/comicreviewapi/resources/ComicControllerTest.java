@@ -35,11 +35,13 @@ import com.gustavo.comicreviewapi.dtos.CharacterDTO;
 import com.gustavo.comicreviewapi.dtos.ComicDTO;
 import com.gustavo.comicreviewapi.dtos.ComicNewDTO;
 import com.gustavo.comicreviewapi.dtos.RateNewDTO;
+import com.gustavo.comicreviewapi.dtos.ReadingNewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.security.JWTUtil;
 import com.gustavo.comicreviewapi.services.ComicService;
 import com.gustavo.comicreviewapi.services.RateService;
+import com.gustavo.comicreviewapi.services.ReadingService;
 import com.gustavo.comicreviewapi.services.ReviewService;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 
@@ -62,6 +64,9 @@ public class ComicControllerTest {
 	
 	@MockBean
 	RateService rateService;
+	
+	@MockBean
+	ReadingService readingService;
 	
 	@MockBean
 	JWTUtil jwtUtil;
@@ -284,6 +289,32 @@ public class ComicControllerTest {
 		mvc.perform(request)
 		 .andExpect( MockMvcResultMatchers.status().isUnprocessableEntity() )
 		 .andExpect( MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(1)) );
+	}
+	
+	@Test
+	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER"})
+	@DisplayName("Must save a reading")
+	public void saveReadingTest() throws Exception {
+		// Scenario
+		Long id = 1l;
+		
+		ReadingNewDTO newReading = new ReadingNewDTO(true, true);
+		
+		String json = new ObjectMapper().writeValueAsString(newReading);
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.post(COMIC_API.concat("/"+id+"/readings"))
+													.contentType(MediaType.APPLICATION_JSON)
+													.accept(MediaType.APPLICATION_JSON)
+													.content(json);
+		
+		// Verification
+		mvc
+		.perform(request)
+		.andExpect(MockMvcResultMatchers.status().isOk());
+		
+		Mockito.verify(readingService, Mockito.times(1)).save(Mockito.anyLong(), Mockito.any(ReadingNewDTO.class));
 	}
 	
 	@Test

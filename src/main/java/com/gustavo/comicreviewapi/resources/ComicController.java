@@ -20,10 +20,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.gustavo.comicreviewapi.services.ComicService;
 import com.gustavo.comicreviewapi.services.RateService;
+import com.gustavo.comicreviewapi.services.ReadingService;
 import com.gustavo.comicreviewapi.services.ReviewService;
 import com.gustavo.comicreviewapi.dtos.ComicDTO;
 import com.gustavo.comicreviewapi.dtos.ComicNewDTO;
 import com.gustavo.comicreviewapi.dtos.RateNewDTO;
+import com.gustavo.comicreviewapi.dtos.ReadingNewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 
 @RestController
@@ -38,6 +40,9 @@ public class ComicController {
 	
 	@Autowired
 	private RateService rateService;
+	
+	@Autowired
+	private ReadingService readingService;
 	
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	@PostMapping
@@ -86,6 +91,13 @@ public class ComicController {
 	@PostMapping("/{comicId}/ratings")
 	public ResponseEntity<Void> saveRate(@PathVariable Long comicId, @Valid @RequestBody RateNewDTO rateDto) {
 		rateService.save(comicId, rateDto);
+		
+		return ResponseEntity.ok().build();
+	}
+	
+	@PostMapping("/{comicId}/readings")
+	public ResponseEntity<Void> saveReading(@PathVariable Long comicId, @RequestBody ReadingNewDTO readingDto) {
+		readingService.save(comicId, readingDto);
 		
 		return ResponseEntity.ok().build();
 	}

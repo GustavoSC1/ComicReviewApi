@@ -52,9 +52,7 @@ public class ReadingServiceTest {
 			mockedStatic.when(UserService::authenticated).thenReturn(userSS);
 			
 			Mockito.when(comicService.findById(id)).thenReturn(comic);
-			
-			Mockito.when(readingRepository.save(Mockito.any(Reading.class))).thenReturn(null);
-			
+						
 			// Execution
 			readingService.save(id, newReading);
 			
