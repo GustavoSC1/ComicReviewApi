@@ -19,10 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.gustavo.comicreviewapi.dtos.CommentDTO;
+import com.gustavo.comicreviewapi.dtos.LikeNewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewNewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewUpdateDTO;
 import com.gustavo.comicreviewapi.services.CommentService;
+import com.gustavo.comicreviewapi.services.LikeService;
 import com.gustavo.comicreviewapi.services.ReviewService;
 
 @RestController
@@ -34,6 +36,9 @@ public class ReviewController {
 	
 	@Autowired
 	private CommentService commentService;
+	
+	@Autowired
+	private LikeService likeService;
 	
 	@PostMapping
 	public ResponseEntity<ReviewDTO> save(@Valid @RequestBody ReviewNewDTO reviewNewDto) {
@@ -92,4 +97,10 @@ public class ReviewController {
 		return ResponseEntity.ok().body(list);
 	}
 	
+	@PostMapping("/{reviewId}/likes")
+	public ResponseEntity<Void> saveLike(@PathVariable Long reviewId, @RequestBody LikeNewDTO likeDto) {
+		likeService.save(reviewId, likeDto);
+		
+		return ResponseEntity.ok().build();
+	}
 }

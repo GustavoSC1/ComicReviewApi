@@ -33,12 +33,14 @@ import com.gustavo.comicreviewapi.builders.CommentDtoBuilder;
 import com.gustavo.comicreviewapi.builders.ReviewDtoBuilder;
 import com.gustavo.comicreviewapi.builders.ReviewNewDtoBuilder;
 import com.gustavo.comicreviewapi.dtos.CommentDTO;
+import com.gustavo.comicreviewapi.dtos.LikeNewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewNewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewUpdateDTO;
 import com.gustavo.comicreviewapi.entities.Review;
 import com.gustavo.comicreviewapi.security.JWTUtil;
 import com.gustavo.comicreviewapi.services.CommentService;
+import com.gustavo.comicreviewapi.services.LikeService;
 import com.gustavo.comicreviewapi.services.ReviewService;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
 
@@ -64,6 +66,9 @@ public class ReviewControllerTest {
 	
 	@MockBean
 	UserDetailsService userDetailsService;
+	
+	@MockBean
+	LikeService likeService;
 		
 	@Test
 	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER"})
@@ -298,6 +303,32 @@ public class ReviewControllerTest {
 			.andExpect(MockMvcResultMatchers.jsonPath("totalElements").value(1))
 			.andExpect(MockMvcResultMatchers.jsonPath("pageable.pageSize").value(24))
 			.andExpect(MockMvcResultMatchers.jsonPath("pageable.pageNumber").value(0));
+	}
+	
+	@Test
+	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER"})
+	@DisplayName("Must save a like")
+	public void saveLikeTest() throws Exception {
+		// Scenario
+		Long id = 1l;
+		
+		LikeNewDTO newLike = new LikeNewDTO(true);
+		
+		String json = new ObjectMapper().writeValueAsString(newLike);
+		
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+													.post(REVIEW_API.concat("/"+id+"/likes"))
+													.contentType(MediaType.APPLICATION_JSON)
+													.accept(MediaType.APPLICATION_JSON)
+													.content(json);
+		
+		// Verification
+		mvc
+		.perform(request)
+		.andExpect(MockMvcResultMatchers.status().isOk());
+		
+		Mockito.verify(likeService, Mockito.times(1)).save(Mockito.anyLong(), Mockito.any(LikeNewDTO.class));
 	}
 			
 }
