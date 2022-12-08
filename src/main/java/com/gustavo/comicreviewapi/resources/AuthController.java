@@ -12,6 +12,10 @@ import com.gustavo.comicreviewapi.security.JWTUtil;
 import com.gustavo.comicreviewapi.security.UserSS;
 import com.gustavo.comicreviewapi.services.UserService;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -20,6 +24,10 @@ public class AuthController {
 	private JWTUtil jwtUtil;
 	
 	// Atualiza o token - O usuário precisa estra logado para acessar
+	@ApiOperation("Generate a new valid token")
+	@ApiResponses(value = {
+			@ApiResponse(code = 204, message = "Successfully generated token")
+	})
 	@PostMapping("/refresh_token")
 	public ResponseEntity<Void> refreshToken(HttpServletResponse response) {
 		UserSS user = UserService.authenticated();

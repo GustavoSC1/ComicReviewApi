@@ -28,8 +28,14 @@ import com.gustavo.comicreviewapi.services.CommentService;
 import com.gustavo.comicreviewapi.services.ReviewService;
 import com.gustavo.comicreviewapi.services.UserService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 @RestController
 @RequestMapping("/users")
+@Api("User API")
 public class UserController {
 	
 	@Autowired
@@ -41,6 +47,12 @@ public class UserController {
 	@Autowired
 	private ReviewService reviewService;
 	
+	@ApiOperation("Save a user")
+	@ApiResponses(value = {
+			@ApiResponse(code = 201, message = "User successfully saved"),
+			@ApiResponse(code = 400, message = "This request can be processed"),
+			@ApiResponse(code = 422, message = "Data validation error")
+	})
 	@PostMapping
 	public ResponseEntity<UserDTO> save(@Valid @RequestBody UserNewDTO userNewDto) {
 		UserDTO userDto = userService.save(userNewDto);
@@ -51,6 +63,11 @@ public class UserController {
 		return ResponseEntity.created(uri).body(userDto);
 	}
 	
+	@ApiOperation("Obtains a user details by id")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "User obtained successfully"),
+			@ApiResponse(code = 404, message = "Could not find the requested data")
+	})
 	@GetMapping("/{id}")
 	public ResponseEntity<UserDTO> find(@PathVariable Long id) {
 		UserDTO userDto = userService.find(id);
@@ -58,6 +75,13 @@ public class UserController {
 		return ResponseEntity.ok().body(userDto);
 	}
 	
+	@ApiOperation("Updates a user")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Successfully edited user"),
+			@ApiResponse(code = 403, message = "You are not allowed to make this request"),
+			@ApiResponse(code = 404, message = "Could not find the requested data"),
+			@ApiResponse(code = 422, message = "Data validation error")
+	})
 	@PutMapping("/{id}")
 	public ResponseEntity<UserDTO> update(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO userDto) {
 		UserDTO user = userService.update(id, userDto);
@@ -65,6 +89,12 @@ public class UserController {
 		return ResponseEntity.ok().body(user);
 	}
 	
+	@ApiOperation("Deletes a user by id")
+	@ApiResponses(value = {
+            @ApiResponse(code = 204, message = "User succesfully deleted"),
+            @ApiResponse(code = 403, message = "You are not allowed to make this request"),
+            @ApiResponse(code = 404, message = "Could not find the requested data")
+    })
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
@@ -73,6 +103,10 @@ public class UserController {
 		return ResponseEntity.noContent().build();
 	}
 	
+	@ApiOperation("Find comments by user")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Comments found successfully")
+	})
 	@GetMapping("/{userId}/comments")
 	public ResponseEntity<Page <CommentDTO>> findCommentsByUser(
 					@PathVariable Long userId,
@@ -86,6 +120,10 @@ public class UserController {
 		return ResponseEntity.ok().body(list);		
 	}
 	
+	@ApiOperation("Find reviews by user")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Reviews found successfully")
+	})
 	@GetMapping("/{userId}/reviews")
 	public ResponseEntity<Page <ReviewDTO>> findReviewsByUser(
 					@PathVariable Long userId,

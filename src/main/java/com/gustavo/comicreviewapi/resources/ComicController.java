@@ -22,6 +22,12 @@ import com.gustavo.comicreviewapi.services.ComicService;
 import com.gustavo.comicreviewapi.services.RateService;
 import com.gustavo.comicreviewapi.services.ReadingService;
 import com.gustavo.comicreviewapi.services.ReviewService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 import com.gustavo.comicreviewapi.dtos.ComicDTO;
 import com.gustavo.comicreviewapi.dtos.ComicNewDTO;
 import com.gustavo.comicreviewapi.dtos.RateNewDTO;
@@ -30,6 +36,7 @@ import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 
 @RestController
 @RequestMapping("/comics")
+@Api("Comic API")
 public class ComicController {
 	
 	@Autowired
@@ -44,8 +51,16 @@ public class ComicController {
 	@Autowired
 	private ReadingService readingService;
 	
+	@ApiOperation("Save a comic")
+	@ApiResponses(value = {
+			@ApiResponse(code = 201, message = "Comic successfully saved"),
+			@ApiResponse(code = 400, message = "This request can be processed"),
+			@ApiResponse(code = 403, message = "You are not allowed to make this request"),
+			@ApiResponse(code = 404, message = "Could not find the requested data"),
+			@ApiResponse(code = 422, message = "Data validation error")
+	})
 	@PreAuthorize("hasAnyRole('ADMIN')")
-	@PostMapping
+	@PostMapping	
 	public ResponseEntity<ComicDTO> save(@Valid @RequestBody ComicNewDTO comicNewDto) {
 		ComicDTO comicDto = comicService.save(comicNewDto);
 		
@@ -55,6 +70,11 @@ public class ComicController {
 		return ResponseEntity.created(uri).body(comicDto);
 	}
 	
+	@ApiOperation("Obtains a comic details by id")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Comic obtained successfully"),
+			@ApiResponse(code = 404, message = "Could not find the requested data")
+	})
 	@GetMapping("/{id}")
 	public ResponseEntity<ComicDTO> find(@PathVariable Long id) {
 		ComicDTO comicDto = comicService.find(id);
@@ -62,6 +82,10 @@ public class ComicController {
 		return ResponseEntity.ok().body(comicDto);
 	}
 	
+	@ApiOperation("Find comics by title")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Comics found successfully")
+	})
 	@GetMapping
 	public ResponseEntity<Page <ComicDTO>> findByTitle(
 					@RequestParam(value="title", defaultValue="") String title,
@@ -75,6 +99,10 @@ public class ComicController {
 		return ResponseEntity.ok().body(list);
 	}
 	
+	@ApiOperation("Find reviews by comic")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Reviews found successfully")
+	})
 	@GetMapping("/{comicId}/reviews")
 	public ResponseEntity<Page <ReviewDTO>> findReviewsByComic(
 					@PathVariable Long comicId,
@@ -88,6 +116,13 @@ public class ComicController {
 		return ResponseEntity.ok().body(list);		
 	}
 	
+	@ApiOperation("Save a rate")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Rate successfully saved"),
+			@ApiResponse(code = 403, message = "You are not allowed to make this request"),
+			@ApiResponse(code = 404, message = "Could not find the requested data"),
+			@ApiResponse(code = 422, message = "Data validation error")
+	})
 	@PostMapping("/{comicId}/ratings")
 	public ResponseEntity<Void> saveRate(@PathVariable Long comicId, @Valid @RequestBody RateNewDTO rateDto) {
 		rateService.save(comicId, rateDto);
@@ -95,6 +130,13 @@ public class ComicController {
 		return ResponseEntity.ok().build();
 	}
 	
+	@ApiOperation("Save a reading")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Reading successfully saved"),
+			@ApiResponse(code = 403, message = "You are not allowed to make this request"),
+			@ApiResponse(code = 404, message = "Could not find the requested data"),
+			@ApiResponse(code = 422, message = "Data validation error")
+	})
 	@PostMapping("/{comicId}/readings")
 	public ResponseEntity<Void> saveReading(@PathVariable Long comicId, @Valid @RequestBody ReadingNewDTO readingDto) {
 		readingService.save(comicId, readingDto);
@@ -102,6 +144,12 @@ public class ComicController {
 		return ResponseEntity.ok().build();
 	}
 	
+	@ApiOperation("Deletes a comic by id")
+	@ApiResponses(value = {
+            @ApiResponse(code = 204, message = "Comic succesfully deleted"),
+            @ApiResponse(code = 404, message = "Could not find the requested data"),
+            @ApiResponse(code = 403, message = "You are not allowed to make this request")
+    })
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {

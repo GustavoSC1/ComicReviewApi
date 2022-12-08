@@ -27,8 +27,14 @@ import com.gustavo.comicreviewapi.services.CommentService;
 import com.gustavo.comicreviewapi.services.LikeService;
 import com.gustavo.comicreviewapi.services.ReviewService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 @RestController
 @RequestMapping("/reviews")
+@Api("Review API")
 public class ReviewController {
 	
 	@Autowired
@@ -40,6 +46,13 @@ public class ReviewController {
 	@Autowired
 	private LikeService likeService;
 	
+	@ApiOperation("Save a review")
+	@ApiResponses(value = {
+			@ApiResponse(code = 201, message = "Review successfully saved"),
+			@ApiResponse(code = 403, message = "You are not allowed to make this request"),
+			@ApiResponse(code = 404, message = "Could not find the requested data"),
+			@ApiResponse(code = 422, message = "Data validation error")
+	})
 	@PostMapping
 	public ResponseEntity<ReviewDTO> save(@Valid @RequestBody ReviewNewDTO reviewNewDto) {
 		ReviewDTO reviewDto = reviewService.save(reviewNewDto);
@@ -50,6 +63,11 @@ public class ReviewController {
 		return ResponseEntity.created(uri).body(reviewDto);
 	}
 	
+	@ApiOperation("Obtains a review details by id")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Review obtained successfully"),
+			@ApiResponse(code = 404, message = "Could not find the requested data")
+	})
 	@GetMapping("/{id}")
 	public ResponseEntity<ReviewDTO> find(@PathVariable Long id) {
 		ReviewDTO reviewDto = reviewService.find(id);
@@ -57,13 +75,26 @@ public class ReviewController {
 		return ResponseEntity.ok().body(reviewDto);
 	}
 	
+	@ApiOperation("Updates a review")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Successfully edited review"),
+			@ApiResponse(code = 403, message = "You are not allowed to make this request"),
+			@ApiResponse(code = 404, message = "Could not find the requested data"),
+			@ApiResponse(code = 422, message = "Data validation error")
+	})
 	@PutMapping("/{id}")
 	public ResponseEntity<ReviewDTO> update(@PathVariable Long id, @Valid @RequestBody ReviewUpdateDTO reviewDto) {
 		ReviewDTO review = reviewService.update(id, reviewDto);
 		
 		return ResponseEntity.ok().body(review);
 	}	
-
+	
+	@ApiOperation("Deletes a review by id")
+	@ApiResponses(value = {
+            @ApiResponse(code = 204, message = "Review succesfully deleted"),
+            @ApiResponse(code = 403, message = "You are not allowed to make this request"),
+            @ApiResponse(code = 404, message = "Could not find the requested data")
+    })
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
 		reviewService.delete(id);
@@ -71,6 +102,10 @@ public class ReviewController {
 		return ResponseEntity.noContent().build();
 	}
 	
+	@ApiOperation("Find comments by review")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Comments found successfully")
+	})
 	@GetMapping("/{reviewId}/comments")
 	public ResponseEntity<Page <CommentDTO>> findCommentsByReview(
 					@PathVariable Long reviewId,
@@ -84,6 +119,10 @@ public class ReviewController {
 		return ResponseEntity.ok().body(list);		
 	}
 	
+	@ApiOperation("Find reviews by title")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Reviews found successfully")
+	})
 	@GetMapping
 	public ResponseEntity<Page <ReviewDTO>> findByTitle(
 					@RequestParam(value="title", defaultValue="") String title,
@@ -97,6 +136,13 @@ public class ReviewController {
 		return ResponseEntity.ok().body(list);
 	}
 	
+	@ApiOperation("Save a like")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Like successfully saved"),
+			@ApiResponse(code = 403, message = "You are not allowed to make this request"),
+			@ApiResponse(code = 404, message = "Could not find the requested data"),
+			@ApiResponse(code = 422, message = "Data validation error")
+	})
 	@PostMapping("/{reviewId}/likes")
 	public ResponseEntity<Void> saveLike(@PathVariable Long reviewId, @Valid @RequestBody LikeNewDTO likeDto) {
 		likeService.save(reviewId, likeDto);
