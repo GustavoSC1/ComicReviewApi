@@ -1,5 +1,7 @@
 package com.gustavo.comicreviewapi.repositories;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
@@ -105,6 +107,24 @@ public class UserRepositoryTest {
 		Assertions.assertThat(deletedUser).isNull();
 		Assertions.assertThat(foundReview).isNotNull(); // Os reviews do usuário não devem ser apagados
 		Assertions.assertThat(foundComment).isNotNull(); // Os comentários do usuário não devem ser apagados
+	}
+	
+	@Test
+	@DisplayName("Must filter user per day and month of birth")
+	public void findByDayAndMonthOfBirthTest() {
+		// Scenario
+		User user = UserBuilder.aUser().now();
+		entityManager.persist(user);
+		
+		User user2 = UserBuilder.aUser().now();
+		user2.setBirthDate(LocalDate.of(1996, 10, 18));
+		entityManager.persist(user2);
+		
+		// Execution
+		List<User> foundUsers = userRepository.findByDayAndMonthOfBirth(17, 10);
+		
+		// Verification
+		Assertions.assertThat(foundUsers.size()).isEqualTo(1);		
 	}
 	
 }
