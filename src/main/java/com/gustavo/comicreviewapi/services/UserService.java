@@ -1,5 +1,7 @@
 package com.gustavo.comicreviewapi.services;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -80,6 +82,12 @@ public class UserService {
 		userRepository.delete(foundUser);
 	}
 	
+	public List<User> findBirthdayUsers() {
+		LocalDate date = getDate();
+		List<User> foundUsers = userRepository.findByDayAndMonthOfBirth(date.getDayOfMonth(), date.getMonthValue());
+		return foundUsers;
+	}
+	
 	public static UserSS authenticated() {
 		try {
 			// Obtem o usuário atual logado
@@ -87,6 +95,10 @@ public class UserService {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+	
+	public LocalDate getDate() {		
+		return LocalDate.now();
 	}
 	
 }

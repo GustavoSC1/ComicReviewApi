@@ -1,6 +1,8 @@
 package com.gustavo.comicreviewapi.services;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -202,6 +204,29 @@ public class UserServiceTest {
 		
 		// Verification
 		Mockito.verify(userRepository, Mockito.times(1)).delete(foundUser);
+	}
+		
+	@Test
+	@DisplayName("Must get birthday users of the day")
+	public void findBirthdayUsersTest() {
+		// Scenario		
+		User user = UserBuilder.aUser().withId(1l).now();
+		List<User> users = new ArrayList<User>();
+		users.add(user);
+		
+		Mockito.doReturn(LocalDate.of(2022, 10, 17)).when(userService).getDate();
+		Mockito.when(userRepository.findByDayAndMonthOfBirth(17, 10)).thenReturn(users);
+		
+		// Execution
+		List<User> foundUsers = userService.findBirthdayUsers();
+		
+		// Verification
+		Assertions.assertThat(foundUsers.size()).isEqualTo(1);
+		Assertions.assertThat(foundUsers.get(0).getName()).isEqualTo("Gustavo Silva Cruz");
+		Assertions.assertThat(foundUsers.get(0).getBirthDate()).isEqualTo(LocalDate.of(1996, 10, 17));
+		Assertions.assertThat(foundUsers.get(0).getPhone()).isEqualTo("998123899");		
+		Assertions.assertThat(foundUsers.get(0).getEmail()).isEqualTo("gu.cruz17@hotmail.com");
+		Assertions.assertThat(foundUsers.get(0).getProfiles().contains(Profile.USER)).isTrue();	
 	}
 	
 }
