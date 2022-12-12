@@ -124,7 +124,7 @@ public class UserRepositoryTest {
 		List<User> foundUsers = userRepository.findByDayAndMonthOfBirth(17, 10);
 		
 		// Verification
-		Assertions.assertThat(foundUsers.size()).isEqualTo(1);		
+		Assertions.assertThat(foundUsers).hasSize(1).contains(user);		
 	}
 	
 }
