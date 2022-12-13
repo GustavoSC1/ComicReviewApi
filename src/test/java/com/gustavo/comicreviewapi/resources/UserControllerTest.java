@@ -116,7 +116,6 @@ public class UserControllerTest {
 	public void saveInvalidUserTest() throws Exception {
 		// Scenario
 		UserNewDTO newUser = new UserNewDTO();
-		newUser.setBirthDate(LocalDate.of(2022, 10, 17));
 		
 		String json = mapper.writeValueAsString(newUser);
 				
@@ -221,7 +220,6 @@ public class UserControllerTest {
 		Long id = 2l;
 		
 		UserUpdateDTO user = new UserUpdateDTO();
-		user.setBirthDate(LocalDate.of(2022, 10, 17));
 		
 		String json = mapper.writeValueAsString(user);
 				
