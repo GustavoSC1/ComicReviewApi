@@ -13,10 +13,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import com.gustavo.comicreviewapi.entities.enums.Profile;
 
 @Entity
+@Table(name="TB_USER")
 public class User {
 	
 	@Id
@@ -30,7 +32,7 @@ public class User {
 	private String password;
 	
 	@ElementCollection(fetch=FetchType.EAGER)
-	@CollectionTable(name="PROFILES")
+	@CollectionTable(name="TB_PROFILES")
 	private Set<Integer> profiles = new HashSet<>();
 	
 	@OneToMany(mappedBy="user")

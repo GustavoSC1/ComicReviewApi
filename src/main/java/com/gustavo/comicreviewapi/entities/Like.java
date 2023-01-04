@@ -7,7 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="likes") 
+@Table(name="TB_LIKE") 
 public class Like implements Serializable {
 	private static final long serialVersionUID = 1L;
 	

@@ -12,8 +12,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="TB_COMIC")
 public class Comic implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -27,13 +29,13 @@ public class Comic implements Serializable {
 	private String description;
 	
 	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "tb_comic_author",
+	@JoinTable(name = "TB_COMIC_AUTHOR",
 			joinColumns = @JoinColumn(name = "comic_id"),
 			inverseJoinColumns = @JoinColumn(name = "author_id"))
 	private Set<Author> authors = new HashSet<>();
 	
 	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "tb_comic_character",
+	@JoinTable(name = "TB_COMIC_CHARACTER",
 			joinColumns = @JoinColumn(name = "comic_id"),
 			inverseJoinColumns = @JoinColumn(name = "character_id"))
 	private Set<Character> characters = new HashSet<>();
