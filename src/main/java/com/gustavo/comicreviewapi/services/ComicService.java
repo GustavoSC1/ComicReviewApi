@@ -47,7 +47,7 @@ public class ComicService {
 	
 	private Clock clock;
 	
-	public ComicService(@Value("${marvel.public_key}")String publicKey, @Value("${marvel.private_key}") String privateKey, 
+	public ComicService(@Value("${marvel.public-key}")String publicKey, @Value("${marvel.private-key}") String privateKey, 
 			ComicRepository comicRepository, AuthorService authorService, CharacterService characterService, 
 			MarvelClient marvelClient, Clock clock) {
 		this.publicKey = publicKey;
