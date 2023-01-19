@@ -11,7 +11,7 @@
 	<groupId>com.gustavo</groupId>
 	<artifactId>ComicReviewApi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>ComicReviewApi</name>
+	<name>Comic Book Reviews API</name>
 	<description>Platform for users to view information and rate Marvel comics</description>
 	<properties>
 		<java.version>11</java.version>

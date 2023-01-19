@@ -55,8 +55,8 @@ public class SwaggerConfig {
 	
 	private ApiInfo apiInfo() {
 		return new ApiInfoBuilder()
-					.title("Comic API")
-					.description("Comic Book Reviews API")
+					.title("Comic Book Reviews API")
+					.description("API that gathers comic book reviews and gives an overall rating for each issue based on individual reviewer scores. Users can post their own Comics reviews and/or ratings which will be taken into account when calculating an issue's overall rating.")
 					.version("1.0")
 					.contact(contact())
 					.build();
