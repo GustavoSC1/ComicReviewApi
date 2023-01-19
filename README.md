@@ -1,6 +1,11 @@
 # Comic Book Reviews API
+[![NPM](https://img.shields.io/npm/l/react)](https://github.com/GustavoSC1/ComicReviewApi/blob/main/LICENCE)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/GustavoSC1/ComicReviewApi/maven.yml?branch=main)
 [![codecov](https://codecov.io/gh/GustavoSC1/ComicReviewApi/branch/main/graph/badge.svg?token=5K6EIQ8WIG)](https://codecov.io/gh/GustavoSC1/ComicReviewApi)
+
+API: https://comicreviewapi-production.up.railway.app
+
+Documentação: https://comicreviewapi-production.up.railway.app/swagger-ui/
 
 ## Sobre o projeto
 
