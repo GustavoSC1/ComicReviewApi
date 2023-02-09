@@ -52,6 +52,9 @@ Exemplo B: hoje é quinta-feira, o Comics tem o ISBN XXXXXXXX1, ou seja, seu des
 - [H2](https://www.h2database.com/html/main.html)
 - [JWT](https://jwt.io/)
 - [PostgreSQL](https://www.postgresql.org/)
+- [JUnit5](https://junit.org/junit5/docs/current/user-guide/)
+- [Mockito](https://site.mockito.org/)
+- [Jacoco](https://www.jacoco.org/jacoco/trunk/doc/mission.html)
 
 ## Como executar o projeto
 
