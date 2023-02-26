@@ -11,7 +11,7 @@ Documentação: https://comicreviewapi-production.up.railway.app/swagger-ui/
 
 Comic Book Reviews é uma API REST que reúne reviews de Comics e dá uma avalização geral para cada edição com base nas pontuações individuais dos revisores. Os usuários podem postar suas próprias resenhas e/ou avaliações de Comics que serão levadas em consideração ao calcular a avaliação geral de uma edição.
 
-Nessa API pode é possivel realizar o cadastro de usuários, o cadastro de Comics, avaliar os Comics, favoritar o Comics, fazer o review do Comics, comentar o review, dar lik em no review. Além disso, também é possivel fazer diversas buscas por usuários, comics, reviews e comentários. Para obter os dados e realizar o cadastro do Comics, o sistema consome uma API externa da MARVEL (https://developer.marvel.com/).
+Nessa API pode é possivel realizar o cadastro de usuários, o cadastro de Comics, avaliar os Comics, favoritar o Comics, fazer o review do Comics, comentar o review, dar like no review. Além disso, também é possivel fazer diversas buscas por usuários, comics, reviews e comentários. Para obter os dados e realizar o cadastro do Comics, o sistema consome uma API externa da MARVEL (https://developer.marvel.com/).
 
 Obs: A integração com a API da MARVEL foi feita usando o Spring-Cloud-Feign.
 
