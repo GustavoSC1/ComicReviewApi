@@ -18,7 +18,7 @@ public class UserDtoBuilder {
 		builder.userDto.setBirthDate(LocalDate.of(1996, 10, 17));
 		builder.userDto.setPhone("998123899");
 		builder.userDto.setEmail("gu.cruz17@hotmail.com");
-		builder.userDto.addProfile(Profile.USER);
+		builder.userDto.addProfile(Profile.USER.getDescription());
 		
 		return builder;
 	}

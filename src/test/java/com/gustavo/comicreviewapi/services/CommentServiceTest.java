@@ -31,8 +31,8 @@ import com.gustavo.comicreviewapi.entities.Comment;
 import com.gustavo.comicreviewapi.entities.Review;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.CommentRepository;
-import com.gustavo.comicreviewapi.security.UserSS;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
+import com.gustavo.comicreviewapi.utils.UserSS;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -111,7 +111,7 @@ public class CommentServiceTest {
 		// Execution and Verification
 		Exception exception = assertThrows(ObjectNotFoundException.class, () -> {commentService.findById(id);});
 	
-		String expectedMessage = "Object not found! Id: " + id + ", Type: " + Comment.class.getName();
+		String expectedMessage = "Comment not found! Id: " + id;
 		String actualMessage = exception.getMessage();
 		
 		Assertions.assertThat(actualMessage).isEqualTo(expectedMessage);		
@@ -254,5 +254,5 @@ public class CommentServiceTest {
 			Mockito.verify(commentRepository, Mockito.times(1)).delete(foundComment);
 		}
 	}
-			
+	
 }

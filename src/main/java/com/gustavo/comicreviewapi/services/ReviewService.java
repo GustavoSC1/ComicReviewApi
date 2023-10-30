@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewNewDTO;
@@ -16,9 +17,9 @@ import com.gustavo.comicreviewapi.entities.Review;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.entities.enums.Profile;
 import com.gustavo.comicreviewapi.repositories.ReviewRepository;
-import com.gustavo.comicreviewapi.security.UserSS;
 import com.gustavo.comicreviewapi.services.exceptions.AuthorizationException;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
+import com.gustavo.comicreviewapi.utils.UserSS;
 
 @Service
 public class ReviewService {
@@ -34,13 +35,12 @@ public class ReviewService {
 
 	public ReviewDTO save(ReviewNewDTO reviewDto) {
 
-		UserSS userAuthenticated = UserService.authenticated();		
-		if(userAuthenticated==null) {
-			throw new AuthorizationException("Access denied");
-		}
-		
+		UserSS userAuthenticated = UserService.authenticated();	
+				
 		User user = new User();
+		
 		user.setId(userAuthenticated.getId());
+		
 		Comic comic = comicService.findById(reviewDto.getComicId());
 		
 		Review review = new Review(null, reviewDto.getTitle(), getDateTime(), reviewDto.getContent(), user, comic);
@@ -49,6 +49,7 @@ public class ReviewService {
 		return new ReviewDTO(review);
 	}
 	
+	@Transactional(readOnly = true)
 	public ReviewDTO find(Long id) {
 		Review review = findById(id);
 		
@@ -57,7 +58,7 @@ public class ReviewService {
 		
 	public Review findById(Long id) {
 		Optional<Review> reviewOptional = reviewRepository.findById(id);
-		Review review = reviewOptional.orElseThrow(() -> new ObjectNotFoundException("Object not found! Id: " + id + ", Type: " + Review.class.getName()));
+		Review review = reviewOptional.orElseThrow(() -> new ObjectNotFoundException("Review not found! Id: " + id));
 	
 		return review;
 	}
@@ -65,8 +66,9 @@ public class ReviewService {
 	public ReviewDTO update(Long id, ReviewUpdateDTO reviewDto) {
 		Review review = findById(id);
 		
-		UserSS userAuthenticated = UserService.authenticated();		
-		if(userAuthenticated==null || !review.getUser().getId().equals(userAuthenticated.getId())) {
+		UserSS userAuthenticated = UserService.authenticated();	
+		
+		if(!review.getUser().getId().equals(userAuthenticated.getId())) {
 			throw new AuthorizationException("Access denied");
 		}
 		
@@ -100,8 +102,9 @@ public class ReviewService {
 	public void delete(Long id) {
 		Review foundReview = findById(id);
 		
-		UserSS userAuthenticated = UserService.authenticated();		
-		if(userAuthenticated==null || !userAuthenticated.hasRole(Profile.ADMIN) && !foundReview.getUser().getId().equals(userAuthenticated.getId())) {
+		UserSS userAuthenticated = UserService.authenticated();	
+		
+		if(!userAuthenticated.hasRole(Profile.ADMIN) && !foundReview.getUser().getId().equals(userAuthenticated.getId())) {
 			throw new AuthorizationException("Access denied");
 		}
 		

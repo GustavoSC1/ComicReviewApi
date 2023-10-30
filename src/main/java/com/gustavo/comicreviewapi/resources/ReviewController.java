@@ -2,7 +2,7 @@ package com.gustavo.comicreviewapi.resources;
 
 import java.net.URI;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,14 +27,14 @@ import com.gustavo.comicreviewapi.services.CommentService;
 import com.gustavo.comicreviewapi.services.LikeService;
 import com.gustavo.comicreviewapi.services.ReviewService;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/reviews")
-@Api("Review API")
+@Tag(name = "Review API")
 public class ReviewController {
 	
 	@Autowired
@@ -46,12 +46,12 @@ public class ReviewController {
 	@Autowired
 	private LikeService likeService;
 	
-	@ApiOperation("Save a review")
+	@Operation(summary = "Save a review")
 	@ApiResponses(value = {
-			@ApiResponse(code = 201, message = "Review successfully saved"),
-			@ApiResponse(code = 403, message = "You are not allowed to make this request"),
-			@ApiResponse(code = 404, message = "Could not find the requested data"),
-			@ApiResponse(code = 422, message = "Data validation error")
+			@ApiResponse(responseCode = "201", description = "Review successfully saved"),
+			@ApiResponse(responseCode = "403", description = "You are not allowed to make this request"),
+			@ApiResponse(responseCode = "404", description = "Could not find the requested data"),
+			@ApiResponse(responseCode = "422", description = "Data validation error")
 	})
 	@PostMapping
 	public ResponseEntity<ReviewDTO> save(@Valid @RequestBody ReviewNewDTO reviewNewDto) {
@@ -63,10 +63,10 @@ public class ReviewController {
 		return ResponseEntity.created(uri).body(reviewDto);
 	}
 	
-	@ApiOperation("Obtains a review details by id")
+	@Operation(summary = "Obtains a review details by id")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Review obtained successfully"),
-			@ApiResponse(code = 404, message = "Could not find the requested data")
+			@ApiResponse(responseCode = "200", description = "Review obtained successfully"),
+			@ApiResponse(responseCode = "404", description = "Could not find the requested data")
 	})
 	@GetMapping("/{id}")
 	public ResponseEntity<ReviewDTO> find(@PathVariable Long id) {
@@ -75,12 +75,12 @@ public class ReviewController {
 		return ResponseEntity.ok().body(reviewDto);
 	}
 	
-	@ApiOperation("Updates a review")
+	@Operation(summary = "Updates a review")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Successfully edited review"),
-			@ApiResponse(code = 403, message = "You are not allowed to make this request"),
-			@ApiResponse(code = 404, message = "Could not find the requested data"),
-			@ApiResponse(code = 422, message = "Data validation error")
+			@ApiResponse(responseCode = "200", description = "Successfully edited review"),
+			@ApiResponse(responseCode = "403", description = "You are not allowed to make this request"),
+			@ApiResponse(responseCode = "404", description = "Could not find the requested data"),
+			@ApiResponse(responseCode = "422", description = "Data validation error")
 	})
 	@PutMapping("/{id}")
 	public ResponseEntity<ReviewDTO> update(@PathVariable Long id, @Valid @RequestBody ReviewUpdateDTO reviewDto) {
@@ -89,11 +89,11 @@ public class ReviewController {
 		return ResponseEntity.ok().body(review);
 	}	
 	
-	@ApiOperation("Deletes a review by id")
+	@Operation(summary = "Deletes a review by id")
 	@ApiResponses(value = {
-            @ApiResponse(code = 204, message = "Review succesfully deleted"),
-            @ApiResponse(code = 403, message = "You are not allowed to make this request"),
-            @ApiResponse(code = 404, message = "Could not find the requested data")
+            @ApiResponse(responseCode = "204", description = "Review succesfully deleted"),
+            @ApiResponse(responseCode = "403", description = "You are not allowed to make this request"),
+            @ApiResponse(responseCode = "404", description = "Could not find the requested data")
     })
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
@@ -102,9 +102,9 @@ public class ReviewController {
 		return ResponseEntity.noContent().build();
 	}
 	
-	@ApiOperation("Find comments by review")
+	@Operation(summary = "Find comments by review")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Comments found successfully")
+			@ApiResponse(responseCode = "200", description = "Comments found successfully")
 	})
 	@GetMapping("/{reviewId}/comments")
 	public ResponseEntity<Page <CommentDTO>> findCommentsByReview(
@@ -119,9 +119,9 @@ public class ReviewController {
 		return ResponseEntity.ok().body(list);		
 	}
 	
-	@ApiOperation("Find reviews by title")
+	@Operation(summary = "Find reviews by title")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Reviews found successfully")
+			@ApiResponse(responseCode = "200", description = "Reviews found successfully")
 	})
 	@GetMapping
 	public ResponseEntity<Page <ReviewDTO>> findByTitle(
@@ -136,12 +136,12 @@ public class ReviewController {
 		return ResponseEntity.ok().body(list);
 	}
 	
-	@ApiOperation("Save a like")
+	@Operation(summary = "Save a like")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Like successfully saved"),
-			@ApiResponse(code = 403, message = "You are not allowed to make this request"),
-			@ApiResponse(code = 404, message = "Could not find the requested data"),
-			@ApiResponse(code = 422, message = "Data validation error")
+			@ApiResponse(responseCode = "200", description = "Like successfully saved"),
+			@ApiResponse(responseCode = "403", description = "You are not allowed to make this request"),
+			@ApiResponse(responseCode = "404", description = "Could not find the requested data"),
+			@ApiResponse(responseCode = "422", description = "Data validation error")
 	})
 	@PostMapping("/{reviewId}/likes")
 	public ResponseEntity<Void> saveLike(@PathVariable Long reviewId, @Valid @RequestBody LikeNewDTO likeDto) {

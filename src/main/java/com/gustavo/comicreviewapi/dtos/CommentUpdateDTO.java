@@ -2,9 +2,9 @@ package com.gustavo.comicreviewapi.dtos;
 
 import java.io.Serializable;
 
-import javax.validation.constraints.NotEmpty;
-
 import org.hibernate.validator.constraints.Length;
+
+import jakarta.validation.constraints.NotEmpty;
 
 public class CommentUpdateDTO implements Serializable {
 	private static final long serialVersionUID = 1L;

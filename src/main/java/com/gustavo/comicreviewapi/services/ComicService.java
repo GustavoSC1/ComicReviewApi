@@ -46,7 +46,7 @@ public class ComicService {
 	private MarvelClient marvelClient;
 	
 	private Clock clock;
-	
+		
 	public ComicService(@Value("${marvel.public-key}")String publicKey, @Value("${marvel.private-key}") String privateKey, 
 			ComicRepository comicRepository, AuthorService authorService, CharacterService characterService, 
 			MarvelClient marvelClient, Clock clock) {
@@ -55,8 +55,8 @@ public class ComicService {
 		this.comicRepository = comicRepository;
 		this.authorService = authorService;
 		this.characterService = characterService;
-		this.marvelClient = marvelClient;
-		this.clock = clock;
+		this.marvelClient = marvelClient;		
+		this.clock = clock;		
 	}	
 	
 	public ComicDTO save(ComicNewDTO objDto) {
@@ -84,8 +84,10 @@ public class ComicService {
 			for (CreatorSummaryDTO creator: marvelModel.getData().getResults().get(0).getCreators().getItems()) {
 				Author obj = authorService.findByName(creator.getName());	
 				
-				if(obj==null) {				
-					comic.getAuthors().add(new Author(null, creator.getName()));					
+				if(obj==null) {	
+					Author author = new Author(null, creator.getName());
+					comic.getAuthors().add(author);	
+					
 				} else {
 					comic.getAuthors().add(obj);
 				}
@@ -94,8 +96,9 @@ public class ComicService {
 			for (CharacterSummaryDTO character: marvelModel.getData().getResults().get(0).getCharacters().getItems()) {
 				Character obj = characterService.findByName(character.getName());	
 				
-				if(obj==null) {				
-					comic.getCharacters().add(new Character(null, character.getName()));					
+				if(obj==null) {	
+					Character newCharacter = new Character(null, character.getName());
+					comic.getCharacters().add(newCharacter);					
 				} else {
 					comic.getCharacters().add(obj);
 				}
@@ -142,7 +145,7 @@ public class ComicService {
 		
 	public Comic findById(Long id) {
 		Optional<Comic> comicOptional = comicRepository.findById(id);
-		Comic comic = comicOptional.orElseThrow(() -> new ObjectNotFoundException("Object not found! Id: " + id + ", Type: " + Comic.class.getName()));
+		Comic comic = comicOptional.orElseThrow(() -> new ObjectNotFoundException("Comic not found! Id: " + id));
 		
 		return comic;
 	}

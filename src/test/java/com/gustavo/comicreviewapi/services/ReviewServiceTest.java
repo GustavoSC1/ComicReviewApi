@@ -33,8 +33,8 @@ import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.entities.Review;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.ReviewRepository;
-import com.gustavo.comicreviewapi.security.UserSS;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
+import com.gustavo.comicreviewapi.utils.UserSS;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -124,7 +124,7 @@ public class ReviewServiceTest {
 		// Execution and Verification
 		Exception exception = assertThrows(ObjectNotFoundException.class, () -> {reviewService.findById(id);});
 		
-		String expectedMessage = "Object not found! Id: " + id + ", Type: " + Review.class.getName();
+		String expectedMessage = "Review not found! Id: " + id;
 		String actualMessage = exception.getMessage();
 		
 		Assertions.assertThat(actualMessage).isEqualTo(expectedMessage);

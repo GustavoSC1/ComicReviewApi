@@ -7,8 +7,7 @@ import com.gustavo.comicreviewapi.entities.Like;
 import com.gustavo.comicreviewapi.entities.Review;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.LikeRepository;
-import com.gustavo.comicreviewapi.security.UserSS;
-import com.gustavo.comicreviewapi.services.exceptions.AuthorizationException;
+import com.gustavo.comicreviewapi.utils.UserSS;
 
 @Service
 public class LikeService {
@@ -23,13 +22,9 @@ public class LikeService {
 	
 	public void save(Long reviewId, LikeNewDTO likeDto) {
 		
-		UserSS userAuthenticated = UserService.authenticated();
-		
-		if(userAuthenticated==null) {
-			throw new AuthorizationException("Access denied");
-		}
-		
-		User user = new User();
+		UserSS userAuthenticated = UserService.authenticated();			
+				
+		User user = new User();		
 		user.setId(userAuthenticated.getId());
 		
 		Review review = reviewService.findById(reviewId);

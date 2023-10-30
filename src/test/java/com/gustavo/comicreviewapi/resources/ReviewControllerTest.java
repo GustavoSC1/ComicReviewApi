@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -32,21 +33,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gustavo.comicreviewapi.builders.CommentDtoBuilder;
 import com.gustavo.comicreviewapi.builders.ReviewDtoBuilder;
 import com.gustavo.comicreviewapi.builders.ReviewNewDtoBuilder;
+import com.gustavo.comicreviewapi.configs.SecurityConfig;
 import com.gustavo.comicreviewapi.dtos.CommentDTO;
 import com.gustavo.comicreviewapi.dtos.LikeNewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewNewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewUpdateDTO;
-import com.gustavo.comicreviewapi.entities.Review;
-import com.gustavo.comicreviewapi.security.JWTUtil;
+import com.gustavo.comicreviewapi.filters.JWTAccessDeniedHandler;
+import com.gustavo.comicreviewapi.filters.JWTAuthenticationEntryPoint;
 import com.gustavo.comicreviewapi.services.CommentService;
 import com.gustavo.comicreviewapi.services.LikeService;
 import com.gustavo.comicreviewapi.services.ReviewService;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
+import com.gustavo.comicreviewapi.utils.JwtUtil;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @WebMvcTest(controllers = ReviewController.class)
+@Import({SecurityConfig.class, JWTAccessDeniedHandler.class, JWTAuthenticationEntryPoint.class})
 @AutoConfigureMockMvc
 public class ReviewControllerTest {
 	
@@ -60,15 +64,15 @@ public class ReviewControllerTest {
 	
 	@MockBean
 	CommentService commentService;
-	
-	@MockBean
-	JWTUtil jwtUtil;
-	
+		
 	@MockBean
 	UserDetailsService userDetailsService;
 	
 	@MockBean
 	LikeService likeService;
+	
+	@MockBean
+	JwtUtil jwtUtil;
 		
 	@Test
 	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER"})
@@ -154,7 +158,7 @@ public class ReviewControllerTest {
 		// Scenario
 		Long id = 2l;
 		
-		BDDMockito.given(reviewService.find(id)).willThrow(new ObjectNotFoundException("Object not found! Id: " + id + ", Type: " + Review.class.getName()));
+		BDDMockito.given(reviewService.find(id)).willThrow(new ObjectNotFoundException("Object not found! Id: " + id));
 		
 		// Execution
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -165,7 +169,7 @@ public class ReviewControllerTest {
 		mvc.perform(request)
 			.andExpect(MockMvcResultMatchers.status().isNotFound())
 			.andExpect(MockMvcResultMatchers.jsonPath("error").value("Not found"))
-			.andExpect(MockMvcResultMatchers.jsonPath("message").value("Object not found! Id: " + id + ", Type: " + Review.class.getName()));
+			.andExpect(MockMvcResultMatchers.jsonPath("message").value("Object not found! Id: " + id));
 	}
 	
 	@Test
@@ -184,7 +188,7 @@ public class ReviewControllerTest {
 				"A HQ não mostra quase nada sobre o Homem-Aranha: "
 				+ "deveria mostrar mais sobre os seus problemas, ele tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
 				+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
-				+ "família.");
+				+ "família.", 2l);
 		
 		BDDMockito.given(reviewService.update(Mockito.anyLong(), Mockito.any(ReviewUpdateDTO.class))).willReturn(updatedReview);
 		
@@ -206,7 +210,8 @@ public class ReviewControllerTest {
 			.andExpect(MockMvcResultMatchers.jsonPath("content").value("A HQ não mostra quase nada sobre o Homem-Aranha: "
 					+ "deveria mostrar mais sobre os seus problemas, ele tentando fazer o que é certo enquanto luta para manter sua identidade secreta em "
 					+ "segredo, com um turbilhão de coisas acontecendo ao mesmo tempo, na escola, no namoro, no trabalho, em "
-					+ "família."));
+					+ "família."))
+			.andExpect(MockMvcResultMatchers.jsonPath("likes").value(2));
 	}
 	
 	@Test

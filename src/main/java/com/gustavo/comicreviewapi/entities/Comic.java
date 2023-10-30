@@ -2,17 +2,18 @@ package com.gustavo.comicreviewapi.entities;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name="TB_COMIC")
@@ -28,16 +29,16 @@ public class Comic implements Serializable {
 	@Column(length=3000)
 	private String description;
 	
-	@ManyToMany(cascade = CascadeType.ALL)
+	@ManyToMany(cascade = CascadeType.PERSIST)
 	@JoinTable(name = "TB_COMIC_AUTHOR",
-			joinColumns = @JoinColumn(name = "comic_id"),
-			inverseJoinColumns = @JoinColumn(name = "author_id"))
+			joinColumns = @JoinColumn(name = "comic_id",  referencedColumnName="id"),
+			inverseJoinColumns = @JoinColumn(name = "author_id", referencedColumnName="id"))
 	private Set<Author> authors = new HashSet<>();
 	
-	@ManyToMany(cascade = CascadeType.ALL)
+	@ManyToMany(cascade = CascadeType.PERSIST)
 	@JoinTable(name = "TB_COMIC_CHARACTER",
-			joinColumns = @JoinColumn(name = "comic_id"),
-			inverseJoinColumns = @JoinColumn(name = "character_id"))
+			joinColumns = @JoinColumn(name = "comic_id", referencedColumnName="id"),
+			inverseJoinColumns = @JoinColumn(name = "character_id", referencedColumnName="id"))
 	private Set<Character> characters = new HashSet<>();
 	
 	@OneToMany(mappedBy = "comic")
@@ -144,10 +145,7 @@ public class Comic implements Serializable {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
+		return Objects.hash(id);
 	}
 
 	@Override
@@ -159,12 +157,7 @@ public class Comic implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Comic other = (Comic) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		return true;
+		return Objects.equals(id, other.id);
 	}
-
+	
 }

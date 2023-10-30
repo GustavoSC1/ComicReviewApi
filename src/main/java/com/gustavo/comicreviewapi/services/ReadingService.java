@@ -7,8 +7,7 @@ import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.entities.Reading;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.ReadingRepository;
-import com.gustavo.comicreviewapi.security.UserSS;
-import com.gustavo.comicreviewapi.services.exceptions.AuthorizationException;
+import com.gustavo.comicreviewapi.utils.UserSS;
 
 @Service
 public class ReadingService {
@@ -23,13 +22,9 @@ public class ReadingService {
 	
 	public void save(Long comicId, ReadingNewDTO readingDto) {
 		
-		UserSS userAuthenticated = UserService.authenticated();
+		UserSS userAuthenticated = UserService.authenticated();	
 		
-		if(userAuthenticated==null) {
-			throw new AuthorizationException("Access denied");
-		}
-		
-		User user = new User();
+		User user = new User();		
 		user.setId(userAuthenticated.getId());
 		
 		Comic comic = comicService.findById(comicId);

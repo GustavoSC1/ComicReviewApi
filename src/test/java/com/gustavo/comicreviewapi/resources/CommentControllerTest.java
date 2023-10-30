@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,17 +27,20 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gustavo.comicreviewapi.builders.CommentDtoBuilder;
 import com.gustavo.comicreviewapi.builders.CommentNewDtoBuilder;
+import com.gustavo.comicreviewapi.configs.SecurityConfig;
 import com.gustavo.comicreviewapi.dtos.CommentDTO;
 import com.gustavo.comicreviewapi.dtos.CommentNewDTO;
 import com.gustavo.comicreviewapi.dtos.CommentUpdateDTO;
-import com.gustavo.comicreviewapi.entities.Comment;
-import com.gustavo.comicreviewapi.security.JWTUtil;
+import com.gustavo.comicreviewapi.filters.JWTAccessDeniedHandler;
+import com.gustavo.comicreviewapi.filters.JWTAuthenticationEntryPoint;
 import com.gustavo.comicreviewapi.services.CommentService;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
+import com.gustavo.comicreviewapi.utils.JwtUtil;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @WebMvcTest(controllers = CommentController.class)
+@Import({SecurityConfig.class, JWTAccessDeniedHandler.class, JWTAuthenticationEntryPoint.class})
 @AutoConfigureMockMvc
 public class CommentControllerTest {
 	
@@ -49,10 +53,10 @@ public class CommentControllerTest {
 	CommentService commentService;
 	
 	@MockBean
-	JWTUtil jwtUtil;
+	UserDetailsService userDetailsService;
 	
 	@MockBean
-	UserDetailsService userDetailsService;
+	JwtUtil jwtUtil;
 	
 	@Test
 	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER"})
@@ -133,7 +137,7 @@ public class CommentControllerTest {
 		// Scenario
 		Long id = 2l;
 		
-		BDDMockito.given(commentService.find(id)).willThrow(new ObjectNotFoundException("Object not found! Id: " + id + ", Type: " + Comment.class.getName()));
+		BDDMockito.given(commentService.find(id)).willThrow(new ObjectNotFoundException("Object not found! Id: " + id));
 		
 		// Execution
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -144,7 +148,7 @@ public class CommentControllerTest {
 		mvc.perform(request)
 			.andExpect(MockMvcResultMatchers.status().isNotFound())
 			.andExpect(MockMvcResultMatchers.jsonPath("error").value("Not found"))
-			.andExpect(MockMvcResultMatchers.jsonPath("message").value("Object not found! Id: " + id + ", Type: " + Comment.class.getName()));
+			.andExpect(MockMvcResultMatchers.jsonPath("message").value("Object not found! Id: " + id));
 	}
 	
 	@Test

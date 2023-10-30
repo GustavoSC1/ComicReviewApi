@@ -17,7 +17,7 @@ import org.assertj.core.api.Assertions;
 
 @ActiveProfiles("test")
 public class MarvelClientTest {
-	
+
 	static String BASE_URL = "https://gateway.marvel.com:443/v1/public";
 	
 	static String RESPONSE_COMIC = "{\n" + 

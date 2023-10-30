@@ -16,9 +16,9 @@ import com.gustavo.comicreviewapi.entities.Review;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.entities.enums.Profile;
 import com.gustavo.comicreviewapi.repositories.CommentRepository;
-import com.gustavo.comicreviewapi.security.UserSS;
 import com.gustavo.comicreviewapi.services.exceptions.AuthorizationException;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
+import com.gustavo.comicreviewapi.utils.UserSS;
 
 @Service
 public class CommentService {
@@ -34,16 +34,16 @@ public class CommentService {
 	
 	public CommentDTO save(CommentNewDTO commentDto) {
 		
-		UserSS userAuthenticated = UserService.authenticated();		
-		if(userAuthenticated==null) {
-			throw new AuthorizationException("Access denied");
-		}
+		UserSS userAuthenticated = UserService.authenticated();	
 		
 		User user = new User();
+		
 		user.setId(userAuthenticated.getId());
+		
 		Review review = reviewService.findById(commentDto.getReviewId());
 	
 		Comment comment = new Comment(null, commentDto.getTitle(), getDateTime(), commentDto.getContent(), review, user);
+		
 		comment = commentRepository.save(comment);
 		
 		return new CommentDTO(comment);	
@@ -57,7 +57,7 @@ public class CommentService {
 	
 	public Comment findById(Long id) {
 		Optional<Comment> commentOptional = commentRepository.findById(id);
-		Comment comment = commentOptional.orElseThrow(() -> new ObjectNotFoundException("Object not found! Id: " + id + ", Type: " + Comment.class.getName()));
+		Comment comment = commentOptional.orElseThrow(() -> new ObjectNotFoundException("Comment not found! Id: " + id));
 		
 		return comment;
 	}
@@ -65,8 +65,9 @@ public class CommentService {
 	public CommentDTO update(Long id, CommentUpdateDTO commentDto) {
 		Comment comment = findById(id);
 		
-		UserSS userAuthenticated = UserService.authenticated();		
-		if(userAuthenticated==null || !comment.getUser().getId().equals(userAuthenticated.getId())) {
+		UserSS userAuthenticated = UserService.authenticated();	
+		
+		if(!comment.getUser().getId().equals(userAuthenticated.getId())) {
 			throw new AuthorizationException("Access denied");
 		}
 		
@@ -94,8 +95,9 @@ public class CommentService {
 	public void delete(Long id) {
 		Comment foundComment = findById(id);
 		
-		UserSS userAuthenticated = UserService.authenticated();		
-		if(userAuthenticated==null || !userAuthenticated.hasRole(Profile.ADMIN) && !foundComment.getUser().getId().equals(userAuthenticated.getId())) {
+		UserSS userAuthenticated = UserService.authenticated();	
+		
+		if(!userAuthenticated.hasRole(Profile.ADMIN) && !foundComment.getUser().getId().equals(userAuthenticated.getId())) {
 			throw new AuthorizationException("Access denied");
 		}
 		

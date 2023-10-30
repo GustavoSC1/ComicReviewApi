@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.assertj.core.api.Assertions;
@@ -14,21 +15,32 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.gustavo.comicreviewapi.builders.AuthenticationDtoBuilder;
+import com.gustavo.comicreviewapi.builders.RefreshTokenBuilder;
 import com.gustavo.comicreviewapi.builders.UserBuilder;
 import com.gustavo.comicreviewapi.builders.UserNewDtoBuilder;
+import com.gustavo.comicreviewapi.dtos.AuthenticationDTO;
+import com.gustavo.comicreviewapi.dtos.LoginResponseDTO;
 import com.gustavo.comicreviewapi.dtos.UserDTO;
 import com.gustavo.comicreviewapi.dtos.UserNewDTO;
 import com.gustavo.comicreviewapi.dtos.UserUpdateDTO;
+import com.gustavo.comicreviewapi.entities.RefreshToken;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.entities.enums.Profile;
 import com.gustavo.comicreviewapi.repositories.UserRepository;
-import com.gustavo.comicreviewapi.security.UserSS;
+import com.gustavo.comicreviewapi.services.exceptions.AuthenticationErrorException;
 import com.gustavo.comicreviewapi.services.exceptions.BusinessException;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
+import com.gustavo.comicreviewapi.utils.JwtUtil;
+import com.gustavo.comicreviewapi.utils.UserSS;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -42,9 +54,68 @@ public class UserServiceTest {
 	@MockBean
 	BCryptPasswordEncoder pe;
 	
+	@MockBean
+	AuthenticationManager authenticationManager;
+	
+	@MockBean
+	RefreshTokenService refreshTokenService;
+    
+	@MockBean
+    JwtUtil jwtUtil;
+	
 	@BeforeEach
 	public void setUp() {
-		this.userService= Mockito.spy(new UserService(userRepository, pe));
+		this.userService= Mockito.spy(new UserService(userRepository, pe, authenticationManager, refreshTokenService, jwtUtil));
+	}
+	
+	@Test
+	@DisplayName("Must login and return the token")
+	public void loginTest() {
+		// Scenario
+		String token = "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJDb21pYyBSZXZpZXcgQXBpIiwic3ViIjoiSldUIFRva2VuIiwidXNlcm5hbWUiOiJndS5jcnV6MTdAaG90bWFpbC5jb20iLCJpYXQiOjE2OTUzODU3MDMsImV4cCI6MTY5NTQxNTcwM30.Ksery3op3UJ79HOflaJ9EEb9YI_Zv74UaQfL7MJ8sQXBYvBJ3ESEwcG4edCY5CjEKM1WxyvU3PSYJCc5JobWRg";
+				
+		AuthenticationDTO authenticationDTO = AuthenticationDtoBuilder.aAuthenticationDto().now();
+		
+		UserSS userDetails = new UserSS(1l, "gu.cruz17@hotmail.com", "Password1.", Set.of(Profile.USER));
+		
+		RefreshToken refreshToken = RefreshTokenBuilder.aRefreshToken().withId(1l).withUser(UserBuilder.aUser().withId(1l).now()).now();
+		
+		Authentication authentication = new UsernamePasswordAuthenticationToken(
+				userDetails, userDetails.getPassword(), userDetails.getAuthorities());
+				
+		Mockito.when(authenticationManager.authenticate(Mockito.any(Authentication.class))).thenReturn(authentication);
+		
+		Mockito.when(jwtUtil.generateToken(Mockito.any(UserSS.class))).thenReturn(token);
+		
+		Mockito.when(refreshTokenService.createRefreshToken(Mockito.anyLong())).thenReturn(refreshToken);
+		
+		// Execution
+		LoginResponseDTO loginResponseDto = userService.login(authenticationDTO);
+		
+		// Verification
+		Assertions.assertThat(loginResponseDto.getToken()).isEqualTo(token);
+		Assertions.assertThat(loginResponseDto.getId()).isEqualTo(userDetails.getId());
+		Assertions.assertThat(loginResponseDto.getEmail()).isEqualTo(userDetails.getUsername());
+		Assertions.assertThat(loginResponseDto.getRefreshToken()).isEqualTo(refreshToken.getToken());
+		Assertions.assertThat(loginResponseDto.getType()).isEqualTo("Bearer");
+		Assertions.assertThat(loginResponseDto.getProfiles().contains("ROLE_USER")).isTrue();
+	}
+	
+	@Test
+	@DisplayName("Should generate an Authentication Error when login is unsuccessful")
+	public void incorrectLoginTest() {
+		// Scenario
+		AuthenticationDTO authenticationDTO = AuthenticationDtoBuilder.aAuthenticationDto().now();
+						
+		Mockito.when(authenticationManager.authenticate(Mockito.any(Authentication.class))).thenThrow(BadCredentialsException.class);
+				
+		// Execution and Verification
+		Exception exception = assertThrows(AuthenticationErrorException.class, () -> {userService.login(authenticationDTO);});
+		
+		String expectedMessage = "Incorrect username or password!";
+		String actualMessage = exception.getMessage();
+		
+		Assertions.assertThat(actualMessage).isEqualTo(expectedMessage);
 	}
 	
 	@Test
@@ -68,7 +139,7 @@ public class UserServiceTest {
 		Assertions.assertThat(savedUserDto.getBirthDate()).isEqualTo(LocalDate.of(1996, 10, 17));
 		Assertions.assertThat(savedUserDto.getPhone()).isEqualTo("998123899");		
 		Assertions.assertThat(savedUserDto.getEmail()).isEqualTo("gu.cruz17@hotmail.com");
-		Assertions.assertThat(savedUserDto.getProfiles().contains(Profile.USER)).isTrue();
+		Assertions.assertThat(savedUserDto.getProfiles().contains(Profile.USER.getDescription())).isTrue();
 		Mockito.verify(pe, Mockito.times(1)).encode(newUser.getPassword());
 	}
 	
@@ -123,7 +194,7 @@ public class UserServiceTest {
 		// Execution and Verification
 		Exception exception = assertThrows(ObjectNotFoundException.class, () -> {userService.findById(id);});
 		
-		String expectedMessage = "Object not found! Id: " + id + ", Type: " + User.class.getName();
+		String expectedMessage = "User not found! Id: " + id;
 		String actualMessage = exception.getMessage();
 		
 		Assertions.assertThat(actualMessage).isEqualTo(expectedMessage);			
@@ -148,7 +219,7 @@ public class UserServiceTest {
 		Assertions.assertThat(foundUser.getBirthDate()).isEqualTo(LocalDate.of(1996, 10, 17));
 		Assertions.assertThat(foundUser.getPhone()).isEqualTo("998123899");		
 		Assertions.assertThat(foundUser.getEmail()).isEqualTo("gu.cruz17@hotmail.com");
-		Assertions.assertThat(foundUser.getProfiles().contains(Profile.USER)).isTrue();
+		Assertions.assertThat(foundUser.getProfiles().contains(Profile.USER.getDescription())).isTrue();
 	}
 	
 	@Test

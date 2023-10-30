@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +31,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gustavo.comicreviewapi.builders.ComicDtoBuilder;
 import com.gustavo.comicreviewapi.builders.ReviewDtoBuilder;
+import com.gustavo.comicreviewapi.configs.SecurityConfig;
 import com.gustavo.comicreviewapi.dtos.AuthorDTO;
 import com.gustavo.comicreviewapi.dtos.CharacterDTO;
 import com.gustavo.comicreviewapi.dtos.ComicDTO;
@@ -37,17 +39,19 @@ import com.gustavo.comicreviewapi.dtos.ComicNewDTO;
 import com.gustavo.comicreviewapi.dtos.RateNewDTO;
 import com.gustavo.comicreviewapi.dtos.ReadingNewDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewDTO;
-import com.gustavo.comicreviewapi.entities.Comic;
-import com.gustavo.comicreviewapi.security.JWTUtil;
+import com.gustavo.comicreviewapi.filters.JWTAccessDeniedHandler;
+import com.gustavo.comicreviewapi.filters.JWTAuthenticationEntryPoint;
 import com.gustavo.comicreviewapi.services.ComicService;
 import com.gustavo.comicreviewapi.services.RateService;
 import com.gustavo.comicreviewapi.services.ReadingService;
 import com.gustavo.comicreviewapi.services.ReviewService;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
+import com.gustavo.comicreviewapi.utils.JwtUtil;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @WebMvcTest(controllers = ComicController.class)
+@Import({SecurityConfig.class, JWTAccessDeniedHandler.class, JWTAuthenticationEntryPoint.class})
 @AutoConfigureMockMvc
 public class ComicControllerTest {
 	
@@ -67,12 +71,12 @@ public class ComicControllerTest {
 	
 	@MockBean
 	ReadingService readingService;
-	
-	@MockBean
-	JWTUtil jwtUtil;
-	
+		
 	@MockBean
 	UserDetailsService userDetailsService;
+	
+	@MockBean
+	JwtUtil jwtUtil;
 	
 	@Test
 	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER", "ADMIN"})
@@ -102,9 +106,7 @@ public class ComicControllerTest {
 		.andExpect( MockMvcResultMatchers.status().isCreated() )
 		.andExpect( MockMvcResultMatchers.header().string(HttpHeaders.LOCATION, Matchers.containsString("/comics/"+id)) );
 	}
-	
-	
-	
+		
 	@Test
 	@WithMockUser(username = "gu.cruz17@hotmail.com", roles = {"USER", "ADMIN"})
 	@DisplayName("Should throw validation error when there is not enough data for comic creation")
@@ -164,7 +166,7 @@ public class ComicControllerTest {
 		// Scenario
 		Long id = 2l;
 		
-		BDDMockito.given(comicService.find(id)).willThrow(new ObjectNotFoundException("Object not found! Id: " + id + ", Type: " + Comic.class.getName()));
+		BDDMockito.given(comicService.find(id)).willThrow(new ObjectNotFoundException("Object not found! Id: " + id));
 		
 		// Execution
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -176,7 +178,7 @@ public class ComicControllerTest {
 		.perform(request)
 		.andExpect(MockMvcResultMatchers.status().isNotFound())
 		.andExpect(MockMvcResultMatchers.jsonPath("error").value("Not found"))
-		.andExpect(MockMvcResultMatchers.jsonPath("message").value("Object not found! Id: " + id + ", Type: " + Comic.class.getName()));
+		.andExpect(MockMvcResultMatchers.jsonPath("message").value("Object not found! Id: " + id));
 	}
 	
 	@Test

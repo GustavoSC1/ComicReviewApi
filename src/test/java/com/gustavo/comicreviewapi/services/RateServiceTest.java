@@ -17,7 +17,7 @@ import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.entities.Rate;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.RateRepository;
-import com.gustavo.comicreviewapi.security.UserSS;
+import com.gustavo.comicreviewapi.utils.UserSS;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -35,7 +35,7 @@ public class RateServiceTest {
 	public void setUp() {
 		this.rateService = new RateService(rateRepository, comicService);
 	}
-		
+	
 	@Test
 	@DisplayName("Must save a rate")
 	public void saveRateTest() {

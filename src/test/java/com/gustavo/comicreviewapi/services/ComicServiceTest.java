@@ -61,7 +61,7 @@ public class ComicServiceTest {
 	
 	@MockBean
 	Clock clock;
-	
+		
 	@BeforeEach
 	public void setUp() {
 		this.comicService = Mockito.spy(new ComicService("ae78641e8976ffdf3fd4b71254a3b9bf", 
@@ -239,7 +239,7 @@ public class ComicServiceTest {
 		// Execution and Verification
 		Exception exception = assertThrows(ObjectNotFoundException.class, () -> {comicService.findById(id);});
 	
-		String expectMessage = "Object not found! Id: " + id + ", Type: " + Comic.class.getName();
+		String expectMessage = "Comic not found! Id: " + id;
 		String actualMessage = exception.getMessage();
 		
 		Assertions.assertThat(actualMessage).isEqualTo(expectMessage);

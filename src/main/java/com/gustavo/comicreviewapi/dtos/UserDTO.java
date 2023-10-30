@@ -2,11 +2,11 @@ package com.gustavo.comicreviewapi.dtos;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.gustavo.comicreviewapi.entities.User;
-import com.gustavo.comicreviewapi.entities.enums.Profile;
 
 public class UserDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -16,7 +16,7 @@ public class UserDTO implements Serializable {
 	private LocalDate birthDate;
 	private String phone;	
 	private String email;	
-	private Set<Profile> profiles = new HashSet<>();
+	private List<String> profiles = new ArrayList<>();
 		
 	public UserDTO() {
 		
@@ -36,7 +36,8 @@ public class UserDTO implements Serializable {
 		this.birthDate = user.getBirthDate();
 		this.phone = user.getPhone();
 		this.email = user.getEmail();
-		this.profiles = user.getProfiles();
+		this.profiles = user.getProfiles().stream().map(item -> item.getDescription())
+		        .collect(Collectors.toList());
 	}
 
 	public Long getId() {
@@ -59,7 +60,7 @@ public class UserDTO implements Serializable {
 		return email;
 	}
 
-	public Set<Profile> getProfiles() {
+	public List<String>  getProfiles() {
 		return profiles;
 	}
 
@@ -83,7 +84,7 @@ public class UserDTO implements Serializable {
 		this.email = email;
 	}
 
-	public void addProfile(Profile profile) {
+	public void addProfile(String profile) {
 		profiles.add(profile);
 	}
 	

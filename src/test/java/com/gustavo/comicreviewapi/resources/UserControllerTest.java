@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -36,22 +37,25 @@ import com.gustavo.comicreviewapi.builders.CommentDtoBuilder;
 import com.gustavo.comicreviewapi.builders.ReviewDtoBuilder;
 import com.gustavo.comicreviewapi.builders.UserDtoBuilder;
 import com.gustavo.comicreviewapi.builders.UserNewDtoBuilder;
+import com.gustavo.comicreviewapi.configs.SecurityConfig;
 import com.gustavo.comicreviewapi.dtos.CommentDTO;
 import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 import com.gustavo.comicreviewapi.dtos.UserDTO;
 import com.gustavo.comicreviewapi.dtos.UserNewDTO;
 import com.gustavo.comicreviewapi.dtos.UserUpdateDTO;
-import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.entities.enums.Profile;
-import com.gustavo.comicreviewapi.security.JWTUtil;
+import com.gustavo.comicreviewapi.filters.JWTAccessDeniedHandler;
+import com.gustavo.comicreviewapi.filters.JWTAuthenticationEntryPoint;
 import com.gustavo.comicreviewapi.services.CommentService;
 import com.gustavo.comicreviewapi.services.ReviewService;
 import com.gustavo.comicreviewapi.services.UserService;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
+import com.gustavo.comicreviewapi.utils.JwtUtil;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @WebMvcTest(controllers = UserController.class)
+@Import({SecurityConfig.class, JWTAccessDeniedHandler.class, JWTAuthenticationEntryPoint.class})
 @AutoConfigureMockMvc
 public class UserControllerTest {
 	
@@ -70,7 +74,7 @@ public class UserControllerTest {
 	ReviewService reviewService;
 	
 	@MockBean
-	JWTUtil jwtUtil;
+	JwtUtil jwtUtil;
 	
 	@MockBean
 	UserDetailsService userDetailsService;
@@ -153,7 +157,7 @@ public class UserControllerTest {
 			.andExpect(MockMvcResultMatchers.jsonPath("name").value("Gustavo Silva Cruz"))
 			.andExpect(MockMvcResultMatchers.jsonPath("phone").value("998123899"))
 			.andExpect(MockMvcResultMatchers.jsonPath("email").value("gu.cruz17@hotmail.com"))
-			.andExpect(MockMvcResultMatchers.jsonPath("profiles[0]").value("USER"));
+			.andExpect(MockMvcResultMatchers.jsonPath("profiles[0]").value("ROLE_USER"));
 	}
 	
 	@Test
@@ -162,7 +166,7 @@ public class UserControllerTest {
 		// Scenario
 		Long id = 2l;
 		
-		BDDMockito.given(userService.find(id)).willThrow(new ObjectNotFoundException("Object not found! Id: " + id + ", Type: " + User.class.getName()));
+		BDDMockito.given(userService.find(id)).willThrow(new ObjectNotFoundException("Object not found! Id: " + id));
 		
 		// Execution
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -174,7 +178,7 @@ public class UserControllerTest {
 		.perform(request)
 		.andExpect(MockMvcResultMatchers.status().isNotFound())
 		.andExpect(MockMvcResultMatchers.jsonPath("error").value("Not found"))
-		.andExpect(MockMvcResultMatchers.jsonPath("message").value("Object not found! Id: " + id + ", Type: " + User.class.getName()));		
+		.andExpect(MockMvcResultMatchers.jsonPath("message").value("Object not found! Id: " + id));		
 	}
 	
 	@Test
@@ -190,7 +194,7 @@ public class UserControllerTest {
 		UserUpdateDTO userUpdateDTO = new UserUpdateDTO("Fulano Cauê Calebe Jesus", LocalDate.of(1996, 10, 17), "998123899", "fulano-jesus87@hotmail.com.br");
 				
 		UserDTO updatedUser = new UserDTO(id, "Fulano Cauê Calebe Jesus", LocalDate.of(1996, 10, 17), "998123899", "fulano-jesus87@hotmail.com.br");
-		updatedUser.addProfile(Profile.USER);
+		updatedUser.addProfile(Profile.USER.getDescription());
 		
 		BDDMockito.given(userService.update(Mockito.anyLong(), Mockito.any(UserUpdateDTO.class))).willReturn(updatedUser);
 		
@@ -209,7 +213,7 @@ public class UserControllerTest {
 		.andExpect(MockMvcResultMatchers.jsonPath("name").value("Fulano Cauê Calebe Jesus"))
 		.andExpect(MockMvcResultMatchers.jsonPath("phone").value("998123899"))
 		.andExpect(MockMvcResultMatchers.jsonPath("email").value("fulano-jesus87@hotmail.com.br"))
-		.andExpect(MockMvcResultMatchers.jsonPath("profiles[0]").value("USER"));
+		.andExpect(MockMvcResultMatchers.jsonPath("profiles[0]").value("ROLE_USER"));
 	}
 	
 	@Test

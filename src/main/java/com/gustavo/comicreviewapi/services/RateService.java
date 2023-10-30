@@ -7,8 +7,7 @@ import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.entities.Rate;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.RateRepository;
-import com.gustavo.comicreviewapi.security.UserSS;
-import com.gustavo.comicreviewapi.services.exceptions.AuthorizationException;
+import com.gustavo.comicreviewapi.utils.UserSS;
 
 @Service
 public class RateService {
@@ -22,13 +21,8 @@ public class RateService {
 	}
 	
 	public void save(Long comicId, RateNewDTO rateDto) {		
-						
-		UserSS userAuthenticated = UserService.authenticated();
-		
-		if(userAuthenticated==null) {
-			throw new AuthorizationException("Access denied");
-		}
-		
+		UserSS userAuthenticated = UserService.authenticated(); 
+        
 		User user = new User();
 		user.setId(userAuthenticated.getId());
 		
@@ -36,7 +30,7 @@ public class RateService {
 		
 		Rate rate = new Rate(user, comic, rateDto.getRate());
 						
-		rateRepository.save(rate);		
+		rateRepository.save(rate);	
 	}
 
 }

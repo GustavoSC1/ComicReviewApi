@@ -1,10 +1,11 @@
 package com.gustavo.comicreviewapi.entities;
 
 import java.io.Serializable;
+import java.util.Objects;
 
-import javax.persistence.Embeddable;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Embeddable
 public class LikePK implements Serializable {
@@ -45,11 +46,7 @@ public class LikePK implements Serializable {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((review == null) ? 0 : review.hashCode());
-		result = prime * result + ((user == null) ? 0 : user.hashCode());
-		return result;
+		return Objects.hash(review, user);
 	}
 
 	@Override
@@ -61,17 +58,7 @@ public class LikePK implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		LikePK other = (LikePK) obj;
-		if (review == null) {
-			if (other.review != null)
-				return false;
-		} else if (!review.equals(other.review))
-			return false;
-		if (user == null) {
-			if (other.user != null)
-				return false;
-		} else if (!user.equals(other.user))
-			return false;
-		return true;
+		return Objects.equals(review, other.review) && Objects.equals(user, other.user);
 	}
 	
 }

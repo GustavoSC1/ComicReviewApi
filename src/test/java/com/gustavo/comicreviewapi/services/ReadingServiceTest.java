@@ -17,7 +17,7 @@ import com.gustavo.comicreviewapi.entities.Comic;
 import com.gustavo.comicreviewapi.entities.Reading;
 import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.ReadingRepository;
-import com.gustavo.comicreviewapi.security.UserSS;
+import com.gustavo.comicreviewapi.utils.UserSS;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")

@@ -1,25 +1,30 @@
 package com.gustavo.comicreviewapi.resources.exceptions;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.gustavo.comicreviewapi.services.exceptions.BusinessException;
 import com.gustavo.comicreviewapi.services.exceptions.ObjectNotFoundException;
+import com.gustavo.comicreviewapi.services.exceptions.TokenRefreshException;
+import com.gustavo.comicreviewapi.services.exceptions.AuthenticationErrorException;
 import com.gustavo.comicreviewapi.services.exceptions.AuthorizationException;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class ResourceExceptionHandler {
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<StandardError> validation(MethodArgumentNotValidException e, HttpServletRequest request) {
-		ValidationError err = new ValidationError(System.currentTimeMillis(), HttpStatus.UNPROCESSABLE_ENTITY.value(), "Validation error", e.getMessage(), request.getRequestURI());
-		for(FieldError x : e.getBindingResult().getFieldErrors()) {
+		String mensage = "Parameters entered are invalid";
+		ValidationError err = new ValidationError(System.currentTimeMillis(), HttpStatus.UNPROCESSABLE_ENTITY.value(), "Validation error", mensage, request.getRequestURI());
+		for(FieldError x : e.getFieldErrors()) {
 			err.addError(x.getField(), x.getDefaultMessage());
 		}
 		
@@ -38,9 +43,35 @@ public class ResourceExceptionHandler {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
 	}
 	
-	@ExceptionHandler(AuthorizationException.class)
-	public ResponseEntity<StandardError> authorization(AuthorizationException e, HttpServletRequest request) {
+	@ExceptionHandler(AuthenticationErrorException.class)
+	public ResponseEntity<StandardError> exceptionsAuthentication(AuthenticationErrorException e, HttpServletRequest request) {		
 		StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.FORBIDDEN.value(), "Access denied", e.getMessage(), request.getRequestURI());
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(err);
+	}
+	
+	@ExceptionHandler(AuthorizationException.class)
+	public ResponseEntity<StandardError> authorization(AuthorizationException e, HttpServletRequest request) {	
+		StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.FORBIDDEN.value(), "Access denied", e.getMessage(), request.getRequestURI());		
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(err);
+	}
+	
+	@ExceptionHandler(AuthenticationException.class)
+	public ResponseEntity<StandardError> unauthenticatedUser(AuthenticationException e, HttpServletRequest request) {	
+		String mensage = "You must be logged in to access this resource";
+		StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.FORBIDDEN.value(), "Access denied", mensage, request.getRequestURI());		
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(err);
+	}
+	
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<StandardError> accessDenied(AccessDeniedException e, HttpServletRequest request) {
+		String mensage = "User does not have permission to access this resource";
+		StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.FORBIDDEN.value(), "Access denied", mensage, request.getRequestURI());		
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(err);
+	}
+	
+	@ExceptionHandler(TokenRefreshException.class)
+	public ResponseEntity<StandardError> authorization(TokenRefreshException e, HttpServletRequest request) {	
+		StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.FORBIDDEN.value(), "Access denied", e.getMessage(), request.getRequestURI());		
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(err);
 	}
 	

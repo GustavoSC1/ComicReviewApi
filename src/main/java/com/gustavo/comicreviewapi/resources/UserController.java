@@ -2,7 +2,7 @@ package com.gustavo.comicreviewapi.resources;
 
 import java.net.URI;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,14 +28,14 @@ import com.gustavo.comicreviewapi.services.CommentService;
 import com.gustavo.comicreviewapi.services.ReviewService;
 import com.gustavo.comicreviewapi.services.UserService;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
 @RequestMapping("/users")
-@Api("User API")
+@Tag(name = "User API")
 public class UserController {
 	
 	@Autowired
@@ -47,11 +47,11 @@ public class UserController {
 	@Autowired
 	private ReviewService reviewService;
 	
-	@ApiOperation("Save a user")
+	@Operation(summary = "Save a user")
 	@ApiResponses(value = {
-			@ApiResponse(code = 201, message = "User successfully saved"),
-			@ApiResponse(code = 400, message = "This request can be processed"),
-			@ApiResponse(code = 422, message = "Data validation error")
+			@ApiResponse(responseCode = "201", description = "User successfully saved"),
+			@ApiResponse(responseCode = "400", description = "This request can be processed"),
+			@ApiResponse(responseCode = "422", description = "Data validation error")
 	})
 	@PostMapping
 	public ResponseEntity<UserDTO> save(@Valid @RequestBody UserNewDTO userNewDto) {
@@ -60,13 +60,13 @@ public class UserController {
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 				 .buildAndExpand(userDto.getId()).toUri();
 		
-		return ResponseEntity.created(uri).body(userDto);
+		return ResponseEntity.created(uri).build();
 	}
 	
-	@ApiOperation("Obtains a user details by id")
+	@Operation(summary = "Obtains a user details by id")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "User obtained successfully"),
-			@ApiResponse(code = 404, message = "Could not find the requested data")
+			@ApiResponse(responseCode = "200", description = "User obtained successfully"),
+			@ApiResponse(responseCode = "404", description = "Could not find the requested data")
 	})
 	@GetMapping("/{id}")
 	public ResponseEntity<UserDTO> find(@PathVariable Long id) {
@@ -75,12 +75,12 @@ public class UserController {
 		return ResponseEntity.ok().body(userDto);
 	}
 	
-	@ApiOperation("Updates a user")
+	@Operation(summary = "Updates a user")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Successfully edited user"),
-			@ApiResponse(code = 403, message = "You are not allowed to make this request"),
-			@ApiResponse(code = 404, message = "Could not find the requested data"),
-			@ApiResponse(code = 422, message = "Data validation error")
+			@ApiResponse(responseCode = "200", description = "Successfully edited user"),
+			@ApiResponse(responseCode = "403", description = "You are not allowed to make this request"),
+			@ApiResponse(responseCode = "404", description = "Could not find the requested data"),
+			@ApiResponse(responseCode = "422", description = "Data validation error")
 	})
 	@PutMapping("/{id}")
 	public ResponseEntity<UserDTO> update(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO userDto) {
@@ -89,11 +89,11 @@ public class UserController {
 		return ResponseEntity.ok().body(user);
 	}
 	
-	@ApiOperation("Deletes a user by id")
+	@Operation(summary = "Deletes a user by id")
 	@ApiResponses(value = {
-            @ApiResponse(code = 204, message = "User succesfully deleted"),
-            @ApiResponse(code = 403, message = "You are not allowed to make this request"),
-            @ApiResponse(code = 404, message = "Could not find the requested data")
+            @ApiResponse(responseCode = "204", description = "User succesfully deleted"),
+            @ApiResponse(responseCode = "403", description = "You are not allowed to make this request"),
+            @ApiResponse(responseCode = "404", description = "Could not find the requested data")
     })
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	@DeleteMapping("/{id}")
@@ -103,9 +103,9 @@ public class UserController {
 		return ResponseEntity.noContent().build();
 	}
 	
-	@ApiOperation("Find comments by user")
+	@Operation(summary = "Find comments by user")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Comments found successfully")
+			@ApiResponse(responseCode = "200", description = "Comments found successfully")
 	})
 	@GetMapping("/{userId}/comments")
 	public ResponseEntity<Page <CommentDTO>> findCommentsByUser(
@@ -120,9 +120,9 @@ public class UserController {
 		return ResponseEntity.ok().body(list);		
 	}
 	
-	@ApiOperation("Find reviews by user")
+	@Operation(summary = "Find reviews by user")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Reviews found successfully")
+			@ApiResponse(responseCode = "200", description = "Reviews found successfully")
 	})
 	@GetMapping("/{userId}/reviews")
 	public ResponseEntity<Page <ReviewDTO>> findReviewsByUser(

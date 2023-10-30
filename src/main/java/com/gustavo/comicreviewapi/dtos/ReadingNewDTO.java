@@ -2,7 +2,7 @@ package com.gustavo.comicreviewapi.dtos;
 
 import java.io.Serializable;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public class ReadingNewDTO implements Serializable {
 	private static final long serialVersionUID = 1L;

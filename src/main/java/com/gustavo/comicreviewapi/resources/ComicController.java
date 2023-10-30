@@ -2,7 +2,7 @@ package com.gustavo.comicreviewapi.resources;
 
 import java.net.URI;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,10 +23,10 @@ import com.gustavo.comicreviewapi.services.RateService;
 import com.gustavo.comicreviewapi.services.ReadingService;
 import com.gustavo.comicreviewapi.services.ReviewService;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import com.gustavo.comicreviewapi.dtos.ComicDTO;
 import com.gustavo.comicreviewapi.dtos.ComicNewDTO;
@@ -36,7 +36,7 @@ import com.gustavo.comicreviewapi.dtos.ReviewDTO;
 
 @RestController
 @RequestMapping("/comics")
-@Api("Comic API")
+@Tag(name = "Comic API")
 public class ComicController {
 	
 	@Autowired
@@ -51,17 +51,18 @@ public class ComicController {
 	@Autowired
 	private ReadingService readingService;
 	
-	@ApiOperation("Save a comic")
+	@Operation(summary = "Save a comic")
 	@ApiResponses(value = {
-			@ApiResponse(code = 201, message = "Comic successfully saved"),
-			@ApiResponse(code = 400, message = "This request can be processed"),
-			@ApiResponse(code = 403, message = "You are not allowed to make this request"),
-			@ApiResponse(code = 404, message = "Could not find the requested data"),
-			@ApiResponse(code = 422, message = "Data validation error")
+			@ApiResponse(responseCode = "201", description = "Comic successfully saved"),
+			@ApiResponse(responseCode = "400", description = "This request can be processed"),
+			@ApiResponse(responseCode = "403", description = "You are not allowed to make this request"),
+			@ApiResponse(responseCode = "404", description = "Could not find the requested data"),
+			@ApiResponse(responseCode = "422", description = "Data validation error")
 	})
 	@PreAuthorize("hasAnyRole('ADMIN')")
-	@PostMapping	
+	@PostMapping
 	public ResponseEntity<ComicDTO> save(@Valid @RequestBody ComicNewDTO comicNewDto) {
+		System.out.println("Entrou save comic");
 		ComicDTO comicDto = comicService.save(comicNewDto);
 		
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
@@ -70,10 +71,10 @@ public class ComicController {
 		return ResponseEntity.created(uri).body(comicDto);
 	}
 	
-	@ApiOperation("Obtains a comic details by id")
+	@Operation(summary = "Obtains a comic details by id")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Comic obtained successfully"),
-			@ApiResponse(code = 404, message = "Could not find the requested data")
+			@ApiResponse(responseCode = "200", description = "Comic obtained successfully"),
+			@ApiResponse(responseCode = "404", description = "Could not find the requested data")
 	})
 	@GetMapping("/{id}")
 	public ResponseEntity<ComicDTO> find(@PathVariable Long id) {
@@ -82,9 +83,9 @@ public class ComicController {
 		return ResponseEntity.ok().body(comicDto);
 	}
 	
-	@ApiOperation("Find comics by title")
+	@Operation(summary = "Find comics by title")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Comics found successfully")
+			@ApiResponse(responseCode = "200", description = "Comics found successfully")
 	})
 	@GetMapping
 	public ResponseEntity<Page <ComicDTO>> findByTitle(
@@ -99,9 +100,9 @@ public class ComicController {
 		return ResponseEntity.ok().body(list);
 	}
 	
-	@ApiOperation("Find reviews by comic")
+	@Operation(summary = "Find reviews by comic")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Reviews found successfully")
+			@ApiResponse(responseCode = "200", description = "Reviews found successfully")
 	})
 	@GetMapping("/{comicId}/reviews")
 	public ResponseEntity<Page <ReviewDTO>> findReviewsByComic(
@@ -116,12 +117,12 @@ public class ComicController {
 		return ResponseEntity.ok().body(list);		
 	}
 	
-	@ApiOperation("Save a rate")
+	@Operation(summary = "Save a rate")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Rate successfully saved"),
-			@ApiResponse(code = 403, message = "You are not allowed to make this request"),
-			@ApiResponse(code = 404, message = "Could not find the requested data"),
-			@ApiResponse(code = 422, message = "Data validation error")
+			@ApiResponse(responseCode = "200", description = "Rate successfully saved"),
+			@ApiResponse(responseCode = "403", description = "You are not allowed to make this request"),
+			@ApiResponse(responseCode = "404", description = "Could not find the requested data"),
+			@ApiResponse(responseCode = "422", description = "Data validation error")
 	})
 	@PostMapping("/{comicId}/ratings")
 	public ResponseEntity<Void> saveRate(@PathVariable Long comicId, @Valid @RequestBody RateNewDTO rateDto) {
@@ -130,12 +131,12 @@ public class ComicController {
 		return ResponseEntity.ok().build();
 	}
 	
-	@ApiOperation("Save a reading")
+	@Operation(summary = "Save a reading")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Reading successfully saved"),
-			@ApiResponse(code = 403, message = "You are not allowed to make this request"),
-			@ApiResponse(code = 404, message = "Could not find the requested data"),
-			@ApiResponse(code = 422, message = "Data validation error")
+			@ApiResponse(responseCode = "200", description = "Reading successfully saved"),
+			@ApiResponse(responseCode = "403", description = "You are not allowed to make this request"),
+			@ApiResponse(responseCode = "404", description = "Could not find the requested data"),
+			@ApiResponse(responseCode = "422", description = "Data validation error")
 	})
 	@PostMapping("/{comicId}/readings")
 	public ResponseEntity<Void> saveReading(@PathVariable Long comicId, @Valid @RequestBody ReadingNewDTO readingDto) {
@@ -144,11 +145,11 @@ public class ComicController {
 		return ResponseEntity.ok().build();
 	}
 	
-	@ApiOperation("Deletes a comic by id")
+	@Operation(summary = "Deletes a comic by id")
 	@ApiResponses(value = {
-            @ApiResponse(code = 204, message = "Comic succesfully deleted"),
-            @ApiResponse(code = 404, message = "Could not find the requested data"),
-            @ApiResponse(code = 403, message = "You are not allowed to make this request")
+            @ApiResponse(responseCode = "204", description = "Comic succesfully deleted"),
+            @ApiResponse(responseCode = "404", description = "Could not find the requested data"),
+            @ApiResponse(responseCode = "403", description = "You are not allowed to make this request")
     })
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	@DeleteMapping("/{id}")

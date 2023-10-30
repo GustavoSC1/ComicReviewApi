@@ -1,28 +1,29 @@
 package com.gustavo.comicreviewapi.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.gustavo.comicreviewapi.security.UserSS;
-import com.gustavo.comicreviewapi.entities.User;
 import com.gustavo.comicreviewapi.repositories.UserRepository;
+import com.gustavo.comicreviewapi.entities.User;
+import com.gustavo.comicreviewapi.utils.UserSS;
 
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class AuthorizationService implements UserDetailsService {
 	
-	@Autowired
 	private UserRepository userRepository;
 	
-	// Classe de serviço conforme contrato do Spring Security (implements UserDetailsService). 
-	// Permite a busca do usuário pelo email.
+	public AuthorizationService(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
+	
 	@Override
-	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-		User user = userRepository.findByEmail(email);
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		User user = userRepository.findByEmail(username);
+		
 		if (user == null) {
-			throw new UsernameNotFoundException(email);
+			throw new UsernameNotFoundException(username);
 		}
 		
 		return new UserSS(user.getId(), user.getEmail(), user.getPassword(), user.getProfiles());
