@@ -42,7 +42,7 @@ Exemplo B: hoje é quinta-feira, o Comics tem o ISBN XXXXXXXX1, ou seja, seu des
 
 ## Tecnologias utilizadas
 ### Back end
-- [Java](https://www.oracle.com/java/)
+- [Java 17](https://www.oracle.com/java/)
 - [Spring Boot](https://spring.io/projects/spring-boot)
 - [Spring Data JPA](https://spring.io/projects/spring-data-jpa)
 - [Spring Security](https://spring.io/projects/spring-security)
@@ -59,7 +59,7 @@ Exemplo B: hoje é quinta-feira, o Comics tem o ISBN XXXXXXXX1, ou seja, seu des
 ## Como executar o projeto
 
 ### Back end
-Pré-requisitos: Java 11
+Pré-requisitos: Java 17
 
 ```bash
 # clonar repositório
